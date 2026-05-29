@@ -4,17 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gharmon255.dinostep.game.GameViewModel
-import com.gharmon255.dinostep.ui.home.HomeScreen
+import com.gharmon255.dinostep.ui.DinoStepApp
 import com.gharmon255.dinostep.ui.theme.DinoStepTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,23 +20,5 @@ class MainActivity : ComponentActivity() {
                 DinoStepApp(viewModel = viewModel)
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DinoStepApp(viewModel: GameViewModel) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text("Dino Step") },
-            )
-        },
-    ) { innerPadding ->
-        HomeScreen(
-            viewModel = viewModel,
-            modifier = Modifier.padding(innerPadding),
-        )
     }
 }

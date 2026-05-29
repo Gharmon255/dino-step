@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.game
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,12 @@ class GameViewModel : ViewModel() {
 
     var collection by mutableStateOf<List<CompletedCreature>>(emptyList())
         private set
+
+    var totalFakeStepsAdded by mutableIntStateOf(0)
+        private set
+
+    val completedCount: Int
+        get() = collection.size
 
     val steps: Int
         get() = activeCreature.steps
@@ -39,7 +46,11 @@ class GameViewModel : ViewModel() {
     val isAdult: Boolean
         get() = activeCreature.isAdult
 
+    val activeCreatureState: ActiveCreatureState
+        get() = activeCreature
+
     fun addSteps(amount: Int) {
+        totalFakeStepsAdded += amount
         activeCreature = activeCreature.copy(steps = activeCreature.steps + amount)
     }
 
