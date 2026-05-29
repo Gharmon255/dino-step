@@ -2,14 +2,21 @@ package com.gharmon255.dinostep.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -20,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.ui.collection.CollectionScreen
@@ -61,32 +69,52 @@ fun DinoStepApp(
             )
         },
         bottomBar = {
-            BottomNavBar(
-                selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it },
-            )
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 3.dp,
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    BottomNavBar(
+                        selectedTab = selectedTab,
+                        onTabSelected = { selectedTab = it },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .windowInsetsPadding(WindowInsets.navigationBars),
+                    )
+                }
+            }
         },
     ) { innerPadding ->
-        val screenModifier = Modifier.padding(innerPadding)
-
         when (selectedTab) {
             AppTab.Home -> HomeScreen(
                 viewModel = viewModel,
                 onRequestHealthPermission = onRequestHealthPermission,
-                modifier = screenModifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
             )
             AppTab.Eggs -> EggsScreen(
                 viewModel = viewModel,
-                modifier = screenModifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
             )
             AppTab.Collection -> CollectionScreen(
                 viewModel = viewModel,
-                modifier = screenModifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
             )
             AppTab.Stats -> StatsScreen(
                 viewModel = viewModel,
                 onRequestHealthPermission = onRequestHealthPermission,
-                modifier = screenModifier,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
             )
         }
     }
@@ -99,11 +127,17 @@ private fun BottomNavBar(
     modifier: Modifier = Modifier,
 ) {
     HorizontalDivider()
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 56.dp),
+    ) {
         AppTab.entries.forEach { tab ->
             TextButton(
                 onClick = { onTabSelected(tab) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .defaultMinSize(minHeight = 48.dp),
             ) {
                 Text(
                     text = tab.label,

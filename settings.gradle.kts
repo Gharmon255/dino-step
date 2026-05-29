@@ -24,3 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Dino Step"
 include(":app")
+include(":shared")
+include(":wear")

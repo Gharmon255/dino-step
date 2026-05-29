@@ -1,0 +1,8 @@
+com.gharmon255.dinostep.wear-pngs-0 C:\Users\Gharm\projects\dino-step\wear\build\generated\res\pngs\debug
+com.gharmon255.dinostep.wear-updated_navigation_xml-1 C:\Users\Gharm\projects\dino-step\wear\build\generated\updated_navigation_xml\debug
+com.gharmon255.dinostep.wear-packageDebugResources-2 C:\Users\Gharm\projects\dino-step\wear\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.gharmon255.dinostep.wear-packageDebugResources-3 C:\Users\Gharm\projects\dino-step\wear\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.gharmon255.dinostep.wear-debug-4 C:\Users\Gharm\projects\dino-step\wear\build\intermediates\merged_res\debug\mergeDebugResources
+com.gharmon255.dinostep.wear-debug-5 C:\Users\Gharm\projects\dino-step\wear\src\debug\res
+com.gharmon255.dinostep.wear-main-6 C:\Users\Gharm\projects\dino-step\wear\src\main\res
+gradleHome-0 C:\Users\Gharm\.gradle

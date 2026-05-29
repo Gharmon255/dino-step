@@ -4,6 +4,7 @@ import android.app.Application
 import com.gharmon255.dinostep.data.local.DinoStepDatabase
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
+import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class DinoStepApplication : Application() {
     val gameRepository: GameRepository by lazy {
@@ -12,5 +13,9 @@ class DinoStepApplication : Application() {
 
     val healthConnectRepository: HealthConnectRepository by lazy {
         HealthConnectRepository(this)
+    }
+
+    val wearDataLayerPublisher: WearDataLayerPublisher by lazy {
+        WearDataLayerPublisher(this)
     }
 }

@@ -1,0 +1,209 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.gharmon255.dinostep"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+7-->INJECTED
+8        android:minSdkVersion="30"
+8-->INJECTED
+9        android:targetSdkVersion="36" />
+9-->INJECTED
+10
+11    <uses-feature
+11-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:4:5-6:35
+12        android:name="android.hardware.type.watch"
+12-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:5:9-51
+13        android:required="true" />
+13-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:6:9-32
+14
+15    <permission
+15-->[androidx.core:core:1.18.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\e18b91ff3392e3ff56a68244002a1a56\transformed\core-1.18.0\AndroidManifest.xml:22:5-24:47
+16        android:name="com.gharmon255.dinostep.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+16-->[androidx.core:core:1.18.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\e18b91ff3392e3ff56a68244002a1a56\transformed\core-1.18.0\AndroidManifest.xml:23:9-81
+17        android:protectionLevel="signature" />
+17-->[androidx.core:core:1.18.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\e18b91ff3392e3ff56a68244002a1a56\transformed\core-1.18.0\AndroidManifest.xml:24:9-44
+18
+19    <uses-permission android:name="com.gharmon255.dinostep.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+19-->[androidx.core:core:1.18.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\e18b91ff3392e3ff56a68244002a1a56\transformed\core-1.18.0\AndroidManifest.xml:26:5-97
+19-->[androidx.core:core:1.18.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\e18b91ff3392e3ff56a68244002a1a56\transformed\core-1.18.0\AndroidManifest.xml:26:22-94
+20
+21    <application
+21-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:8:5-46:19
+22        android:name="com.gharmon255.dinostep.wear.WearApplication"
+22-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:9:9-40
+23        android:allowBackup="true"
+23-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:10:9-35
+24        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+24-->[androidx.core:core:1.18.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\e18b91ff3392e3ff56a68244002a1a56\transformed\core-1.18.0\AndroidManifest.xml:28:18-86
+25        android:extractNativeLibs="false"
+25-->INJECTED
+26        android:icon="@drawable/ic_launcher"
+26-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:11:9-45
+27        android:label="@string/app_name"
+27-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:12:9-41
+28        android:supportsRtl="true"
+28-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:13:9-35
+29        android:theme="@android:style/Theme.DeviceDefault" >
+29-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:14:9-59
+30        <activity
+30-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:15:9-25:20
+31            android:name="com.gharmon255.dinostep.wear.MainActivity"
+31-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:16:13-41
+32            android:exported="true"
+32-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:17:13-36
+33            android:taskAffinity=""
+33-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:18:13-36
+34            android:theme="@android:style/Theme.DeviceDefault" >
+34-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:19:13-63
+35            <intent-filter>
+35-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:20:13-24:29
+36                <action android:name="android.intent.action.MAIN" />
+36-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:21:17-69
+36-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:21:25-66
+37
+38                <category android:name="android.intent.category.LAUNCHER" />
+38-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:23:17-77
+38-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:23:27-74
+39            </intent-filter>
+40        </activity>
+41
+42        <meta-data
+42-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:27:9-29:37
+43            android:name="com.google.android.wearable.standalone"
+43-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:28:13-66
+44            android:value="false" />
+44-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:29:13-34
+45
+46        <!--
+47          Same applicationId as phone (com.gharmon255.dinostep). Install wear APK on watch only.
+48          Uninstall any previous com.gharmon255.dinostep.wear build before installing.
+49        -->
+50        <service
+50-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:35:9-45:19
+51            android:name="com.gharmon255.dinostep.wear.sync.WearDataListenerService"
+51-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:36:13-57
+52            android:exported="true" >
+52-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:37:13-36
+53            <intent-filter>
+53-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:38:13-44:29
+54                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+54-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:39:17-87
+54-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:39:25-84
+55
+56                <data
+56-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:40:17-43:45
+57                    android:host="*"
+57-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:41:21-37
+58                    android:pathPrefix="/dino_step"
+58-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:42:21-52
+59                    android:scheme="wear" />
+59-->C:\Users\Gharm\projects\dino-step\wear\src\main\AndroidManifest.xml:43:21-42
+60            </intent-filter>
+61        </service>
+62
+63        <activity
+63-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\6b7073f6988c404476c40bf54b6eb28f\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:9-173
+64            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+64-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\6b7073f6988c404476c40bf54b6eb28f\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:19-85
+65            android:exported="false"
+65-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\6b7073f6988c404476c40bf54b6eb28f\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:146-170
+66            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+66-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\6b7073f6988c404476c40bf54b6eb28f\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:86-145
+67
+68        <uses-library
+68-->[androidx.wear.compose:compose-foundation:1.4.1] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\0f601bae2e65a60f24b87b698a9edc56\transformed\compose-foundation-1.4.1\AndroidManifest.xml:23:9-25:40
+69            android:name="wear-sdk"
+69-->[androidx.wear.compose:compose-foundation:1.4.1] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\0f601bae2e65a60f24b87b698a9edc56\transformed\compose-foundation-1.4.1\AndroidManifest.xml:24:13-36
+70            android:required="false" />
+70-->[androidx.wear.compose:compose-foundation:1.4.1] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\0f601bae2e65a60f24b87b698a9edc56\transformed\compose-foundation-1.4.1\AndroidManifest.xml:25:13-37
+71
+72        <provider
+72-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:24:9-32:20
+73            android:name="androidx.startup.InitializationProvider"
+73-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:25:13-67
+74            android:authorities="com.gharmon255.dinostep.androidx-startup"
+74-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:26:13-68
+75            android:exported="false" >
+75-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:27:13-37
+76            <meta-data
+76-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:29:13-31:52
+77                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+77-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:30:17-75
+78                android:value="androidx.startup" />
+78-->[androidx.emoji2:emoji2:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\975de82f748c1aa4d767b0bf69973c73\transformed\emoji2-1.4.0\AndroidManifest.xml:31:17-49
+79            <meta-data
+79-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\91c9b23e69283e0224720ab42d39d9ac\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:29:13-31:52
+80                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+80-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\91c9b23e69283e0224720ab42d39d9ac\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:30:17-78
+81                android:value="androidx.startup" />
+81-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\91c9b23e69283e0224720ab42d39d9ac\transformed\lifecycle-process-2.9.4\AndroidManifest.xml:31:17-49
+82            <meta-data
+82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+83                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+83-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+84                android:value="androidx.startup" />
+84-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+85        </provider>
+86
+87        <uses-library
+87-->[androidx.window:window:1.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\9ee132e0ef97598f96b1eff38106d402\transformed\window-1.5.0\AndroidManifest.xml:23:9-25:40
+88            android:name="androidx.window.extensions"
+88-->[androidx.window:window:1.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\9ee132e0ef97598f96b1eff38106d402\transformed\window-1.5.0\AndroidManifest.xml:24:13-54
+89            android:required="false" />
+89-->[androidx.window:window:1.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\9ee132e0ef97598f96b1eff38106d402\transformed\window-1.5.0\AndroidManifest.xml:25:13-37
+90        <uses-library
+90-->[androidx.window:window:1.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\9ee132e0ef97598f96b1eff38106d402\transformed\window-1.5.0\AndroidManifest.xml:26:9-28:40
+91            android:name="androidx.window.sidecar"
+91-->[androidx.window:window:1.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\9ee132e0ef97598f96b1eff38106d402\transformed\window-1.5.0\AndroidManifest.xml:27:13-51
+92            android:required="false" />
+92-->[androidx.window:window:1.5.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\9ee132e0ef97598f96b1eff38106d402\transformed\window-1.5.0\AndroidManifest.xml:28:13-37
+93
+94        <meta-data
+94-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\970d4473a103a45fc67b288512cd4b52\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
+95            android:name="com.google.android.gms.version"
+95-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\970d4473a103a45fc67b288512cd4b52\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
+96            android:value="@integer/google_play_services_version" />
+96-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\970d4473a103a45fc67b288512cd4b52\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
+97
+98        <receiver
+98-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+99            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+99-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+100            android:directBootAware="false"
+100-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+101            android:enabled="true"
+101-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+102            android:exported="true"
+102-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+103            android:permission="android.permission.DUMP" >
+103-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+104            <intent-filter>
+104-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+105                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+105-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+105-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+106            </intent-filter>
+107            <intent-filter>
+107-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+108                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+108-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+108-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+109            </intent-filter>
+110            <intent-filter>
+110-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+111                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+111-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+111-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+112            </intent-filter>
+113            <intent-filter>
+113-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+114                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Gharm\.gradle\caches\9.4.1\transforms\f4e00dbd973bb94d16678ad6c74261f9\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+115            </intent-filter>
+116        </receiver>
+117    </application>
+118
+119</manifest>

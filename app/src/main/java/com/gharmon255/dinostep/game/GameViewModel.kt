@@ -12,11 +12,17 @@ import com.gharmon255.dinostep.health.StepSyncCalculator
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
+import com.gharmon255.dinostep.shared.wear.WearSyncEventType
+import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
+import com.gharmon255.dinostep.wear.WearDataLayerPublisher
+import com.gharmon255.dinostep.wear.WearSyncDebugState
+import com.gharmon255.dinostep.wear.WearSyncPublishResult
 import kotlinx.coroutines.launch
 
 class GameViewModel(
     private val repository: GameRepository,
     private val healthConnectRepository: HealthConnectRepository,
+    private val wearDataLayerPublisher: WearDataLayerPublisher,
 ) : ViewModel() {
     var isReady by mutableStateOf(false)
         private set
@@ -37,6 +43,9 @@ class GameViewModel(
         private set
 
     var isSyncing by mutableStateOf(false)
+        private set
+
+    var wearSyncDebug by mutableStateOf(WearSyncDebugState())
         private set
 
     val readStepsPermissions: Set<String>
@@ -89,7 +98,15 @@ class GameViewModel(
             playerStats = snapshot.playerStats
             refreshHealthConnectStatus()
             isReady = true
+            publishActiveCreatureToWatch(WearSyncEventType.NONE)
         }
+    }
+
+    fun forceWatchSync() {
+        if (!isReady) {
+            return
+        }
+        publishActiveCreatureToWatch(WearSyncEventType.NONE)
     }
 
     fun refreshHealthConnectStatus() {
@@ -170,9 +187,10 @@ class GameViewModel(
             return
         }
 
+        val completedCreatureState = activeCreature
         val completed = CompletedCreature(
-            creature = activeCreature.creature,
-            stepsCompleted = activeCreature.steps,
+            creature = completedCreatureState.creature,
+            stepsCompleted = completedCreatureState.steps,
             completedAt = System.currentTimeMillis(),
         )
 
@@ -183,9 +201,15 @@ class GameViewModel(
         activeCreature = repository.createMysteryCommonEgg()
 
         viewModelScope.launch {
+            val completedResult = wearDataLayerPublisher.publishActiveCreature(
+                activeCreature = completedCreatureState,
+                eventType = WearSyncEventType.COMPLETED,
+            )
+            updateWearSyncDebug(completedResult)
             repository.saveCompletedCreature(completed)
             repository.savePlayerStats(playerStats)
             repository.saveActiveCreature(activeCreature)
+            publishActiveCreatureToWatch(WearSyncEventType.NONE)
         }
     }
 
@@ -194,6 +218,7 @@ class GameViewModel(
             return
         }
 
+        val previous = activeCreature
         val wasRevealed = activeCreature.isRevealed
         val newSteps = activeCreature.steps + amount
         val nowRevealed = wasRevealed || newSteps >= activeCreature.creature.hatchStep
@@ -213,7 +238,36 @@ class GameViewModel(
             eggsHatched = playerStats.eggsHatched + eggsHatchedDelta,
         )
 
+        val eventType = WearCreaturePayloadMapper.detectEventType(
+            previous = previous,
+            current = activeCreature,
+        )
         persistActiveAndStats()
+        publishActiveCreatureToWatch(eventType)
+    }
+
+    private fun publishActiveCreatureToWatch(eventType: WearSyncEventType) {
+        if (!isReady) {
+            return
+        }
+
+        val creature = activeCreature
+        viewModelScope.launch {
+            val result = wearDataLayerPublisher.publishActiveCreature(creature, eventType)
+            updateWearSyncDebug(result)
+        }
+    }
+
+    private fun updateWearSyncDebug(result: WearSyncPublishResult) {
+        wearSyncDebug = WearSyncDebugState(
+            connectedNodeCount = result.connectedNodeCount,
+            lastAttemptTimeMillis = System.currentTimeMillis(),
+            lastStatusMessage = result.statusMessage,
+            lastPayloadDisplayName = result.payloadDisplayName,
+            lastPayloadStage = result.payloadStage,
+            lastPayloadSteps = result.payloadSteps,
+            lastPayloadSummary = result.payloadSummary,
+        )
     }
 
     private fun persistActiveAndStats() {

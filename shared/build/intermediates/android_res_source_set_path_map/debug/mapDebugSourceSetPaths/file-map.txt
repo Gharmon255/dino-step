@@ -1,0 +1,9 @@
+com.gharmon255.dinostep.shared-pngs-0 C:\Users\Gharm\projects\dino-step\shared\build\generated\res\pngs\debug
+com.gharmon255.dinostep.shared-updated_navigation_xml-1 C:\Users\Gharm\projects\dino-step\shared\build\generated\updated_navigation_xml\debug
+com.gharmon255.dinostep.shared-mergeDebugResources-2 C:\Users\Gharm\projects\dino-step\shared\build\intermediates\incremental\debug\mergeDebugResources\merged.dir
+com.gharmon255.dinostep.shared-mergeDebugResources-3 C:\Users\Gharm\projects\dino-step\shared\build\intermediates\incremental\debug\mergeDebugResources\stripped.dir
+com.gharmon255.dinostep.shared-debug-4 C:\Users\Gharm\projects\dino-step\shared\build\intermediates\merged_res\debug\mergeDebugResources
+com.gharmon255.dinostep.shared-debug-5 C:\Users\Gharm\projects\dino-step\shared\build\intermediates\packaged_res\debug\packageDebugResources
+com.gharmon255.dinostep.shared-debug-6 C:\Users\Gharm\projects\dino-step\shared\src\debug\res
+com.gharmon255.dinostep.shared-main-7 C:\Users\Gharm\projects\dino-step\shared\src\main\res
+gradleHome-0 C:\Users\Gharm\.gradle

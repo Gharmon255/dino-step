@@ -4,15 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
+import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class GameViewModelFactory(
     private val repository: GameRepository,
     private val healthConnectRepository: HealthConnectRepository,
+    private val wearDataLayerPublisher: WearDataLayerPublisher,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
-            return GameViewModel(repository, healthConnectRepository) as T
+            return GameViewModel(
+                repository = repository,
+                healthConnectRepository = healthConnectRepository,
+                wearDataLayerPublisher = wearDataLayerPublisher,
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }

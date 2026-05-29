@@ -5,8 +5,14 @@
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
+        <package android:name="com.google.android.wearable.app" />
+        <package android:name="com.samsung.android.app.watchmanager" />
     </queries>
 
+    <!--
+      Phone and watch both use applicationId com.gharmon255.dinostep (wear :wear module).
+      Install phone APK on phone and wear APK on watch only. Same debug signing key.
+    -->
     <application
         android:name=".DinoStepApplication"
         android:allowBackup="true"
