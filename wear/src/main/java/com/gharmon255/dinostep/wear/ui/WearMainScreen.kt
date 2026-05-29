@@ -1,9 +1,11 @@
 package com.gharmon255.dinostep.wear.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -14,8 +16,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
@@ -27,16 +27,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/** Insets for round displays — keeps labels off top/bottom bezels. */
-private val RoundContentPadding = PaddingValues(
-    top = 34.dp,
-    bottom = 38.dp,
-    start = 24.dp,
-    end = 24.dp,
-)
-private val ProgressRingSize = 52.dp
-private val ProgressStrokeWidth = 3.dp
-private val CreatureSize = 30.dp
+/** Safe insets for round Samsung watches — extra bottom inset avoids bezel clipping. */
+private val RoundHorizontalPadding = 22.dp
+private val RoundTopPadding = 26.dp
+private val RoundBottomPadding = 42.dp
+
+private val ProgressRingSize = 88.dp
+private val ProgressStrokeWidth = 5.dp
+private val CreatureInRingSize = 50.dp
 
 @Composable
 fun WearMainScreen(
@@ -51,31 +49,60 @@ fun WearMainScreen(
         "${numberFormat.format(state.stepsUntilNextMilestone)} to next"
     }
     val lastUpdatedLabel = state.lastUpdatedAtMillis?.let { millis ->
-        val formatted = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(millis))
+        val formatted = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(millis))
         "Updated $formatted"
     }
-    val listState = rememberScalingLazyListState()
 
-    Scaffold(
-        modifier = modifier,
-    ) {
-        ScalingLazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            state = listState,
+    Scaffold(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = RoundHorizontalPadding,
+                    end = RoundHorizontalPadding,
+                    top = RoundTopPadding,
+                    bottom = RoundBottomPadding,
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = RoundContentPadding,
-            verticalArrangement = Arrangement.spacedBy(1.dp, Alignment.CenterVertically),
         ) {
-            item {
+            WatchHeaderSection(state = state)
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            ProgressRingSection(
+                progress = progress,
+                stage = state.stage,
+                emoji = state.displayEmoji,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "${state.progressPercent.toInt()}%",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = stepsUntilLabel,
+                fontSize = 10.sp,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.85f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            if (state.isFromPhone && lastUpdatedLabel != null) {
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = state.syncStatusMessage,
-                    style = MaterialTheme.typography.caption3,
+                    text = lastUpdatedLabel,
                     fontSize = 9.sp,
-                    color = if (state.isFromPhone) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        MaterialTheme.colors.onSurface.copy(alpha = 0.75f)
-                    },
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
@@ -83,91 +110,74 @@ fun WearMainScreen(
                 )
             }
 
-            item {
-                Text(
-                    text = state.displayName,
-                    style = MaterialTheme.typography.caption3,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            item {
-                Text(
-                    text = state.stageLabel,
-                    style = MaterialTheme.typography.caption3,
-                    fontSize = 9.sp,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.85f),
-                    maxLines = 1,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            item {
-                Box(
-                    modifier = Modifier
-                        .padding(vertical = 2.dp)
-                        .size(ProgressRingSize),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator(
-                        progress = progress,
-                        modifier = Modifier.size(ProgressRingSize),
-                        strokeWidth = ProgressStrokeWidth,
-                        indicatorColor = MaterialTheme.colors.primary,
-                        trackColor = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
-                    )
-
-                    CreatureVisual(
-                        stage = state.stage,
-                        emoji = state.displayEmoji,
-                        modifier = Modifier.size(CreatureSize),
-                    )
-                }
-            }
-
-            item {
-                Text(
-                    text = "${state.progressPercent.toInt()}%",
-                    style = MaterialTheme.typography.caption3,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            item {
-                Text(
-                    text = stepsUntilLabel,
-                    style = MaterialTheme.typography.caption3,
-                    fontSize = 9.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            if (lastUpdatedLabel != null) {
-                item {
-                    Text(
-                        text = lastUpdatedLabel,
-                        style = MaterialTheme.typography.caption3,
-                        fontSize = 8.sp,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.55f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
         }
+    }
+}
+
+@Composable
+private fun WatchHeaderSection(state: WatchCreatureState) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = state.syncStatusMessage,
+            fontSize = 11.sp,
+            color = if (state.isFromPhone) {
+                MaterialTheme.colors.primary
+            } else {
+                MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+            },
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = state.displayName,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Text(
+            text = state.stageLabel,
+            fontSize = 11.sp,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun ProgressRingSection(
+    progress: Float,
+    stage: WearGrowthStage,
+    emoji: String,
+) {
+    Box(
+        modifier = Modifier.size(ProgressRingSize),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            progress = progress,
+            modifier = Modifier.size(ProgressRingSize),
+            strokeWidth = ProgressStrokeWidth,
+            indicatorColor = MaterialTheme.colors.primary,
+            trackColor = MaterialTheme.colors.onSurface.copy(alpha = 0.18f),
+        )
+
+        CreatureVisual(
+            stage = stage,
+            emoji = emoji,
+            modifier = Modifier.size(CreatureInRingSize),
+        )
     }
 }

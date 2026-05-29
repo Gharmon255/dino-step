@@ -7,13 +7,11 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
 import com.gharmon255.dinostep.wear.model.WearGrowthStage
@@ -31,8 +29,8 @@ fun CreatureVisual(
         when (stage) {
             WearGrowthStage.EGG -> EggVisual()
             WearGrowthStage.BABY -> BabyVisual(emoji = emoji)
-            WearGrowthStage.JUVENILE -> DinoVisual(emoji = emoji, fontSizeSp = 18)
-            WearGrowthStage.ADULT -> AdultVisual(emoji = emoji)
+            WearGrowthStage.JUVENILE -> DinoVisual(emoji = emoji, fontSizeSp = 30)
+            WearGrowthStage.ADULT -> DinoVisual(emoji = emoji, fontSizeSp = 34)
         }
     }
 }
@@ -52,7 +50,7 @@ private fun EggVisual() {
 
     Text(
         text = "🥚",
-        fontSize = 18.sp,
+        fontSize = 32.sp,
         modifier = Modifier.graphicsLayer { rotationZ = rotation },
     )
 }
@@ -62,7 +60,7 @@ private fun BabyVisual(emoji: String) {
     val infiniteTransition = rememberInfiniteTransition(label = "wearBabyBounce")
     val offsetY by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = -4f,
+        targetValue = -5f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 450, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse,
@@ -72,7 +70,7 @@ private fun BabyVisual(emoji: String) {
 
     Text(
         text = emoji,
-        fontSize = 16.sp,
+        fontSize = 28.sp,
         modifier = Modifier.graphicsLayer { translationY = offsetY },
     )
 }
@@ -83,19 +81,4 @@ private fun DinoVisual(emoji: String, fontSizeSp: Int) {
         text = emoji,
         fontSize = fontSizeSp.sp,
     )
-}
-
-@Composable
-private fun AdultVisual(emoji: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = emoji,
-            fontSize = 20.sp,
-        )
-        Text(
-            text = "Grown",
-            fontSize = 7.sp,
-            textAlign = TextAlign.Center,
-        )
-    }
 }

@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.wear.model
 
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
+import java.util.Locale
 
 data class WatchCreatureState(
     val creatureName: String,
@@ -18,8 +19,11 @@ data class WatchCreatureState(
     val lastUpdatedAtMillis: Long? = null,
 ) {
     val stageLabel: String
-        get() = stage.name
+        get() = stage.name.lowercase(Locale.getDefault()).replaceFirstChar { char ->
+            char.titlecase(Locale.getDefault())
+        }
 
+    /** Short label for the watch face (no long phrases). */
     val syncStatusMessage: String
-        get() = if (isFromPhone) "Synced from phone" else "Waiting for phone sync..."
+        get() = if (isFromPhone) "Synced" else "Waiting"
 }
