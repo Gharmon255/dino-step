@@ -78,5 +78,7 @@ object CreatureCatalog {
 
     val commonCreatures: List<CreatureDefinition> = all.filter { it.rarity == Rarity.COMMON }
 
+    fun byId(id: String): CreatureDefinition? = all.find { it.id == id }
+
     fun randomCommonCreature(): CreatureDefinition = commonCreatures.random()
 }

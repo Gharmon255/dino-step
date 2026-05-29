@@ -41,7 +41,7 @@ fun StatsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "Session stats",
+                    text = "Player stats",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -53,6 +53,10 @@ fun StatsScreen(
                 StatRow(
                     label = "Total fake steps added",
                     value = numberFormat.format(viewModel.totalFakeStepsAdded),
+                )
+                StatRow(
+                    label = "Eggs hatched",
+                    value = numberFormat.format(viewModel.eggsHatched),
                 )
                 StatRow(
                     label = "Completed dinosaurs",
