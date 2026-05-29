@@ -7,5 +7,7 @@ data class WearSyncDebugState(
     val lastPayloadDisplayName: String = "—",
     val lastPayloadStage: String = "—",
     val lastPayloadSteps: Int? = null,
+    val lastPayloadStepsUntilNext: Int? = null,
+    val lastPayloadNextStageLabel: String = "—",
     val lastPayloadSummary: String = "—",
 )

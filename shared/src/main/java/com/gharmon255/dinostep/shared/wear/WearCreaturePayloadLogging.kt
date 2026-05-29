@@ -10,6 +10,8 @@ fun WearCreaturePayload.toLogString(): String {
         append(", totalStepsRequired=").append(totalStepsRequired)
         append(", progressPercent=").append(progressPercent)
         append(", stepsUntilNextMilestone=").append(stepsUntilNextMilestone)
+        append(", stepsUntilNextStage=").append(stepsUntilNextStage)
+        append(", nextStageLabel=").append(nextStageLabel)
         append(", isRevealed=").append(isRevealed)
         append(", emoji=").append(displayEmoji)
         append(", eventType=").append(eventType)

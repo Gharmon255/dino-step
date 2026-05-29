@@ -3,6 +3,7 @@ package com.gharmon255.dinostep.wear
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.shared.wear.WearCreaturePayload
+import com.gharmon255.dinostep.shared.wear.WearStageProgress
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
 
 object WearCreaturePayloadMapper {
@@ -12,7 +13,13 @@ object WearCreaturePayloadMapper {
     ): WearCreaturePayload {
         val creature = activeCreature.creature
         val nextMilestone = activeCreature.nextMilestone ?: creature.totalStepsRequired
-        val stepsUntilNext = (nextMilestone - activeCreature.steps).coerceAtLeast(0)
+        val stageProgress = WearStageProgress.calculate(
+            stageName = activeCreature.stage.name,
+            currentSteps = activeCreature.steps,
+            hatchStep = creature.hatchStep,
+            juvenileStep = creature.juvenileStep,
+            totalStepsRequired = creature.totalStepsRequired,
+        )
 
         return WearCreaturePayload(
             creatureName = creature.name,
@@ -22,7 +29,9 @@ object WearCreaturePayloadMapper {
             nextMilestone = nextMilestone,
             totalStepsRequired = creature.totalStepsRequired,
             progressPercent = activeCreature.progressPercent,
-            stepsUntilNextMilestone = stepsUntilNext,
+            stepsUntilNextMilestone = stageProgress.stepsUntilNextStage,
+            stepsUntilNextStage = stageProgress.stepsUntilNextStage,
+            nextStageLabel = stageProgress.nextStageLabel,
             isRevealed = activeCreature.isRevealed,
             displayEmoji = creature.emoji,
             eventType = eventType,

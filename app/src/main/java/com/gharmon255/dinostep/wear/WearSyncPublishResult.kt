@@ -9,4 +9,6 @@ data class WearSyncPublishResult(
     val payloadDisplayName: String = "—",
     val payloadStage: String = "—",
     val payloadSteps: Int = 0,
+    val payloadStepsUntilNext: Int = 0,
+    val payloadNextStageLabel: String = "—",
 )

@@ -8,8 +8,8 @@ import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.PlayerStats
 
-fun ActiveCreatureEntity.toDomain(): ActiveCreatureState? {
-    val creature = CreatureCatalog.byId(creatureId) ?: return null
+fun ActiveCreatureEntity.toDomain(): ActiveCreatureState {
+    val creature = CreatureCatalog.fallbackCreature(creatureId)
     return ActiveCreatureState(
         creature = creature,
         steps = currentSteps,
@@ -27,8 +27,8 @@ fun ActiveCreatureState.toEntity(): ActiveCreatureEntity {
     )
 }
 
-fun CompletedCreatureEntity.toDomain(): CompletedCreature? {
-    val creature = CreatureCatalog.byId(creatureId) ?: return null
+fun CompletedCreatureEntity.toDomain(): CompletedCreature {
+    val creature = CreatureCatalog.fallbackCreature(creatureId)
     return CompletedCreature(
         creature = creature,
         stepsCompleted = completedStepTotal,

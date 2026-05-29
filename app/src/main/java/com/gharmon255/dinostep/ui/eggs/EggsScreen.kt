@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.home.CreaturePlaceholder
 import java.text.NumberFormat
@@ -28,6 +30,8 @@ fun EggsScreen(
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
+    val activeEggRarity = EggRarity.COMMON
+    val poolSize = CreatureCatalog.creaturesForEgg(activeEggRarity).size
 
     Column(
         modifier = modifier
@@ -38,9 +42,15 @@ fun EggsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Mystery Common Egg",
+            text = activeEggRarity.displayName,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
+        )
+
+        Text(
+            text = "$poolSize possible ${activeEggRarity.name.lowercase()} dinosaurs inside",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         CreaturePlaceholder(
@@ -86,7 +96,7 @@ fun EggsScreen(
                     )
                 } else {
                     Text(
-                        text = "A common dinosaur is hidden inside until hatch.",
+                        text = "A random ${activeEggRarity.name.lowercase()} dinosaur is hidden inside until hatch.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

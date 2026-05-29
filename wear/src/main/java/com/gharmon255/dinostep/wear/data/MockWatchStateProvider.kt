@@ -16,6 +16,8 @@ object MockWatchStateProvider {
             totalStepsRequired = 0,
             progressPercent = 0f,
             stepsUntilNextMilestone = 0,
+            stepsUntilNextStage = 0,
+            nextStageLabel = "",
             isRevealed = false,
             displayEmoji = "🥚",
             eventType = WearSyncEventType.NONE,

@@ -23,8 +23,6 @@ import androidx.wear.compose.material.Text
 import com.gharmon255.dinostep.wear.model.WatchCreatureState
 import com.gharmon255.dinostep.wear.model.WearGrowthStage
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 /** Safe insets for round Samsung watches — extra bottom inset avoids bezel clipping. */
@@ -43,15 +41,7 @@ fun WearMainScreen(
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val progress = (state.progressPercent / 100f).coerceIn(0f, 1f)
-    val stepsUntilLabel = if (state.stage == WearGrowthStage.ADULT) {
-        "Fully grown"
-    } else {
-        "${numberFormat.format(state.stepsUntilNextMilestone)} to next"
-    }
-    val lastUpdatedLabel = state.lastUpdatedAtMillis?.let { millis ->
-        val formatted = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(millis))
-        "Updated $formatted"
-    }
+    val stepsUntilNextLine = state.stepsUntilNextStageDisplay(numberFormat)
 
     Scaffold(modifier = modifier) {
         Column(
@@ -85,31 +75,18 @@ fun WearMainScreen(
                 maxLines = 1,
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = stepsUntilLabel,
-                fontSize = 10.sp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.85f),
+                text = stepsUntilNextLine,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colors.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-
-            if (state.isFromPhone && lastUpdatedLabel != null) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = lastUpdatedLabel,
-                    fontSize = 9.sp,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
         }
     }
 }

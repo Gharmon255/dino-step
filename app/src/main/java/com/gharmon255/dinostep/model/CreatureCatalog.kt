@@ -1,84 +1,406 @@
 package com.gharmon255.dinostep.model
 
 object CreatureCatalog {
-    val tinyRaptor = CreatureDefinition(
+    // COMMON
+    val tinyRaptor = d(
         id = "tiny_raptor",
         name = "Tiny Raptor",
         rarity = Rarity.COMMON,
         habitat = Habitat.JUNGLE,
-        totalStepsRequired = 8_000,
-        hatchStep = 1_600,
-        juvenileStep = 4_000,
+        total = 8_000,
+        hatch = 1_600,
+        juvenile = 4_000,
         emoji = "🦖",
     )
 
-    val triceratops = CreatureDefinition(
+    val triceratops = d(
         id = "triceratops",
         name = "Triceratops",
         rarity = Rarity.COMMON,
         habitat = Habitat.PLAINS,
-        totalStepsRequired = 10_000,
-        hatchStep = 2_000,
-        juvenileStep = 5_000,
+        total = 10_000,
+        hatch = 2_000,
+        juvenile = 5_000,
         emoji = "🦕",
     )
 
-    val ankylosaurus = CreatureDefinition(
+    val ankylosaurus = d(
         id = "ankylosaurus",
         name = "Ankylosaurus",
         rarity = Rarity.COMMON,
         habitat = Habitat.ROCKY,
-        totalStepsRequired = 12_000,
-        hatchStep = 2_400,
-        juvenileStep = 6_000,
+        total = 12_000,
+        hatch = 2_400,
+        juvenile = 6_000,
+        emoji = "🛡️",
+    )
+
+    val parasaurolophus = d(
+        id = "parasaurolophus",
+        name = "Parasaurolophus",
+        rarity = Rarity.COMMON,
+        habitat = Habitat.FOREST,
+        total = 11_000,
+        hatch = 2_200,
+        juvenile = 5_500,
         emoji = "🦕",
     )
 
-    val stegosaurus = CreatureDefinition(
+    val pachycephalosaurus = d(
+        id = "pachycephalosaurus",
+        name = "Pachycephalosaurus",
+        rarity = Rarity.COMMON,
+        habitat = Habitat.ROCKY,
+        total = 12_500,
+        hatch = 2_500,
+        juvenile = 6_250,
+        emoji = "🦴",
+    )
+
+    val gallimimus = d(
+        id = "gallimimus",
+        name = "Gallimimus",
+        rarity = Rarity.COMMON,
+        habitat = Habitat.PLAINS,
+        total = 9_000,
+        hatch = 1_800,
+        juvenile = 4_500,
+        emoji = "🦤",
+    )
+
+    // UNCOMMON
+    val stegosaurus = d(
         id = "stegosaurus",
         name = "Stegosaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.FOREST,
-        totalStepsRequired = 18_000,
-        hatchStep = 3_600,
-        juvenileStep = 9_000,
+        total = 18_000,
+        hatch = 3_600,
+        juvenile = 9_000,
         emoji = "🦕",
     )
 
-    val pterodactyl = CreatureDefinition(
+    val pterodactyl = d(
         id = "pterodactyl",
         name = "Pterodactyl",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.MOUNTAIN,
-        totalStepsRequired = 22_000,
-        hatchStep = 4_400,
-        juvenileStep = 11_000,
+        total = 22_000,
+        hatch = 4_400,
+        juvenile = 11_000,
         emoji = "🪽",
     )
 
-    val tRex = CreatureDefinition(
+    val dilophosaurus = d(
+        id = "dilophosaurus",
+        name = "Dilophosaurus",
+        rarity = Rarity.UNCOMMON,
+        habitat = Habitat.JUNGLE,
+        total = 20_000,
+        hatch = 4_000,
+        juvenile = 10_000,
+        emoji = "🦖",
+    )
+
+    val iguanodon = d(
+        id = "iguanodon",
+        name = "Iguanodon",
+        rarity = Rarity.UNCOMMON,
+        habitat = Habitat.FOREST,
+        total = 19_000,
+        hatch = 3_800,
+        juvenile = 9_500,
+        emoji = "🦕",
+    )
+
+    val carnotaurus = d(
+        id = "carnotaurus",
+        name = "Carnotaurus",
+        rarity = Rarity.UNCOMMON,
+        habitat = Habitat.VOLCANO,
+        total = 24_000,
+        hatch = 4_800,
+        juvenile = 12_000,
+        emoji = "🦖",
+    )
+
+    val baryonyx = d(
+        id = "baryonyx",
+        name = "Baryonyx",
+        rarity = Rarity.UNCOMMON,
+        habitat = Habitat.SWAMP,
+        total = 25_000,
+        hatch = 5_000,
+        juvenile = 12_500,
+        emoji = "🐊",
+    )
+
+    // RARE
+    val tRex = d(
         id = "t_rex",
         name = "T-Rex",
         rarity = Rarity.RARE,
         habitat = Habitat.VOLCANO,
-        totalStepsRequired = 50_000,
-        hatchStep = 10_000,
-        juvenileStep = 25_000,
+        total = 50_000,
+        hatch = 10_000,
+        juvenile = 25_000,
         emoji = "🦖",
+    )
+
+    val spinosaurus = d(
+        id = "spinosaurus",
+        name = "Spinosaurus",
+        rarity = Rarity.RARE,
+        habitat = Habitat.SWAMP,
+        total = 60_000,
+        hatch = 12_000,
+        juvenile = 30_000,
+        emoji = "🐊",
+    )
+
+    val velociRaptorAlpha = d(
+        id = "velociraptor_alpha",
+        name = "Velociraptor Alpha",
+        rarity = Rarity.RARE,
+        habitat = Habitat.JUNGLE,
+        total = 45_000,
+        hatch = 9_000,
+        juvenile = 22_500,
+        emoji = "🦖",
+    )
+
+    val allosaurus = d(
+        id = "allosaurus",
+        name = "Allosaurus",
+        rarity = Rarity.RARE,
+        habitat = Habitat.ROCKY,
+        total = 48_000,
+        hatch = 9_600,
+        juvenile = 24_000,
+        emoji = "🦖",
+    )
+
+    val therizinosaurus = d(
+        id = "therizinosaurus",
+        name = "Therizinosaurus",
+        rarity = Rarity.RARE,
+        habitat = Habitat.FOREST,
+        total = 55_000,
+        hatch = 11_000,
+        juvenile = 27_500,
+        emoji = "🦕",
+    )
+
+    val mosasaurus = d(
+        id = "mosasaurus",
+        name = "Mosasaurus",
+        rarity = Rarity.RARE,
+        habitat = Habitat.OCEAN,
+        total = 65_000,
+        hatch = 13_000,
+        juvenile = 32_500,
+        emoji = "🐋",
+    )
+
+    // EPIC
+    val giganotosaurus = d(
+        id = "giganotosaurus",
+        name = "Giganotosaurus",
+        rarity = Rarity.EPIC,
+        habitat = Habitat.PLAINS,
+        total = 85_000,
+        hatch = 17_000,
+        juvenile = 42_500,
+        emoji = "🦖",
+    )
+
+    val quetzalcoatlus = d(
+        id = "quetzalcoatlus",
+        name = "Quetzalcoatlus",
+        rarity = Rarity.EPIC,
+        habitat = Habitat.MOUNTAIN,
+        total = 90_000,
+        hatch = 18_000,
+        juvenile = 45_000,
+        emoji = "🪽",
+    )
+
+    val indominusHybrid = d(
+        id = "indominus_hybrid",
+        name = "Indominus Rex Style Hybrid",
+        rarity = Rarity.EPIC,
+        habitat = Habitat.LAB,
+        total = 95_000,
+        hatch = 19_000,
+        juvenile = 47_500,
+        emoji = "🧬",
+    )
+
+    val ancientSpinosaurus = d(
+        id = "ancient_spinosaurus",
+        name = "Ancient Spinosaurus",
+        rarity = Rarity.EPIC,
+        habitat = Habitat.SWAMP,
+        total = 100_000,
+        hatch = 20_000,
+        juvenile = 50_000,
+        emoji = "🐊",
+    )
+
+    // LEGENDARY
+    val volcanicTRex = d(
+        id = "volcanic_t_rex",
+        name = "Volcanic T-Rex",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.VOLCANO,
+        total = 125_000,
+        hatch = 25_000,
+        juvenile = 62_500,
+        emoji = "🌋",
+    )
+
+    val frostRaptor = d(
+        id = "frost_raptor",
+        name = "Frost Raptor",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.ICE,
+        total = 110_000,
+        hatch = 22_000,
+        juvenile = 55_000,
+        emoji = "❄️",
+    )
+
+    val shadowTriceratops = d(
+        id = "shadow_triceratops",
+        name = "Shadow Triceratops",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.DARK,
+        total = 130_000,
+        hatch = 26_000,
+        juvenile = 65_000,
+        emoji = "🌑",
+    )
+
+    val titanosaur = d(
+        id = "titanosaur",
+        name = "Titanosaur",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.PLAINS,
+        total = 150_000,
+        hatch = 30_000,
+        juvenile = 75_000,
+        emoji = "🦕",
+    )
+
+    val cosmicPterodactyl = d(
+        id = "cosmic_pterodactyl",
+        name = "Cosmic Pterodactyl",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.SKY,
+        total = 175_000,
+        hatch = 35_000,
+        juvenile = 87_500,
+        emoji = "✨",
+    )
+
+    val ancientApexRex = d(
+        id = "ancient_apex_rex",
+        name = "Ancient Apex Rex",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.VOLCANO,
+        total = 200_000,
+        hatch = 40_000,
+        juvenile = 100_000,
+        emoji = "👑",
     )
 
     val all: List<CreatureDefinition> = listOf(
         tinyRaptor,
         triceratops,
         ankylosaurus,
+        parasaurolophus,
+        pachycephalosaurus,
+        gallimimus,
         stegosaurus,
         pterodactyl,
+        dilophosaurus,
+        iguanodon,
+        carnotaurus,
+        baryonyx,
         tRex,
+        spinosaurus,
+        velociRaptorAlpha,
+        allosaurus,
+        therizinosaurus,
+        mosasaurus,
+        giganotosaurus,
+        quetzalcoatlus,
+        indominusHybrid,
+        ancientSpinosaurus,
+        volcanicTRex,
+        frostRaptor,
+        shadowTriceratops,
+        titanosaur,
+        cosmicPterodactyl,
+        ancientApexRex,
     )
 
-    val commonCreatures: List<CreatureDefinition> = all.filter { it.rarity == Rarity.COMMON }
+    val commonCreatures: List<CreatureDefinition> = byRarity(Rarity.COMMON)
+
+    val uncommonCreatures: List<CreatureDefinition> = byRarity(Rarity.UNCOMMON)
+
+    val rareCreatures: List<CreatureDefinition> = byRarity(Rarity.RARE)
+
+    val epicCreatures: List<CreatureDefinition> = byRarity(Rarity.EPIC)
+
+    val legendaryCreatures: List<CreatureDefinition> = byRarity(Rarity.LEGENDARY)
 
     fun byId(id: String): CreatureDefinition? = all.find { it.id == id }
 
-    fun randomCommonCreature(): CreatureDefinition = commonCreatures.random()
+    fun byRarity(rarity: Rarity): List<CreatureDefinition> = all.filter { it.rarity == rarity }
+
+    fun creaturesForEgg(eggRarity: EggRarity): List<CreatureDefinition> = when (eggRarity) {
+        EggRarity.COMMON -> commonCreatures
+        EggRarity.UNCOMMON -> uncommonCreatures
+        EggRarity.RARE -> rareCreatures
+        EggRarity.EPIC -> epicCreatures
+        EggRarity.LEGENDARY -> legendaryCreatures
+    }
+
+    fun randomCreatureForEgg(eggRarity: EggRarity): CreatureDefinition {
+        return creaturesForEgg(eggRarity).random()
+    }
+
+    /** Legacy saves with unknown ids still load without crashing. */
+    fun fallbackCreature(creatureId: String): CreatureDefinition {
+        return byId(creatureId) ?: tinyRaptor.copy(
+            id = creatureId,
+            name = creatureId.replace('_', ' ').replaceFirstChar { it.uppercase() },
+        )
+    }
+
+    @Deprecated("Use randomCreatureForEgg(EggRarity.COMMON)", ReplaceWith("randomCreatureForEgg(EggRarity.COMMON)"))
+    fun randomCommonCreature(): CreatureDefinition = randomCreatureForEgg(EggRarity.COMMON)
+
+    private fun d(
+        id: String,
+        name: String,
+        rarity: Rarity,
+        habitat: Habitat,
+        total: Int,
+        hatch: Int,
+        juvenile: Int,
+        emoji: String,
+    ): CreatureDefinition {
+        return CreatureDefinition(
+            id = id,
+            name = name,
+            rarity = rarity,
+            habitat = habitat,
+            totalStepsRequired = total,
+            hatchStep = hatch,
+            juvenileStep = juvenile,
+            emoji = emoji,
+        )
+    }
 }

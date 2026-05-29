@@ -1,6 +1,8 @@
 package com.gharmon255.dinostep.wear.model
 
+import com.gharmon255.dinostep.shared.wear.WearStageProgress
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
+import java.text.NumberFormat
 import java.util.Locale
 
 data class WatchCreatureState(
@@ -12,6 +14,8 @@ data class WatchCreatureState(
     val totalStepsRequired: Int,
     val progressPercent: Float,
     val stepsUntilNextMilestone: Int,
+    val stepsUntilNextStage: Int = 0,
+    val nextStageLabel: String = "",
     val isRevealed: Boolean,
     val displayEmoji: String,
     val eventType: WearSyncEventType = WearSyncEventType.NONE,
@@ -23,7 +27,40 @@ data class WatchCreatureState(
             char.titlecase(Locale.getDefault())
         }
 
-    /** Short label for the watch face (no long phrases). */
     val syncStatusMessage: String
         get() = if (isFromPhone) "Synced" else "Waiting"
+
+    fun stepsUntilNextStageDisplay(numberFormat: NumberFormat): String {
+        if (!isFromPhone) {
+            return "Waiting for sync"
+        }
+
+        val steps = resolvedStepsUntilNextStage()
+        val label = resolvedNextStageLabel()
+
+        return WearStageProgress.formatDisplayLine(
+            stepsUntilNextStage = steps,
+            nextStageLabel = label,
+            formattedSteps = numberFormat.format(steps),
+        )
+    }
+
+    private fun resolvedStepsUntilNextStage(): Int {
+        if (stepsUntilNextStage > 0 || nextStageLabel.isNotBlank()) {
+            return stepsUntilNextStage
+        }
+        return stepsUntilNextMilestone
+    }
+
+    private fun resolvedNextStageLabel(): String {
+        if (nextStageLabel.isNotBlank()) {
+            return nextStageLabel
+        }
+        return when (stage) {
+            WearGrowthStage.EGG -> "hatch"
+            WearGrowthStage.BABY -> "juvenile"
+            WearGrowthStage.JUVENILE -> "adult"
+            WearGrowthStage.ADULT -> WearStageProgress.LABEL_READY_TO_CLAIM
+        }
+    }
 }

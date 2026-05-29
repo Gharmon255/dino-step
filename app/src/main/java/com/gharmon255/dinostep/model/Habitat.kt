@@ -7,4 +7,10 @@ enum class Habitat {
     FOREST,
     MOUNTAIN,
     VOLCANO,
+    SWAMP,
+    OCEAN,
+    ICE,
+    DARK,
+    SKY,
+    LAB,
 }

@@ -11,11 +11,17 @@ data class WearCreaturePayload(
     val totalStepsRequired: Int,
     val progressPercent: Float,
     val stepsUntilNextMilestone: Int,
+    val stepsUntilNextStage: Int,
+    val nextStageLabel: String,
     val isRevealed: Boolean,
     val displayEmoji: String,
     val eventType: WearSyncEventType,
     val updatedAtMillis: Long = System.currentTimeMillis(),
-)
+) {
+    /** @deprecated Use [nextStageLabel] */
+    val nextStageGoal: String
+        get() = if (nextStageLabel == WearStageProgress.LABEL_READY_TO_CLAIM) "claim" else nextStageLabel
+}
 
 object WearCreaturePayloadCodec {
     private const val KEY_CREATURE_NAME = "creature_name"
@@ -26,6 +32,9 @@ object WearCreaturePayloadCodec {
     private const val KEY_TOTAL_STEPS_REQUIRED = "total_steps_required"
     private const val KEY_PROGRESS_PERCENT = "progress_percent"
     private const val KEY_STEPS_UNTIL_NEXT = "steps_until_next_milestone"
+    private const val KEY_STEPS_UNTIL_NEXT_STAGE = "steps_until_next_stage"
+    private const val KEY_NEXT_STAGE_LABEL = "next_stage_label"
+    private const val KEY_NEXT_STAGE_GOAL = "next_stage_goal"
     private const val KEY_IS_REVEALED = "is_revealed"
     private const val KEY_DISPLAY_EMOJI = "display_emoji"
     private const val KEY_EVENT_TYPE = "event_type"
@@ -41,6 +50,9 @@ object WearCreaturePayloadCodec {
             putInt(KEY_TOTAL_STEPS_REQUIRED, payload.totalStepsRequired)
             putFloat(KEY_PROGRESS_PERCENT, payload.progressPercent)
             putInt(KEY_STEPS_UNTIL_NEXT, payload.stepsUntilNextMilestone)
+            putInt(KEY_STEPS_UNTIL_NEXT_STAGE, payload.stepsUntilNextStage)
+            putString(KEY_NEXT_STAGE_LABEL, payload.nextStageLabel)
+            putString(KEY_NEXT_STAGE_GOAL, payload.nextStageGoal)
             putBoolean(KEY_IS_REVEALED, payload.isRevealed)
             putString(KEY_DISPLAY_EMOJI, payload.displayEmoji)
             putString(KEY_EVENT_TYPE, payload.eventType.name)
@@ -53,19 +65,65 @@ object WearCreaturePayloadCodec {
             return null
         }
 
+        val stage = dataMap.getString(KEY_STAGE, "EGG")
+        val legacyStepsUntil = dataMap.getInt(KEY_STEPS_UNTIL_NEXT, -1)
+        val legacyGoal = dataMap.getString(KEY_NEXT_STAGE_GOAL, "")
+
+        val stageProgress = if (dataMap.containsKey(KEY_STEPS_UNTIL_NEXT_STAGE) &&
+            dataMap.containsKey(KEY_NEXT_STAGE_LABEL)
+        ) {
+            WearStageProgress.Info(
+                stepsUntilNextStage = dataMap.getInt(KEY_STEPS_UNTIL_NEXT_STAGE, 0),
+                nextStageLabel = dataMap.getString(KEY_NEXT_STAGE_LABEL, ""),
+            )
+        } else {
+            resolveLegacyStageProgress(
+                stage = stage,
+                legacyStepsUntil = legacyStepsUntil,
+                legacyGoal = legacyGoal,
+            )
+        }
+
+        val stepsUntilNextMilestone = if (legacyStepsUntil >= 0) {
+            legacyStepsUntil
+        } else {
+            stageProgress.stepsUntilNextStage
+        }
+
         return WearCreaturePayload(
             creatureName = dataMap.getString(KEY_CREATURE_NAME, ""),
             displayName = dataMap.getString(KEY_DISPLAY_NAME, "Mystery Egg"),
-            stage = dataMap.getString(KEY_STAGE, "EGG"),
+            stage = stage,
             currentSteps = dataMap.getInt(KEY_CURRENT_STEPS, 0),
             nextMilestone = dataMap.getInt(KEY_NEXT_MILESTONE, 0),
             totalStepsRequired = dataMap.getInt(KEY_TOTAL_STEPS_REQUIRED, 0),
             progressPercent = dataMap.getFloat(KEY_PROGRESS_PERCENT, 0f),
-            stepsUntilNextMilestone = dataMap.getInt(KEY_STEPS_UNTIL_NEXT, 0),
+            stepsUntilNextMilestone = stepsUntilNextMilestone,
+            stepsUntilNextStage = stageProgress.stepsUntilNextStage,
+            nextStageLabel = stageProgress.nextStageLabel,
             isRevealed = dataMap.getBoolean(KEY_IS_REVEALED, false),
             displayEmoji = dataMap.getString(KEY_DISPLAY_EMOJI, "🥚"),
             eventType = WearSyncEventType.fromRaw(dataMap.getString(KEY_EVENT_TYPE)),
             updatedAtMillis = dataMap.getLong(KEY_UPDATED_AT, 0L),
+        )
+    }
+
+    private fun resolveLegacyStageProgress(
+        stage: String,
+        legacyStepsUntil: Int,
+        legacyGoal: String,
+    ): WearStageProgress.Info {
+        val label = when {
+            stage.equals("ADULT", ignoreCase = true) -> WearStageProgress.LABEL_READY_TO_CLAIM
+            legacyGoal.isNotBlank() -> legacyGoal
+            stage.equals("EGG", ignoreCase = true) -> "hatch"
+            stage.equals("BABY", ignoreCase = true) -> "juvenile"
+            stage.equals("JUVENILE", ignoreCase = true) -> "adult"
+            else -> WearStageProgress.LABEL_READY_TO_CLAIM
+        }
+        return WearStageProgress.Info(
+            stepsUntilNextStage = legacyStepsUntil.coerceAtLeast(0),
+            nextStageLabel = label,
         )
     }
 }

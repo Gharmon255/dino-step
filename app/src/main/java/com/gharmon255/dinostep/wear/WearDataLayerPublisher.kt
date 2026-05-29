@@ -111,6 +111,8 @@ class WearDataLayerPublisher(
             payloadDisplayName = payload.displayName,
             payloadStage = payload.stage,
             payloadSteps = payload.currentSteps,
+            payloadStepsUntilNext = payload.stepsUntilNextStage,
+            payloadNextStageLabel = payload.nextStageLabel,
         )
     }
 

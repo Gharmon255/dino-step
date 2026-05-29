@@ -109,6 +109,32 @@ class GameViewModel(
         publishActiveCreatureToWatch(WearSyncEventType.NONE)
     }
 
+    fun clearCollectionForTesting() {
+        if (!isReady) {
+            return
+        }
+
+        viewModelScope.launch {
+            repository.clearCollection()
+            collection = emptyList()
+            playerStats = playerStats.copy(creaturesCompleted = 0)
+        }
+    }
+
+    fun resetGameForTesting() {
+        if (!isReady) {
+            return
+        }
+
+        viewModelScope.launch {
+            val snapshot = repository.resetGameForTesting()
+            activeCreature = snapshot.activeCreature
+            collection = snapshot.collection
+            playerStats = snapshot.playerStats
+            publishActiveCreatureToWatch(WearSyncEventType.NONE)
+        }
+    }
+
     fun refreshHealthConnectStatus() {
         viewModelScope.launch {
             healthConnectStatus = runCatching {
@@ -266,6 +292,8 @@ class GameViewModel(
             lastPayloadDisplayName = result.payloadDisplayName,
             lastPayloadStage = result.payloadStage,
             lastPayloadSteps = result.payloadSteps,
+            lastPayloadStepsUntilNext = result.payloadStepsUntilNext,
+            lastPayloadNextStageLabel = result.payloadNextStageLabel,
             lastPayloadSummary = result.payloadSummary,
         )
     }

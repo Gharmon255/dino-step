@@ -7,11 +7,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,6 +41,9 @@ fun StatsScreen(
     val lastSyncTimeLabel = wearDebug.lastAttemptTimeMillis?.let { millis ->
         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(millis))
     } ?: "—"
+
+    var showClearCollectionDialog by remember { mutableStateOf(false) }
+    var showResetGameDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -86,6 +96,14 @@ fun StatsScreen(
                     label = "Last payload steps",
                     value = wearDebug.lastPayloadSteps?.let { numberFormat.format(it) } ?: "—",
                 )
+                StatRow(
+                    label = "Last payload steps to next",
+                    value = wearDebug.lastPayloadStepsUntilNext?.let { numberFormat.format(it) } ?: "—",
+                )
+                StatRow(
+                    label = "Last payload next stage",
+                    value = wearDebug.lastPayloadNextStageLabel,
+                )
                 Text(
                     text = "Last payload detail: ${wearDebug.lastPayloadSummary}",
                     style = MaterialTheme.typography.bodySmall,
@@ -97,6 +115,40 @@ fun StatsScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Force Watch Sync")
+                }
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Testing tools",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = "Debug-only actions. Use while testing — not for normal play.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                OutlinedButton(
+                    onClick = { showClearCollectionDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Clear Collection")
+                }
+
+                OutlinedButton(
+                    onClick = { showResetGameDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Reset Game")
                 }
             }
         }
@@ -144,5 +196,62 @@ fun StatsScreen(
                 )
             }
         }
+    }
+
+    if (showClearCollectionDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearCollectionDialog = false },
+            title = { Text("Clear collection?") },
+            text = {
+                Text(
+                    "Testing only. This deletes all completed dinosaurs from your collection. " +
+                        "Your active egg is kept. Health Connect permissions are not changed.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearCollectionForTesting()
+                        showClearCollectionDialog = false
+                    },
+                ) {
+                    Text("Clear")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearCollectionDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    if (showResetGameDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetGameDialog = false },
+            title = { Text("Reset game?") },
+            text = {
+                Text(
+                    "Testing only. This clears your collection, resets fake-step stats, and gives you " +
+                        "a new Mystery Common Egg. Health Connect permission and today's synced step " +
+                        "baseline are kept.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.resetGameForTesting()
+                        showResetGameDialog = false
+                    },
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showResetGameDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
     }
 }

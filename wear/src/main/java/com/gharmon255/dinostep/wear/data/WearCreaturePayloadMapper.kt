@@ -15,6 +15,8 @@ fun WearCreaturePayload.toWatchCreatureState(): WatchCreatureState {
         totalStepsRequired = totalStepsRequired,
         progressPercent = progressPercent,
         stepsUntilNextMilestone = stepsUntilNextMilestone,
+        stepsUntilNextStage = stepsUntilNextStage,
+        nextStageLabel = nextStageLabel,
         isRevealed = isRevealed,
         displayEmoji = displayEmoji,
         eventType = eventType,

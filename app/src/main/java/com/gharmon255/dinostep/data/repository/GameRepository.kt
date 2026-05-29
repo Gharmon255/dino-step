@@ -8,6 +8,7 @@ import com.gharmon255.dinostep.data.toEntity
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.PlayerStats
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ class GameRepository(
 
         val collection = completedCreatureDao
             .getAllOrderedByCompletedAt()
-            .mapNotNull { it.toDomain() }
+            .map { it.toDomain() }
 
         val activeCreature = activeCreatureDao.getById()?.toDomain()
             ?: createMysteryCommonEgg().also { saveActiveCreature(it) }
@@ -51,11 +52,44 @@ class GameRepository(
     }
 
     fun createMysteryCommonEgg(): ActiveCreatureState {
+        return createMysteryEgg(EggRarity.COMMON)
+    }
+
+    fun createMysteryEgg(eggRarity: EggRarity): ActiveCreatureState {
         return ActiveCreatureState(
-            creature = CreatureCatalog.randomCommonCreature(),
+            creature = CreatureCatalog.randomCreatureForEgg(eggRarity),
             steps = 0,
             startedAt = System.currentTimeMillis(),
             isRevealed = false,
+        )
+    }
+
+    suspend fun clearCollection() = withContext(Dispatchers.IO) {
+        completedCreatureDao.deleteAll()
+        val statsEntity = playerStatsDao.getById() ?: return@withContext
+        playerStatsDao.upsert(
+            statsEntity.copy(creaturesCompleted = 0),
+        )
+    }
+
+    suspend fun resetGameForTesting(): GameSnapshot = withContext(Dispatchers.IO) {
+        completedCreatureDao.deleteAll()
+
+        val existingStats = playerStatsDao.getById() ?: PlayerStatsEntity()
+        val resetStats = existingStats.copy(
+            totalFakeStepsAdded = 0,
+            eggsHatched = 0,
+            creaturesCompleted = 0,
+        )
+        playerStatsDao.upsert(resetStats)
+
+        val newEgg = createMysteryCommonEgg()
+        activeCreatureDao.upsert(newEgg.toEntity())
+
+        GameSnapshot(
+            activeCreature = newEgg,
+            collection = emptyList(),
+            playerStats = resetStats.toDomain(),
         )
     }
 }
