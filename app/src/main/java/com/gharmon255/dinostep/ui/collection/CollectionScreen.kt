@@ -31,9 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.model.CreatureVisualMapper
-import com.gharmon255.dinostep.model.EggRarity
-import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Habitat
+import com.gharmon255.dinostep.model.StageVisual
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.components.CollectionCreatureAvatar
@@ -213,14 +212,10 @@ private fun RosterCreatureCard(
 ) {
     val collected = entry.isCollected
     val colors = rarityColors(entry.creature.rarity)
-    val avatarEmoji = if (collected) {
-        CreatureVisualMapper.getVisualForStage(
-            creatureDefinition = entry.creature,
-            stage = GrowthStage.ADULT,
-            eggRarity = EggRarity.COMMON,
-        ).placeholderEmoji
+    val avatarVisual = if (collected) {
+        CreatureVisualMapper.collectionVisual(entry.creature)
     } else {
-        CreatureVisualMapper.LOCKED_PLACEHOLDER
+        null
     }
 
     Card(
@@ -249,11 +244,26 @@ private fun RosterCreatureCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CollectionCreatureAvatar(
-                emoji = avatarEmoji,
-                rarity = entry.creature.rarity,
-                collected = collected,
-            )
+            if (avatarVisual != null) {
+                CollectionCreatureAvatar(
+                    visual = avatarVisual,
+                    rarity = entry.creature.rarity,
+                    collected = true,
+                )
+            } else {
+                CollectionCreatureAvatar(
+                    visual = StageVisual(
+                        assetKey = "locked",
+                        speciesEmoji = CreatureVisualMapper.LOCKED_PLACEHOLDER,
+                        displayEmoji = CreatureVisualMapper.LOCKED_PLACEHOLDER,
+                        speciesShortLabel = "?",
+                        stageDetailLabel = "Locked",
+                        stageScale = 1f,
+                    ),
+                    rarity = entry.creature.rarity,
+                    collected = false,
+                )
+            }
 
             Column(
                 modifier = Modifier.weight(1f),

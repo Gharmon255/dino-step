@@ -15,8 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureVisualMapper
-import com.gharmon255.dinostep.model.EggRarity
-import com.gharmon255.dinostep.model.GrowthStage
 import java.text.NumberFormat
 
 @Composable
@@ -52,11 +50,7 @@ fun CollectionEntryRow(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        val emoji = CreatureVisualMapper.getVisualForStage(
-            creatureDefinition = entry.creature,
-            stage = GrowthStage.ADULT,
-            eggRarity = EggRarity.COMMON,
-        ).placeholderEmoji
+        val emoji = CreatureVisualMapper.collectionVisual(entry.creature).speciesEmoji
         Text(
             text = "$emoji ${entry.creature.name}",
             style = MaterialTheme.typography.bodyLarge,

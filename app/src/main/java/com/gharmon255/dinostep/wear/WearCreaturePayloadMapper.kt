@@ -23,6 +23,8 @@ object WearCreaturePayloadMapper {
             totalStepsRequired = creature.totalStepsRequired,
         )
 
+        val visual = CreatureVisualMapper.visualForActiveCreature(activeCreature)
+
         return WearCreaturePayload(
             creatureName = creature.name,
             displayName = activeCreature.displayName,
@@ -35,7 +37,9 @@ object WearCreaturePayloadMapper {
             stepsUntilNextStage = stageProgress.stepsUntilNextStage,
             nextStageLabel = stageProgress.nextStageLabel,
             isRevealed = activeCreature.isRevealed,
-            displayEmoji = CreatureVisualMapper.visualForActiveCreature(activeCreature).placeholderEmoji,
+            displayEmoji = visual.displayEmoji,
+            speciesShortLabel = visual.speciesShortLabel,
+            stageScale = visual.stageScale,
             eggRarity = activeCreature.eggRarity.name,
             creatureRarity = if (activeCreature.isRevealed) creature.rarity.name else "",
             accentColorArgb = RarityTheme.resolveAccentArgb(

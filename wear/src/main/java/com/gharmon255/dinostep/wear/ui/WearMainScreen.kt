@@ -65,6 +65,8 @@ fun WearMainScreen(
                 stage = state.stage,
                 emoji = state.displayEmoji,
                 accentColor = state.accentColorArgb.toWearColor(),
+                speciesShortLabel = state.speciesShortLabel,
+                stageScale = state.stageScale,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -141,6 +143,8 @@ private fun ProgressRingSection(
     stage: WearGrowthStage,
     emoji: String,
     accentColor: Color,
+    speciesShortLabel: String,
+    stageScale: Float,
 ) {
     Box(
         modifier = Modifier.size(ProgressRingSize),
@@ -157,6 +161,9 @@ private fun ProgressRingSection(
         CreatureVisual(
             stage = stage,
             emoji = emoji,
+            accentColor = accentColor,
+            speciesShortLabel = speciesShortLabel,
+            stageScale = stageScale,
             modifier = Modifier.size(CreatureInRingSize),
         )
     }

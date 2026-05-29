@@ -19,6 +19,8 @@ fun WearCreaturePayload.toWatchCreatureState(): WatchCreatureState {
         nextStageLabel = nextStageLabel,
         isRevealed = isRevealed,
         displayEmoji = displayEmoji,
+        speciesShortLabel = speciesShortLabel,
+        stageScale = stageScale,
         eggRarity = eggRarity,
         creatureRarity = creatureRarity,
         accentColorArgb = accentColorArgb,

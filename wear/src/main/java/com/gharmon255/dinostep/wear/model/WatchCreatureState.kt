@@ -18,6 +18,8 @@ data class WatchCreatureState(
     val nextStageLabel: String = "",
     val isRevealed: Boolean,
     val displayEmoji: String,
+    val speciesShortLabel: String = "",
+    val stageScale: Float = 1f,
     val eggRarity: String = "COMMON",
     val creatureRarity: String = "",
     val accentColorArgb: Long = com.gharmon255.dinostep.shared.visual.RarityTheme.COMMON_ARGB,

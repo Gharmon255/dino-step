@@ -16,6 +16,8 @@ data class WearCreaturePayload(
     val nextStageLabel: String,
     val isRevealed: Boolean,
     val displayEmoji: String,
+    val speciesShortLabel: String = "",
+    val stageScale: Float = 1f,
     val eggRarity: String = "COMMON",
     val creatureRarity: String = "",
     val accentColorArgb: Long = RarityTheme.COMMON_ARGB,
@@ -41,6 +43,8 @@ object WearCreaturePayloadCodec {
     private const val KEY_NEXT_STAGE_GOAL = "next_stage_goal"
     private const val KEY_IS_REVEALED = "is_revealed"
     private const val KEY_DISPLAY_EMOJI = "display_emoji"
+    private const val KEY_SPECIES_SHORT_LABEL = "species_short_label"
+    private const val KEY_STAGE_SCALE = "stage_scale"
     private const val KEY_EGG_RARITY = "egg_rarity"
     private const val KEY_CREATURE_RARITY = "creature_rarity"
     private const val KEY_ACCENT_COLOR = "accent_color_argb"
@@ -62,6 +66,8 @@ object WearCreaturePayloadCodec {
             putString(KEY_NEXT_STAGE_GOAL, payload.nextStageGoal)
             putBoolean(KEY_IS_REVEALED, payload.isRevealed)
             putString(KEY_DISPLAY_EMOJI, payload.displayEmoji)
+            putString(KEY_SPECIES_SHORT_LABEL, payload.speciesShortLabel)
+            putFloat(KEY_STAGE_SCALE, payload.stageScale)
             putString(KEY_EGG_RARITY, payload.eggRarity)
             putString(KEY_CREATURE_RARITY, payload.creatureRarity)
             putLong(KEY_ACCENT_COLOR, payload.accentColorArgb)
@@ -113,6 +119,8 @@ object WearCreaturePayloadCodec {
             nextStageLabel = stageProgress.nextStageLabel,
             isRevealed = dataMap.getBoolean(KEY_IS_REVEALED, false),
             displayEmoji = dataMap.getString(KEY_DISPLAY_EMOJI, "🥚"),
+            speciesShortLabel = dataMap.getString(KEY_SPECIES_SHORT_LABEL, ""),
+            stageScale = dataMap.getFloat(KEY_STAGE_SCALE, 1f).coerceIn(0.5f, 1f),
             eggRarity = dataMap.getString(KEY_EGG_RARITY, "COMMON"),
             creatureRarity = dataMap.getString(KEY_CREATURE_RARITY, ""),
             accentColorArgb = if (dataMap.containsKey(KEY_ACCENT_COLOR)) {
