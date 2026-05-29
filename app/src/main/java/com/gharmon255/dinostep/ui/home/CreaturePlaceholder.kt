@@ -22,6 +22,7 @@ import com.gharmon255.dinostep.model.GrowthStage
 @Composable
 fun CreaturePlaceholder(
     stage: GrowthStage,
+    emoji: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -32,9 +33,9 @@ fun CreaturePlaceholder(
     ) {
         when (stage) {
             GrowthStage.EGG -> EggAnimation()
-            GrowthStage.BABY -> BabyAnimation()
-            GrowthStage.JUVENILE -> DinoPlaceholder(fontSizeSp = 96)
-            GrowthStage.ADULT -> DinoPlaceholder(fontSizeSp = 120)
+            GrowthStage.BABY -> BabyAnimation(emoji = emoji)
+            GrowthStage.JUVENILE -> DinoPlaceholder(emoji = emoji, fontSizeSp = 96)
+            GrowthStage.ADULT -> DinoPlaceholder(emoji = emoji, fontSizeSp = 120)
         }
     }
 }
@@ -60,7 +61,7 @@ private fun EggAnimation() {
 }
 
 @Composable
-private fun BabyAnimation() {
+private fun BabyAnimation(emoji: String) {
     val infiniteTransition = rememberInfiniteTransition(label = "babyBounce")
     val offsetY by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -73,7 +74,7 @@ private fun BabyAnimation() {
     )
 
     Text(
-        text = "🦖",
+        text = emoji,
         fontSize = 72.sp,
         modifier = Modifier.graphicsLayer {
             translationY = offsetY
@@ -82,9 +83,9 @@ private fun BabyAnimation() {
 }
 
 @Composable
-private fun DinoPlaceholder(fontSizeSp: Int) {
+private fun DinoPlaceholder(emoji: String, fontSizeSp: Int) {
     Text(
-        text = "🦕",
+        text = emoji,
         fontSize = fontSizeSp.sp,
     )
 }
