@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +64,7 @@ fun WearMainScreen(
                 progress = progress,
                 stage = state.stage,
                 emoji = state.displayEmoji,
+                accentColor = state.accentColorArgb.toWearColor(),
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -81,7 +83,7 @@ fun WearMainScreen(
                 text = stepsUntilNextLine,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colors.primary,
+                color = state.accentColorArgb.toWearColor(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
@@ -138,6 +140,7 @@ private fun ProgressRingSection(
     progress: Float,
     stage: WearGrowthStage,
     emoji: String,
+    accentColor: Color,
 ) {
     Box(
         modifier = Modifier.size(ProgressRingSize),
@@ -147,7 +150,7 @@ private fun ProgressRingSection(
             progress = progress,
             modifier = Modifier.size(ProgressRingSize),
             strokeWidth = ProgressStrokeWidth,
-            indicatorColor = MaterialTheme.colors.primary,
+            indicatorColor = accentColor,
             trackColor = MaterialTheme.colors.onSurface.copy(alpha = 0.18f),
         )
 

@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.shared.wear
 
 import com.google.android.gms.wearable.DataMap
+import com.gharmon255.dinostep.shared.visual.RarityTheme
 
 data class WearCreaturePayload(
     val creatureName: String,
@@ -15,6 +16,9 @@ data class WearCreaturePayload(
     val nextStageLabel: String,
     val isRevealed: Boolean,
     val displayEmoji: String,
+    val eggRarity: String = "COMMON",
+    val creatureRarity: String = "",
+    val accentColorArgb: Long = RarityTheme.COMMON_ARGB,
     val eventType: WearSyncEventType,
     val updatedAtMillis: Long = System.currentTimeMillis(),
 ) {
@@ -37,6 +41,9 @@ object WearCreaturePayloadCodec {
     private const val KEY_NEXT_STAGE_GOAL = "next_stage_goal"
     private const val KEY_IS_REVEALED = "is_revealed"
     private const val KEY_DISPLAY_EMOJI = "display_emoji"
+    private const val KEY_EGG_RARITY = "egg_rarity"
+    private const val KEY_CREATURE_RARITY = "creature_rarity"
+    private const val KEY_ACCENT_COLOR = "accent_color_argb"
     private const val KEY_EVENT_TYPE = "event_type"
     private const val KEY_UPDATED_AT = "updated_at"
 
@@ -55,6 +62,9 @@ object WearCreaturePayloadCodec {
             putString(KEY_NEXT_STAGE_GOAL, payload.nextStageGoal)
             putBoolean(KEY_IS_REVEALED, payload.isRevealed)
             putString(KEY_DISPLAY_EMOJI, payload.displayEmoji)
+            putString(KEY_EGG_RARITY, payload.eggRarity)
+            putString(KEY_CREATURE_RARITY, payload.creatureRarity)
+            putLong(KEY_ACCENT_COLOR, payload.accentColorArgb)
             putString(KEY_EVENT_TYPE, payload.eventType.name)
             putLong(KEY_UPDATED_AT, payload.updatedAtMillis)
         }
@@ -103,6 +113,17 @@ object WearCreaturePayloadCodec {
             nextStageLabel = stageProgress.nextStageLabel,
             isRevealed = dataMap.getBoolean(KEY_IS_REVEALED, false),
             displayEmoji = dataMap.getString(KEY_DISPLAY_EMOJI, "🥚"),
+            eggRarity = dataMap.getString(KEY_EGG_RARITY, "COMMON"),
+            creatureRarity = dataMap.getString(KEY_CREATURE_RARITY, ""),
+            accentColorArgb = if (dataMap.containsKey(KEY_ACCENT_COLOR)) {
+                dataMap.getLong(KEY_ACCENT_COLOR)
+            } else {
+                RarityTheme.resolveAccentArgb(
+                    isRevealed = dataMap.getBoolean(KEY_IS_REVEALED, false),
+                    eggRarityName = dataMap.getString(KEY_EGG_RARITY, "COMMON"),
+                    creatureRarityName = dataMap.getString(KEY_CREATURE_RARITY, ""),
+                )
+            },
             eventType = WearSyncEventType.fromRaw(dataMap.getString(KEY_EVENT_TYPE)),
             updatedAtMillis = dataMap.getLong(KEY_UPDATED_AT, 0L),
         )

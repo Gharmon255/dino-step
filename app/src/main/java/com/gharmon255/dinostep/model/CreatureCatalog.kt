@@ -1,4 +1,4 @@
-package com.gharmon255.dinostep.model
+﻿package com.gharmon255.dinostep.model
 
 object CreatureCatalog {
     private const val TAG = "CreatureCatalog"
@@ -11,7 +11,6 @@ object CreatureCatalog {
         total = 8_000,
         hatch = 1_600,
         juvenile = 4_000,
-        emoji = "🦖",
     )
 
     val triceratops = d(
@@ -22,7 +21,6 @@ object CreatureCatalog {
         total = 10_000,
         hatch = 2_000,
         juvenile = 5_000,
-        emoji = "🦕",
     )
 
     val ankylosaurus = d(
@@ -33,7 +31,6 @@ object CreatureCatalog {
         total = 12_000,
         hatch = 2_400,
         juvenile = 6_000,
-        emoji = "🛡️",
     )
 
     val parasaurolophus = d(
@@ -44,7 +41,6 @@ object CreatureCatalog {
         total = 11_000,
         hatch = 2_200,
         juvenile = 5_500,
-        emoji = "🦕",
     )
 
     val pachycephalosaurus = d(
@@ -55,7 +51,6 @@ object CreatureCatalog {
         total = 12_500,
         hatch = 2_500,
         juvenile = 6_250,
-        emoji = "🦴",
     )
 
     val gallimimus = d(
@@ -66,7 +61,6 @@ object CreatureCatalog {
         total = 9_000,
         hatch = 1_800,
         juvenile = 4_500,
-        emoji = "🦤",
     )
 
     // UNCOMMON
@@ -78,7 +72,6 @@ object CreatureCatalog {
         total = 18_000,
         hatch = 3_600,
         juvenile = 9_000,
-        emoji = "🦕",
     )
 
     val pterodactyl = d(
@@ -89,7 +82,6 @@ object CreatureCatalog {
         total = 22_000,
         hatch = 4_400,
         juvenile = 11_000,
-        emoji = "🪽",
     )
 
     val dilophosaurus = d(
@@ -100,7 +92,6 @@ object CreatureCatalog {
         total = 20_000,
         hatch = 4_000,
         juvenile = 10_000,
-        emoji = "🦖",
     )
 
     val iguanodon = d(
@@ -111,7 +102,6 @@ object CreatureCatalog {
         total = 19_000,
         hatch = 3_800,
         juvenile = 9_500,
-        emoji = "🦕",
     )
 
     val carnotaurus = d(
@@ -122,7 +112,6 @@ object CreatureCatalog {
         total = 24_000,
         hatch = 4_800,
         juvenile = 12_000,
-        emoji = "🦖",
     )
 
     val baryonyx = d(
@@ -133,7 +122,6 @@ object CreatureCatalog {
         total = 25_000,
         hatch = 5_000,
         juvenile = 12_500,
-        emoji = "🐊",
     )
 
     // RARE
@@ -145,7 +133,6 @@ object CreatureCatalog {
         total = 50_000,
         hatch = 10_000,
         juvenile = 25_000,
-        emoji = "🦖",
     )
 
     val spinosaurus = d(
@@ -156,7 +143,6 @@ object CreatureCatalog {
         total = 60_000,
         hatch = 12_000,
         juvenile = 30_000,
-        emoji = "🐊",
     )
 
     val velociRaptorAlpha = d(
@@ -167,7 +153,6 @@ object CreatureCatalog {
         total = 45_000,
         hatch = 9_000,
         juvenile = 22_500,
-        emoji = "🦖",
     )
 
     val allosaurus = d(
@@ -178,7 +163,6 @@ object CreatureCatalog {
         total = 48_000,
         hatch = 9_600,
         juvenile = 24_000,
-        emoji = "🦖",
     )
 
     val therizinosaurus = d(
@@ -189,7 +173,6 @@ object CreatureCatalog {
         total = 55_000,
         hatch = 11_000,
         juvenile = 27_500,
-        emoji = "🦕",
     )
 
     val mosasaurus = d(
@@ -200,7 +183,6 @@ object CreatureCatalog {
         total = 65_000,
         hatch = 13_000,
         juvenile = 32_500,
-        emoji = "🐋",
     )
 
     // EPIC
@@ -212,7 +194,6 @@ object CreatureCatalog {
         total = 85_000,
         hatch = 17_000,
         juvenile = 42_500,
-        emoji = "🦖",
     )
 
     val quetzalcoatlus = d(
@@ -223,7 +204,6 @@ object CreatureCatalog {
         total = 90_000,
         hatch = 18_000,
         juvenile = 45_000,
-        emoji = "🪽",
     )
 
     val indominusHybrid = d(
@@ -234,7 +214,6 @@ object CreatureCatalog {
         total = 95_000,
         hatch = 19_000,
         juvenile = 47_500,
-        emoji = "🧬",
     )
 
     val ancientSpinosaurus = d(
@@ -245,7 +224,6 @@ object CreatureCatalog {
         total = 100_000,
         hatch = 20_000,
         juvenile = 50_000,
-        emoji = "🐊",
     )
 
     // LEGENDARY
@@ -257,7 +235,6 @@ object CreatureCatalog {
         total = 125_000,
         hatch = 25_000,
         juvenile = 62_500,
-        emoji = "🌋",
     )
 
     val frostRaptor = d(
@@ -268,7 +245,6 @@ object CreatureCatalog {
         total = 110_000,
         hatch = 22_000,
         juvenile = 55_000,
-        emoji = "❄️",
     )
 
     val shadowTriceratops = d(
@@ -279,7 +255,6 @@ object CreatureCatalog {
         total = 130_000,
         hatch = 26_000,
         juvenile = 65_000,
-        emoji = "🌑",
     )
 
     val titanosaur = d(
@@ -290,7 +265,6 @@ object CreatureCatalog {
         total = 150_000,
         hatch = 30_000,
         juvenile = 75_000,
-        emoji = "🦕",
     )
 
     val cosmicPterodactyl = d(
@@ -301,7 +275,6 @@ object CreatureCatalog {
         total = 175_000,
         hatch = 35_000,
         juvenile = 87_500,
-        emoji = "✨",
     )
 
     val ancientApexRex = d(
@@ -312,7 +285,6 @@ object CreatureCatalog {
         total = 200_000,
         hatch = 40_000,
         juvenile = 100_000,
-        emoji = "👑",
     )
 
     val all: List<CreatureDefinition> = listOf(
@@ -382,9 +354,22 @@ object CreatureCatalog {
 
     /** Legacy saves with unknown ids still load without crashing. */
     fun fallbackCreature(creatureId: String): CreatureDefinition {
-        return byId(creatureId) ?: tinyRaptor.copy(
-            id = creatureId,
-            name = creatureId.replace('_', ' ').replaceFirstChar { it.uppercase() },
+        return byId(creatureId) ?: creatureFromId(creatureId, creatureId.replace('_', ' ').replaceFirstChar { it.uppercase() })
+    }
+
+    private fun creatureFromId(id: String, name: String, rarity: Rarity = Rarity.COMMON): CreatureDefinition {
+        return CreatureDefinition(
+            id = id,
+            name = name,
+            rarity = rarity,
+            habitat = Habitat.JUNGLE,
+            totalStepsRequired = tinyRaptor.totalStepsRequired,
+            hatchStep = tinyRaptor.hatchStep,
+            juvenileStep = tinyRaptor.juvenileStep,
+            eggAssetKey = "${id}_egg",
+            babyAssetKey = "${id}_baby",
+            juvenileAssetKey = "${id}_juvenile",
+            adultAssetKey = "${id}_adult",
         )
     }
 
@@ -399,7 +384,6 @@ object CreatureCatalog {
         total: Int,
         hatch: Int,
         juvenile: Int,
-        emoji: String,
     ): CreatureDefinition {
         return CreatureDefinition(
             id = id,
@@ -409,7 +393,10 @@ object CreatureCatalog {
             totalStepsRequired = total,
             hatchStep = hatch,
             juvenileStep = juvenile,
-            emoji = emoji,
+            eggAssetKey = "${id}_egg",
+            babyAssetKey = "${id}_baby",
+            juvenileAssetKey = "${id}_juvenile",
+            adultAssetKey = "${id}_adult",
         )
     }
 }

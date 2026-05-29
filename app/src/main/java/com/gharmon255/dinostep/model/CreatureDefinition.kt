@@ -8,7 +8,10 @@ data class CreatureDefinition(
     val totalStepsRequired: Int,
     val hatchStep: Int,
     val juvenileStep: Int,
-    val emoji: String,
+    val eggAssetKey: String,
+    val babyAssetKey: String,
+    val juvenileAssetKey: String,
+    val adultAssetKey: String,
 ) {
     fun stageForSteps(steps: Int): GrowthStage = when {
         steps < hatchStep -> GrowthStage.EGG

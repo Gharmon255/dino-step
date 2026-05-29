@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -19,17 +18,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
+import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
+import com.gharmon255.dinostep.ui.components.CreatureStageVisual
+import com.gharmon255.dinostep.ui.components.GameCreatureCard
 import com.gharmon255.dinostep.ui.theme.DinoStepTheme
+import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -39,12 +42,12 @@ fun HomeScreen(
     onRequestHealthPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val active = viewModel.activeCreatureState
     HomeScreenContent(
+        activeCreature = active,
         displayName = viewModel.displayName,
-        isRevealed = viewModel.isRevealed,
         steps = viewModel.steps,
         stage = viewModel.stage,
-        creatureEmoji = viewModel.creatureEmoji,
         nextMilestone = viewModel.nextMilestone,
         progressPercent = viewModel.progressPercent,
         isAdult = viewModel.isAdult,
@@ -62,11 +65,10 @@ fun HomeScreen(
 
 @Composable
 private fun HomeScreenContent(
+    activeCreature: ActiveCreatureState,
     displayName: String,
-    isRevealed: Boolean,
     steps: Int,
     stage: GrowthStage,
-    creatureEmoji: String,
     nextMilestone: Int?,
     progressPercent: Float,
     isAdult: Boolean,
@@ -82,6 +84,12 @@ private fun HomeScreenContent(
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val canSync = healthConnectStatus is HealthConnectUiStatus.Ready && !isSyncing
+    val creatureRarity = activeCreature.creature.rarity.takeIf { activeCreature.isRevealed }
+    val progressColors = if (creatureRarity != null) {
+        rarityColors(creatureRarity)
+    } else {
+        rarityColors(activeCreature.eggRarity)
+    }
 
     Column(
         modifier = modifier
@@ -91,42 +99,34 @@ private fun HomeScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = displayName,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-        )
-
-        CreaturePlaceholder(
+        GameCreatureCard(
+            title = displayName,
             stage = stage,
-            emoji = creatureEmoji,
-        )
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
+            eggRarity = activeCreature.eggRarity,
+            creatureRarity = creatureRarity,
+            progressPercent = progressPercent,
         ) {
+            CreatureStageVisual(activeCreature = activeCreature)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LinearProgressIndicator(
+                progress = { progressPercent / 100f },
+                modifier = Modifier.fillMaxWidth(),
+                color = progressColors.accent,
+                trackColor = progressColors.container,
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(top = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                StatRow(label = "Stage", value = stage.name)
                 StatRow(label = "Steps", value = numberFormat.format(steps))
                 StatRow(
                     label = "Next milestone",
                     value = nextMilestone?.let { numberFormat.format(it) } ?: "Complete",
-                )
-                StatRow(
-                    label = "Progress",
-                    value = "${progressPercent.toInt()}%",
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                LinearProgressIndicator(
-                    progress = { progressPercent / 100f },
-                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -212,11 +212,14 @@ private fun StepButton(
 private fun HomeScreenPreview() {
     DinoStepTheme {
         HomeScreenContent(
+            activeCreature = ActiveCreatureState(
+                creature = CreatureCatalog.tinyRaptor,
+                eggRarity = EggRarity.COMMON,
+                steps = 900,
+            ),
             displayName = "Mystery Common Egg",
-            isRevealed = false,
             steps = 900,
             stage = GrowthStage.EGG,
-            creatureEmoji = CreatureCatalog.tinyRaptor.emoji,
             nextMilestone = CreatureCatalog.tinyRaptor.hatchStep,
             progressPercent = 56.25f,
             isAdult = false,

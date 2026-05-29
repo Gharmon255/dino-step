@@ -26,6 +26,8 @@ import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
+import com.gharmon255.dinostep.ui.components.RarityBadge
+import com.gharmon255.dinostep.ui.components.RarityOutlinedButton
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -151,6 +153,7 @@ fun StatsScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
+                RarityBadge(eggRarity = viewModel.eggRarity)
                 StatRow(label = "Current egg rarity", value = viewModel.eggRarity.name)
                 StatRow(
                     label = "Hatched creature rarity",
@@ -171,30 +174,26 @@ fun StatsScreen(
                 ) {
                     Text("Give Random Egg")
                 }
-                OutlinedButton(
+                RarityOutlinedButton(
+                    label = "Give Uncommon Egg",
+                    eggRarity = EggRarity.UNCOMMON,
                     onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.UNCOMMON)) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Give Uncommon Egg")
-                }
-                OutlinedButton(
+                )
+                RarityOutlinedButton(
+                    label = "Give Rare Egg",
+                    eggRarity = EggRarity.RARE,
                     onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.RARE)) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Give Rare Egg")
-                }
-                OutlinedButton(
+                )
+                RarityOutlinedButton(
+                    label = "Give Epic Egg",
+                    eggRarity = EggRarity.EPIC,
                     onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.EPIC)) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Give Epic Egg")
-                }
-                OutlinedButton(
+                )
+                RarityOutlinedButton(
+                    label = "Give Legendary Egg",
+                    eggRarity = EggRarity.LEGENDARY,
                     onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.LEGENDARY)) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Give Legendary Egg")
-                }
+                )
             }
         }
 

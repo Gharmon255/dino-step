@@ -668,10 +668,10 @@
       proguardRules="proguard.txt"/>
   <library
       name=":@@:shared::debug"
-      jars="C:\Users\Gharm\.gradle\caches\9.4.1\transforms\ad17f7dd2d74047edc65f9b9fb82d7d2\transformed\out\jars\classes.jar;C:\Users\Gharm\.gradle\caches\9.4.1\transforms\ad17f7dd2d74047edc65f9b9fb82d7d2\transformed\out\jars\libs\R.jar"
+      jars="C:\Users\Gharm\.gradle\caches\9.4.1\transforms\7e413fcac9481379842cf2b8536e8bf8\transformed\out\jars\classes.jar;C:\Users\Gharm\.gradle\caches\9.4.1\transforms\7e413fcac9481379842cf2b8536e8bf8\transformed\out\jars\libs\R.jar"
       resolved="Dino Step:shared:unspecified"
       provided="true"
-      folder="C:\Users\Gharm\.gradle\caches\9.4.1\transforms\ad17f7dd2d74047edc65f9b9fb82d7d2\transformed\out"
+      folder="C:\Users\Gharm\.gradle\caches\9.4.1\transforms\7e413fcac9481379842cf2b8536e8bf8\transformed\out"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"

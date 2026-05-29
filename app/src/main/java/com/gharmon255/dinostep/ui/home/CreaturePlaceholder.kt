@@ -1,91 +1,32 @@
 package com.gharmon255.dinostep.ui.home
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.GrowthStage
+import com.gharmon255.dinostep.ui.components.CreatureStageVisual
 
+/** @deprecated Use [CreatureStageVisual] with [ActiveCreatureState]. */
+@Deprecated("Use CreatureStageVisual(activeCreature = …)")
 @Composable
 fun CreaturePlaceholder(
     stage: GrowthStage,
     emoji: String,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .height(160.dp)
-            .size(160.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        when (stage) {
-            GrowthStage.EGG -> EggAnimation()
-            GrowthStage.BABY -> BabyAnimation(emoji = emoji)
-            GrowthStage.JUVENILE -> DinoPlaceholder(emoji = emoji, fontSizeSp = 96)
-            GrowthStage.ADULT -> DinoPlaceholder(emoji = emoji, fontSizeSp = 120)
-        }
-    }
-}
-
-@Composable
-private fun EggAnimation() {
-    val infiniteTransition = rememberInfiniteTransition(label = "eggRock")
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = -10f,
-        targetValue = 10f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
+    // Legacy signature kept for any external callers; stage/emoji are ignored.
+    CreatureStageVisual(
+        activeCreature = ActiveCreatureState(
+            creature = com.gharmon255.dinostep.model.CreatureCatalog.tinyRaptor,
+            eggRarity = com.gharmon255.dinostep.model.EggRarity.COMMON,
+            steps = when (stage) {
+                GrowthStage.EGG -> 0
+                GrowthStage.BABY -> 2_000
+                GrowthStage.JUVENILE -> 6_000
+                GrowthStage.ADULT -> 10_000
+            },
+            isRevealed = stage != GrowthStage.EGG,
         ),
-        label = "eggRotation",
-    )
-
-    Text(
-        text = "🥚",
-        fontSize = 96.sp,
-        modifier = Modifier.graphicsLayer { rotationZ = rotation },
-    )
-}
-
-@Composable
-private fun BabyAnimation(emoji: String) {
-    val infiniteTransition = rememberInfiniteTransition(label = "babyBounce")
-    val offsetY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = -28f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 450, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "babyOffset",
-    )
-
-    Text(
-        text = emoji,
-        fontSize = 72.sp,
-        modifier = Modifier.graphicsLayer {
-            translationY = offsetY
-        },
-    )
-}
-
-@Composable
-private fun DinoPlaceholder(emoji: String, fontSizeSp: Int) {
-    Text(
-        text = emoji,
-        fontSize = fontSizeSp.sp,
+        modifier = modifier,
     )
 }

@@ -2,12 +2,15 @@ package com.gharmon255.dinostep.ui.eggs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.ui.common.StatRow
-import com.gharmon255.dinostep.ui.home.CreaturePlaceholder
+import com.gharmon255.dinostep.ui.components.CreatureStageVisual
+import com.gharmon255.dinostep.ui.components.RarityBadge
+import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -31,6 +36,8 @@ fun EggsScreen(
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val activeEggRarity = viewModel.eggRarity
     val poolSize = CreatureCatalog.creaturesForEgg(activeEggRarity).size
+    val active = viewModel.activeCreatureState
+    val eggColors = rarityColors(activeEggRarity)
 
     Column(
         modifier = modifier
@@ -40,16 +47,13 @@ fun EggsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = activeEggRarity.displayName,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-        )
+        RarityBadge(eggRarity = activeEggRarity)
 
         Text(
             text = activeEggRarity.mysteryDisplayName,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = eggColors.accent,
         )
 
         Text(
@@ -58,12 +62,14 @@ fun EggsScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        CreaturePlaceholder(
-            stage = viewModel.stage,
-            emoji = viewModel.creatureEmoji,
-        )
+        CreatureStageVisual(activeCreature = active)
 
-        Card(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = eggColors.container.copy(alpha = 0.35f),
+            ),
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -89,17 +95,20 @@ fun EggsScreen(
                     value = "${viewModel.progressPercent.toInt()}%",
                 )
 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 LinearProgressIndicator(
                     progress = { viewModel.progressPercent / 100f },
                     modifier = Modifier.fillMaxWidth(),
+                    color = eggColors.accent,
+                    trackColor = eggColors.container,
                 )
 
                 if (viewModel.isRevealed) {
                     Text(
-                        text = "Hatched: ${viewModel.activeCreatureState.creature.name} " +
-                            "(${viewModel.activeCreatureState.creature.rarity.name})",
+                        text = "Hatched: ${active.creature.name} (${active.creature.rarity.name})",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = rarityColors(active.creature.rarity).accent,
                     )
                 } else {
                     Text(

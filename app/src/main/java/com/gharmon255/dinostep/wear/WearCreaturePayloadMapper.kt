@@ -1,7 +1,9 @@
 package com.gharmon255.dinostep.wear
 
 import com.gharmon255.dinostep.game.ActiveCreatureState
+import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.GrowthStage
+import com.gharmon255.dinostep.shared.visual.RarityTheme
 import com.gharmon255.dinostep.shared.wear.WearCreaturePayload
 import com.gharmon255.dinostep.shared.wear.WearStageProgress
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
@@ -33,7 +35,14 @@ object WearCreaturePayloadMapper {
             stepsUntilNextStage = stageProgress.stepsUntilNextStage,
             nextStageLabel = stageProgress.nextStageLabel,
             isRevealed = activeCreature.isRevealed,
-            displayEmoji = creature.emoji,
+            displayEmoji = CreatureVisualMapper.visualForActiveCreature(activeCreature).placeholderEmoji,
+            eggRarity = activeCreature.eggRarity.name,
+            creatureRarity = if (activeCreature.isRevealed) creature.rarity.name else "",
+            accentColorArgb = RarityTheme.resolveAccentArgb(
+                isRevealed = activeCreature.isRevealed,
+                eggRarityName = activeCreature.eggRarity.name,
+                creatureRarityName = creature.rarity.name.takeIf { activeCreature.isRevealed },
+            ),
             eventType = eventType,
             updatedAtMillis = System.currentTimeMillis(),
         )

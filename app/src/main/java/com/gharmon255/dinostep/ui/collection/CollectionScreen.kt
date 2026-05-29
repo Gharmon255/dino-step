@@ -1,17 +1,20 @@
 package com.gharmon255.dinostep.ui.collection
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,15 +26,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.model.CreatureVisualMapper
+import com.gharmon255.dinostep.model.EggRarity
+import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Habitat
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.ui.common.StatRow
+import com.gharmon255.dinostep.ui.components.CollectionCreatureAvatar
+import com.gharmon255.dinostep.ui.components.RarityBadge
+import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.util.Date
@@ -86,10 +93,21 @@ fun CollectionScreen(
         item {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(CollectionFilter.entries.toList(), key = { it.name }) { option ->
+                    val chipRarity = option.toRarity()
+                    val chipColors = chipRarity?.let { rarityColors(it) }
                     FilterChip(
                         selected = filter == option,
                         onClick = { filter = option },
                         label = { Text(filterLabel(option)) },
+                        colors = if (chipColors != null) {
+                            FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = chipColors.container,
+                                selectedLabelColor = chipColors.onContainer,
+                                selectedLeadingIconColor = chipColors.accent,
+                            )
+                        } else {
+                            FilterChipDefaults.filterChipColors()
+                        },
                     )
                 }
             }
@@ -194,17 +212,33 @@ private fun RosterCreatureCard(
     dateFormat: DateFormat,
 ) {
     val collected = entry.isCollected
-    val cardAlpha = if (collected) 1f else 0.85f
+    val colors = rarityColors(entry.creature.rarity)
+    val avatarEmoji = if (collected) {
+        CreatureVisualMapper.getVisualForStage(
+            creatureDefinition = entry.creature,
+            stage = GrowthStage.ADULT,
+            eggRarity = EggRarity.COMMON,
+        ).placeholderEmoji
+    } else {
+        CreatureVisualMapper.LOCKED_PLACEHOLDER
+    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(cardAlpha),
+            .then(
+                if (collected) {
+                    Modifier.border(2.dp, colors.border, RoundedCornerShape(16.dp))
+                } else {
+                    Modifier
+                },
+            ),
+        shape = RoundedCornerShape(16.dp),
         colors = if (collected) {
             CardDefaults.cardColors()
         } else {
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
             )
         },
     ) {
@@ -215,15 +249,15 @@ private fun RosterCreatureCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = if (collected) entry.creature.emoji else "❓",
-                fontSize = 40.sp,
-                modifier = Modifier.alpha(if (collected) 1f else 0.5f),
+            CollectionCreatureAvatar(
+                emoji = avatarEmoji,
+                rarity = entry.creature.rarity,
+                collected = collected,
             )
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     text = if (collected) entry.creature.name else "Undiscovered",
@@ -231,9 +265,14 @@ private fun RosterCreatureCard(
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    color = if (collected) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                 )
 
-                RarityLabel(rarity = entry.creature.rarity)
+                RarityBadge(rarity = entry.creature.rarity)
 
                 Text(
                     text = if (collected) {
@@ -257,6 +296,7 @@ private fun RosterCreatureCard(
                             text = "Collected ×${entry.collectCount}",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium,
+                            color = colors.accent,
                         )
                     }
                     entry.latestCompletedAt?.let { completedAt ->
@@ -272,21 +312,13 @@ private fun RosterCreatureCard(
     }
 }
 
-@Composable
-private fun RarityLabel(rarity: Rarity) {
-    val color = when (rarity) {
-        Rarity.COMMON -> MaterialTheme.colorScheme.onSurfaceVariant
-        Rarity.UNCOMMON -> MaterialTheme.colorScheme.primary
-        Rarity.RARE -> MaterialTheme.colorScheme.tertiary
-        Rarity.EPIC -> MaterialTheme.colorScheme.secondary
-        Rarity.LEGENDARY -> MaterialTheme.colorScheme.error
-    }
-    Text(
-        text = rarity.name,
-        style = MaterialTheme.typography.labelLarge,
-        fontWeight = FontWeight.Bold,
-        color = color,
-    )
+private fun CollectionFilter.toRarity(): Rarity? = when (this) {
+    CollectionFilter.COMMON -> Rarity.COMMON
+    CollectionFilter.UNCOMMON -> Rarity.UNCOMMON
+    CollectionFilter.RARE -> Rarity.RARE
+    CollectionFilter.EPIC -> Rarity.EPIC
+    CollectionFilter.LEGENDARY -> Rarity.LEGENDARY
+    else -> null
 }
 
 private fun filterLabel(filter: CollectionFilter): String = when (filter) {

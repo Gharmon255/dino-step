@@ -10,6 +10,7 @@ import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.health.StepSyncCalculator
 import com.gharmon255.dinostep.model.CompletedCreature
+import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.EggRewardRoller
 import com.gharmon255.dinostep.model.GrowthStage
@@ -85,7 +86,7 @@ class GameViewModel(
         get() = activeCreature.creature.rarity.takeIf { isRevealed }
 
     val creatureEmoji: String
-        get() = activeCreature.creature.emoji
+        get() = CreatureVisualMapper.visualForActiveCreature(activeCreature).placeholderEmoji
 
     val isRevealed: Boolean
         get() = activeCreature.isRevealed
