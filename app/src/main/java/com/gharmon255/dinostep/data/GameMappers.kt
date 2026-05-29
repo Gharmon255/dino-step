@@ -6,12 +6,14 @@ import com.gharmon255.dinostep.data.local.entity.PlayerStatsEntity
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.PlayerStats
 
 fun ActiveCreatureEntity.toDomain(): ActiveCreatureState {
     val creature = CreatureCatalog.fallbackCreature(creatureId)
     return ActiveCreatureState(
         creature = creature,
+        eggRarity = EggRarity.fromRaw(eggRarity),
         steps = currentSteps,
         startedAt = startedAt,
         isRevealed = isRevealed,
@@ -21,6 +23,7 @@ fun ActiveCreatureEntity.toDomain(): ActiveCreatureState {
 fun ActiveCreatureState.toEntity(): ActiveCreatureEntity {
     return ActiveCreatureEntity(
         creatureId = creature.id,
+        eggRarity = eggRarity.name,
         currentSteps = steps,
         startedAt = startedAt,
         isRevealed = isRevealed,

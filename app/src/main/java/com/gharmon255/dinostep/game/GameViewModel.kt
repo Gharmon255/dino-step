@@ -10,8 +10,11 @@ import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.health.StepSyncCalculator
 import com.gharmon255.dinostep.model.CompletedCreature
+import com.gharmon255.dinostep.model.EggRarity
+import com.gharmon255.dinostep.model.EggRewardRoller
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
+import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
 import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
@@ -48,6 +51,9 @@ class GameViewModel(
     var wearSyncDebug by mutableStateOf(WearSyncDebugState())
         private set
 
+    var eggRewardDebug by mutableStateOf(EggRewardDebugState())
+        private set
+
     val readStepsPermissions: Set<String>
         get() = healthConnectRepository.readStepsPermissions
 
@@ -71,6 +77,12 @@ class GameViewModel(
 
     val displayName: String
         get() = activeCreature.displayName
+
+    val eggRarity: EggRarity
+        get() = activeCreature.eggRarity
+
+    val hatchedCreatureRarity: Rarity?
+        get() = activeCreature.creature.rarity.takeIf { isRevealed }
 
     val creatureEmoji: String
         get() = activeCreature.creature.emoji
@@ -131,6 +143,45 @@ class GameViewModel(
             activeCreature = snapshot.activeCreature
             collection = snapshot.collection
             playerStats = snapshot.playerStats
+            eggRewardDebug = EggRewardDebugState()
+            publishActiveCreatureToWatch(WearSyncEventType.NONE)
+        }
+    }
+
+    fun needsReplaceConfirmationForNewEgg(): Boolean {
+        return steps > 0 || isRevealed
+    }
+
+    fun giveRandomEggForTesting() {
+        if (!isReady) {
+            return
+        }
+        val roll = EggRewardRoller.rollWeighted()
+        applyNewEggForTesting(roll.eggRarity, roll)
+    }
+
+    fun giveEggForTesting(eggRarity: EggRarity) {
+        if (!isReady) {
+            return
+        }
+        applyNewEggForTesting(eggRarity, roll = null)
+    }
+
+    private fun applyNewEggForTesting(
+        eggRarity: EggRarity,
+        roll: EggRewardRoller.RollResult?,
+    ) {
+        activeCreature = repository.createMysteryEgg(eggRarity)
+        eggRewardDebug = if (roll != null) {
+            EggRewardDebugState(
+                lastRewardedEggRarity = roll.eggRarity,
+                lastRewardRollValue = roll.rollValue,
+            )
+        } else {
+            eggRewardDebug.copy(lastRewardedEggRarity = eggRarity)
+        }
+        viewModelScope.launch {
+            repository.saveActiveCreature(activeCreature)
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
         }
     }
@@ -224,7 +275,12 @@ class GameViewModel(
         playerStats = playerStats.copy(
             creaturesCompleted = playerStats.creaturesCompleted + 1,
         )
-        activeCreature = repository.createMysteryCommonEgg()
+        val rewardRoll = EggRewardRoller.rollWeighted()
+        activeCreature = repository.createMysteryEgg(rewardRoll.eggRarity)
+        eggRewardDebug = EggRewardDebugState(
+            lastRewardedEggRarity = rewardRoll.eggRarity,
+            lastRewardRollValue = rewardRoll.rollValue,
+        )
 
         viewModelScope.launch {
             val completedResult = wearDataLayerPublisher.publishActiveCreature(

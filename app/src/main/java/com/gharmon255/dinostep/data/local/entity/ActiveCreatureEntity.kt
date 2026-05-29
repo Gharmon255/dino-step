@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class ActiveCreatureEntity(
     @PrimaryKey val id: Int = ACTIVE_ROW_ID,
     val creatureId: String,
+    val eggRarity: String,
     val currentSteps: Int,
     val startedAt: Long,
     val isRevealed: Boolean,

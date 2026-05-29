@@ -19,7 +19,7 @@ import com.gharmon255.dinostep.data.local.entity.PlayerStatsEntity
         CompletedCreatureEntity::class,
         PlayerStatsEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class DinoStepDatabase : RoomDatabase() {
@@ -44,6 +44,14 @@ abstract class DinoStepDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE active_creature ADD COLUMN eggRarity TEXT NOT NULL DEFAULT 'COMMON'",
+                )
+            }
+        }
+
         fun getInstance(context: Context): DinoStepDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -51,7 +59,7 @@ abstract class DinoStepDatabase : RoomDatabase() {
                     DinoStepDatabase::class.java,
                     "dino_step.db",
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { instance = it }
             }

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
 import java.text.NumberFormat
@@ -44,6 +45,19 @@ fun StatsScreen(
 
     var showClearCollectionDialog by remember { mutableStateOf(false) }
     var showResetGameDialog by remember { mutableStateOf(false) }
+    var showReplaceEggDialog by remember { mutableStateOf(false) }
+    var pendingEggGrant by remember { mutableStateOf<PendingEggGrant?>(null) }
+
+    val eggDebug = viewModel.eggRewardDebug
+
+    fun requestEggGrant(grant: PendingEggGrant) {
+        if (viewModel.needsReplaceConfirmationForNewEgg()) {
+            pendingEggGrant = grant
+            showReplaceEggDialog = true
+        } else {
+            executeEggGrant(viewModel, grant)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -127,6 +141,71 @@ fun StatsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
+                    text = "Egg testing",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = "Testing only. Weighted reward: Common 65%, Uncommon 22%, Rare 9%, Epic 3%, Legendary 1%.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                StatRow(label = "Current egg rarity", value = viewModel.eggRarity.name)
+                StatRow(
+                    label = "Hatched creature rarity",
+                    value = viewModel.hatchedCreatureRarity?.name ?: "Not hatched",
+                )
+                StatRow(
+                    label = "Last rewarded egg",
+                    value = eggDebug.lastRewardedEggRarity?.name ?: "—",
+                )
+                StatRow(
+                    label = "Last reward roll (0–99)",
+                    value = eggDebug.lastRewardRollValue?.toString() ?: "—",
+                )
+
+                OutlinedButton(
+                    onClick = { requestEggGrant(PendingEggGrant.Random) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Give Random Egg")
+                }
+                OutlinedButton(
+                    onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.UNCOMMON)) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Give Uncommon Egg")
+                }
+                OutlinedButton(
+                    onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.RARE)) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Give Rare Egg")
+                }
+                OutlinedButton(
+                    onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.EPIC)) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Give Epic Egg")
+                }
+                OutlinedButton(
+                    onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.LEGENDARY)) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Give Legendary Egg")
+                }
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
                     text = "Testing tools",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
@@ -198,6 +277,44 @@ fun StatsScreen(
         }
     }
 
+    if (showReplaceEggDialog && pendingEggGrant != null) {
+        val grant = pendingEggGrant!!
+        AlertDialog(
+            onDismissRequest = {
+                showReplaceEggDialog = false
+                pendingEggGrant = null
+            },
+            title = { Text("Replace active egg?") },
+            text = {
+                Text(
+                    "Testing only. This replaces your current egg and progress with a new egg. " +
+                        "Current steps and hatch progress will be lost.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        executeEggGrant(viewModel, grant)
+                        showReplaceEggDialog = false
+                        pendingEggGrant = null
+                    },
+                ) {
+                    Text("Replace")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showReplaceEggDialog = false
+                        pendingEggGrant = null
+                    },
+                ) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
     if (showClearCollectionDialog) {
         AlertDialog(
             onDismissRequest = { showClearCollectionDialog = false },
@@ -253,5 +370,18 @@ fun StatsScreen(
                 }
             },
         )
+    }
+}
+
+private sealed class PendingEggGrant {
+    data object Random : PendingEggGrant()
+
+    data class Specific(val eggRarity: EggRarity) : PendingEggGrant()
+}
+
+private fun executeEggGrant(viewModel: GameViewModel, grant: PendingEggGrant) {
+    when (grant) {
+        PendingEggGrant.Random -> viewModel.giveRandomEggForTesting()
+        is PendingEggGrant.Specific -> viewModel.giveEggForTesting(grant.eggRarity)
     }
 }

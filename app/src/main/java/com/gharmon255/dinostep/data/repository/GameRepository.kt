@@ -58,6 +58,7 @@ class GameRepository(
     fun createMysteryEgg(eggRarity: EggRarity): ActiveCreatureState {
         return ActiveCreatureState(
             creature = CreatureCatalog.randomCreatureForEgg(eggRarity),
+            eggRarity = eggRarity,
             steps = 0,
             startedAt = System.currentTimeMillis(),
             isRevealed = false,

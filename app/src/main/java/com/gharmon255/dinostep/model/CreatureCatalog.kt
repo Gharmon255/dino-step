@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.model
 
 object CreatureCatalog {
+    private const val TAG = "CreatureCatalog"
     // COMMON
     val tinyRaptor = d(
         id = "tiny_raptor",
@@ -368,7 +369,15 @@ object CreatureCatalog {
     }
 
     fun randomCreatureForEgg(eggRarity: EggRarity): CreatureDefinition {
-        return creaturesForEgg(eggRarity).random()
+        val pool = creaturesForEgg(eggRarity)
+        if (pool.isEmpty()) {
+            android.util.Log.w(
+                TAG,
+                "Empty creature pool for $eggRarity — falling back to COMMON",
+            )
+            return commonCreatures.random()
+        }
+        return pool.random()
     }
 
     /** Legacy saves with unknown ids still load without crashing. */

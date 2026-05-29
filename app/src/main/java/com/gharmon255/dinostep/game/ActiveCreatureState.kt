@@ -1,10 +1,12 @@
 package com.gharmon255.dinostep.game
 
 import com.gharmon255.dinostep.model.CreatureDefinition
+import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
 
 data class ActiveCreatureState(
     val creature: CreatureDefinition,
+    val eggRarity: EggRarity,
     val steps: Int = 0,
     val startedAt: Long = System.currentTimeMillis(),
     val isRevealed: Boolean = false,
@@ -13,7 +15,7 @@ data class ActiveCreatureState(
         get() = creature.stageForSteps(steps)
 
     val displayName: String
-        get() = if (isRevealed) creature.name else MYSTERY_EGG_NAME
+        get() = if (isRevealed) creature.name else eggRarity.mysteryDisplayName
 
     val nextMilestone: Int?
         get() = creature.nextMilestone(steps)
@@ -27,9 +29,5 @@ data class ActiveCreatureState(
     fun normalized(): ActiveCreatureState {
         val revealed = isRevealed || steps >= creature.hatchStep
         return if (revealed == isRevealed) this else copy(isRevealed = revealed)
-    }
-
-    companion object {
-        const val MYSTERY_EGG_NAME = "Mystery Egg"
     }
 }

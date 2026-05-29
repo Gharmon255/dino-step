@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.model.CreatureCatalog
-import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.home.CreaturePlaceholder
 import java.text.NumberFormat
@@ -30,7 +29,7 @@ fun EggsScreen(
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
-    val activeEggRarity = EggRarity.COMMON
+    val activeEggRarity = viewModel.eggRarity
     val poolSize = CreatureCatalog.creaturesForEgg(activeEggRarity).size
 
     Column(
@@ -48,7 +47,13 @@ fun EggsScreen(
         )
 
         Text(
-            text = "$poolSize possible ${activeEggRarity.name.lowercase()} dinosaurs inside",
+            text = activeEggRarity.mysteryDisplayName,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Text(
+            text = "$poolSize possible ${activeEggRarity.name.lowercase()} dinosaurs in this pool",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -71,6 +76,7 @@ fun EggsScreen(
                     fontWeight = FontWeight.SemiBold,
                 )
 
+                StatRow(label = "Egg rarity", value = activeEggRarity.name)
                 StatRow(label = "Status", value = viewModel.displayName)
                 StatRow(label = "Stage", value = viewModel.stage.name)
                 StatRow(label = "Steps", value = numberFormat.format(viewModel.steps))
@@ -90,7 +96,8 @@ fun EggsScreen(
 
                 if (viewModel.isRevealed) {
                     Text(
-                        text = "Hatched: ${viewModel.activeCreatureState.creature.name}",
+                        text = "Hatched: ${viewModel.activeCreatureState.creature.name} " +
+                            "(${viewModel.activeCreatureState.creature.rarity.name})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )

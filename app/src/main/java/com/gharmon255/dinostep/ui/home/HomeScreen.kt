@@ -97,14 +97,6 @@ private fun HomeScreenContent(
             fontWeight = FontWeight.Bold,
         )
 
-        if (!isRevealed) {
-            Text(
-                text = "Mystery Common Egg",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
         CreaturePlaceholder(
             stage = stage,
             emoji = creatureEmoji,
@@ -220,7 +212,7 @@ private fun StepButton(
 private fun HomeScreenPreview() {
     DinoStepTheme {
         HomeScreenContent(
-            displayName = ActiveCreatureState.MYSTERY_EGG_NAME,
+            displayName = "Mystery Common Egg",
             isRevealed = false,
             steps = 900,
             stage = GrowthStage.EGG,
