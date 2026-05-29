@@ -1,5 +1,7 @@
 package com.gharmon255.dinostep.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.ui.collection.CollectionScreen
 import com.gharmon255.dinostep.ui.eggs.EggsScreen
 import com.gharmon255.dinostep.ui.home.HomeScreen
@@ -29,9 +32,26 @@ import com.gharmon255.dinostep.ui.stats.StatsScreen
 @Composable
 fun DinoStepApp(
     viewModel: GameViewModel,
+    healthConnectPermissionContract: ActivityResultContract<Set<String>, Set<String>>,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.Home) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = healthConnectPermissionContract,
+    ) { granted ->
+        viewModel.onHealthPermissionsResult(granted)
+        viewModel.refreshHealthConnectStatus()
+    }
+
+    val onRequestHealthPermission: () -> Unit = {
+        when (viewModel.healthConnectStatus) {
+            is HealthConnectUiStatus.PermissionRequired -> {
+                permissionLauncher.launch(viewModel.readStepsPermissions)
+            }
+            else -> viewModel.refreshHealthConnectStatus()
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -52,6 +72,7 @@ fun DinoStepApp(
         when (selectedTab) {
             AppTab.Home -> HomeScreen(
                 viewModel = viewModel,
+                onRequestHealthPermission = onRequestHealthPermission,
                 modifier = screenModifier,
             )
             AppTab.Eggs -> EggsScreen(
@@ -64,6 +85,7 @@ fun DinoStepApp(
             )
             AppTab.Stats -> StatsScreen(
                 viewModel = viewModel,
+                onRequestHealthPermission = onRequestHealthPermission,
                 modifier = screenModifier,
             )
         }

@@ -9,6 +9,8 @@ data class PlayerStatsEntity(
     val totalFakeStepsAdded: Int = 0,
     val eggsHatched: Int = 0,
     val creaturesCompleted: Int = 0,
+    val lastSyncedStepTotal: Int = 0,
+    val lastSyncDayStartMillis: Long = 0L,
 ) {
     companion object {
         const val STATS_ROW_ID = 1

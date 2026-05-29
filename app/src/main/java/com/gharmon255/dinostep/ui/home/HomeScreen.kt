@@ -24,8 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.GrowthStage
+import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.theme.DinoStepTheme
 import java.text.NumberFormat
@@ -34,6 +36,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     viewModel: GameViewModel,
+    onRequestHealthPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeScreenContent(
@@ -45,7 +48,13 @@ fun HomeScreen(
         nextMilestone = viewModel.nextMilestone,
         progressPercent = viewModel.progressPercent,
         isAdult = viewModel.isAdult,
+        healthConnectStatus = viewModel.healthConnectStatus,
+        lastSyncedStepTotal = viewModel.lastSyncedStepTotal,
+        syncStatusMessage = viewModel.syncStatusMessage,
+        isSyncing = viewModel.isSyncing,
         onAddSteps = viewModel::addSteps,
+        onSyncSteps = viewModel::syncHealthSteps,
+        onRequestHealthPermission = onRequestHealthPermission,
         onClaimReward = viewModel::claimReward,
         modifier = modifier,
     )
@@ -61,11 +70,18 @@ private fun HomeScreenContent(
     nextMilestone: Int?,
     progressPercent: Float,
     isAdult: Boolean,
+    healthConnectStatus: HealthConnectUiStatus,
+    lastSyncedStepTotal: Int,
+    syncStatusMessage: String?,
+    isSyncing: Boolean,
     onAddSteps: (Int) -> Unit,
+    onSyncSteps: () -> Unit,
+    onRequestHealthPermission: () -> Unit,
     onClaimReward: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
+    val canSync = healthConnectStatus is HealthConnectUiStatus.Ready && !isSyncing
 
     Column(
         modifier = modifier
@@ -122,6 +138,36 @@ private fun HomeScreenContent(
                 )
             }
         }
+
+        Button(
+            onClick = onSyncSteps,
+            enabled = canSync,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(if (isSyncing) "Syncing…" else "Sync Steps")
+        }
+
+        syncStatusMessage?.let { message ->
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        if (healthConnectStatus !is HealthConnectUiStatus.Ready) {
+            HealthConnectCard(
+                status = healthConnectStatus,
+                lastSyncedStepTotal = lastSyncedStepTotal,
+                onRequestPermission = onRequestHealthPermission,
+            )
+        }
+
+        Text(
+            text = "Debug: fake steps",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -182,7 +228,13 @@ private fun HomeScreenPreview() {
             nextMilestone = CreatureCatalog.tinyRaptor.hatchStep,
             progressPercent = 56.25f,
             isAdult = false,
+            healthConnectStatus = HealthConnectUiStatus.PermissionRequired,
+            lastSyncedStepTotal = 0,
+            syncStatusMessage = null,
+            isSyncing = false,
             onAddSteps = {},
+            onSyncSteps = {},
+            onRequestHealthPermission = {},
             onClaimReward = {},
         )
     }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
 import java.text.NumberFormat
 import java.util.Locale
@@ -22,6 +23,7 @@ import java.util.Locale
 @Composable
 fun StatsScreen(
     viewModel: GameViewModel,
+    onRequestHealthPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
@@ -33,6 +35,12 @@ fun StatsScreen(
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        HealthConnectCard(
+            status = viewModel.healthConnectStatus,
+            lastSyncedStepTotal = viewModel.lastSyncedStepTotal,
+            onRequestPermission = onRequestHealthPermission,
+        )
+
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
@@ -53,6 +61,10 @@ fun StatsScreen(
                 StatRow(
                     label = "Total fake steps added",
                     value = numberFormat.format(viewModel.totalFakeStepsAdded),
+                )
+                StatRow(
+                    label = "Last synced HC total (today)",
+                    value = numberFormat.format(viewModel.lastSyncedStepTotal),
                 )
                 StatRow(
                     label = "Eggs hatched",

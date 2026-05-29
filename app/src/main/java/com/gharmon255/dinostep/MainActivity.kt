@@ -20,15 +20,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val repository = (application as DinoStepApplication).gameRepository
-        val viewModelFactory = GameViewModelFactory(repository)
+        val app = application as DinoStepApplication
+        val viewModelFactory = GameViewModelFactory(
+            repository = app.gameRepository,
+            healthConnectRepository = app.healthConnectRepository,
+        )
 
         setContent {
             DinoStepTheme {
                 val viewModel: GameViewModel = viewModel(factory = viewModelFactory)
 
                 if (viewModel.isReady) {
-                    DinoStepApp(viewModel = viewModel)
+                    DinoStepApp(
+                        viewModel = viewModel,
+                        healthConnectPermissionContract = app.healthConnectRepository.permissionContract,
+                    )
                 } else {
                     Box(
                         modifier = Modifier.fillMaxSize(),

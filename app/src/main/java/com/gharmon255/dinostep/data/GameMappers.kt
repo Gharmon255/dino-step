@@ -52,6 +52,8 @@ fun PlayerStatsEntity.toDomain(): PlayerStats {
         totalFakeStepsAdded = totalFakeStepsAdded,
         eggsHatched = eggsHatched,
         creaturesCompleted = creaturesCompleted,
+        lastSyncedStepTotal = lastSyncedStepTotal,
+        lastSyncDayStartMillis = lastSyncDayStartMillis,
     )
 }
 
@@ -60,5 +62,7 @@ fun PlayerStats.toEntity(): PlayerStatsEntity {
         totalFakeStepsAdded = totalFakeStepsAdded,
         eggsHatched = eggsHatched,
         creaturesCompleted = creaturesCompleted,
+        lastSyncedStepTotal = lastSyncedStepTotal,
+        lastSyncDayStartMillis = lastSyncDayStartMillis,
     )
 }

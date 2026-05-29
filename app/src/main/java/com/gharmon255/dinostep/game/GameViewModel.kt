@@ -6,6 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gharmon255.dinostep.data.repository.GameRepository
+import com.gharmon255.dinostep.health.HealthConnectRepository
+import com.gharmon255.dinostep.health.HealthConnectUiStatus
+import com.gharmon255.dinostep.health.StepSyncCalculator
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
@@ -13,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class GameViewModel(
     private val repository: GameRepository,
+    private val healthConnectRepository: HealthConnectRepository,
 ) : ViewModel() {
     var isReady by mutableStateOf(false)
         private set
@@ -26,6 +30,18 @@ class GameViewModel(
     var playerStats by mutableStateOf(PlayerStats())
         private set
 
+    var healthConnectStatus by mutableStateOf<HealthConnectUiStatus>(HealthConnectUiStatus.Unavailable)
+        private set
+
+    var syncStatusMessage by mutableStateOf<String?>(null)
+        private set
+
+    var isSyncing by mutableStateOf(false)
+        private set
+
+    val readStepsPermissions: Set<String>
+        get() = healthConnectRepository.readStepsPermissions
+
     val totalFakeStepsAdded: Int
         get() = playerStats.totalFakeStepsAdded
 
@@ -34,6 +50,9 @@ class GameViewModel(
 
     val completedCount: Int
         get() = playerStats.creaturesCompleted
+
+    val lastSyncedStepTotal: Int
+        get() = playerStats.lastSyncedStepTotal
 
     val steps: Int
         get() = activeCreature.steps
@@ -68,7 +87,28 @@ class GameViewModel(
             activeCreature = snapshot.activeCreature.normalized()
             collection = snapshot.collection
             playerStats = snapshot.playerStats
+            refreshHealthConnectStatus()
             isReady = true
+        }
+    }
+
+    fun refreshHealthConnectStatus() {
+        viewModelScope.launch {
+            healthConnectStatus = runCatching {
+                healthConnectRepository.resolveUiStatus()
+            }.getOrElse { error ->
+                HealthConnectUiStatus.Error(
+                    error.localizedMessage ?: "Unable to check Health Connect status",
+                )
+            }
+        }
+    }
+
+    fun onHealthPermissionsResult(granted: Set<String>) {
+        if (granted.containsAll(readStepsPermissions)) {
+            healthConnectStatus = HealthConnectUiStatus.Ready
+        } else {
+            healthConnectStatus = HealthConnectUiStatus.PermissionRequired
         }
     }
 
@@ -76,22 +116,53 @@ class GameViewModel(
         if (!isReady) {
             return
         }
+        applyStepsToCreature(amount, countAsFake = true)
+    }
 
-        val wasRevealed = activeCreature.isRevealed
-        val newSteps = activeCreature.steps + amount
-        val nowRevealed = wasRevealed || newSteps >= activeCreature.creature.hatchStep
-        val eggsHatchedDelta = if (!wasRevealed && nowRevealed) 1 else 0
+    fun syncHealthSteps() {
+        if (!isReady || isSyncing) {
+            return
+        }
 
-        activeCreature = activeCreature.copy(
-            steps = newSteps,
-            isRevealed = nowRevealed,
-        )
-        playerStats = playerStats.copy(
-            totalFakeStepsAdded = playerStats.totalFakeStepsAdded + amount,
-            eggsHatched = playerStats.eggsHatched + eggsHatchedDelta,
-        )
+        viewModelScope.launch {
+            isSyncing = true
+            syncStatusMessage = null
 
-        persistActiveAndStats()
+            try {
+                val status = healthConnectRepository.resolveUiStatus()
+                healthConnectStatus = status
+
+                if (status !is HealthConnectUiStatus.Ready) {
+                    syncStatusMessage = status.message
+                    return@launch
+                }
+
+                val todaySteps = healthConnectRepository.readTodayStepTotal().getOrElse { error ->
+                    healthConnectStatus = HealthConnectUiStatus.Error(
+                        error.localizedMessage ?: "Failed to read steps from Health Connect",
+                    )
+                    syncStatusMessage = healthConnectStatus.message
+                    return@launch
+                }
+
+                val syncResult = StepSyncCalculator.calculate(
+                    playerStats = playerStats,
+                    currentHealthConnectTodaySteps = todaySteps,
+                )
+
+                if (syncResult.delta > 0) {
+                    applyStepsToCreature(syncResult.delta, countAsFake = false)
+                    playerStats = syncResult.updatedStats
+                    repository.savePlayerStats(playerStats)
+                    syncStatusMessage =
+                        "Synced ${syncResult.delta} steps (Health Connect today: ${syncResult.currentHealthConnectSteps})"
+                } else {
+                    syncStatusMessage = "No new steps to sync (Health Connect today: ${syncResult.currentHealthConnectSteps})"
+                }
+            } finally {
+                isSyncing = false
+            }
+        }
     }
 
     fun claimReward() {
@@ -116,6 +187,33 @@ class GameViewModel(
             repository.savePlayerStats(playerStats)
             repository.saveActiveCreature(activeCreature)
         }
+    }
+
+    private fun applyStepsToCreature(amount: Int, countAsFake: Boolean) {
+        if (amount <= 0) {
+            return
+        }
+
+        val wasRevealed = activeCreature.isRevealed
+        val newSteps = activeCreature.steps + amount
+        val nowRevealed = wasRevealed || newSteps >= activeCreature.creature.hatchStep
+        val eggsHatchedDelta = if (!wasRevealed && nowRevealed) 1 else 0
+
+        activeCreature = activeCreature.copy(
+            steps = newSteps,
+            isRevealed = nowRevealed,
+        )
+
+        playerStats = playerStats.copy(
+            totalFakeStepsAdded = if (countAsFake) {
+                playerStats.totalFakeStepsAdded + amount
+            } else {
+                playerStats.totalFakeStepsAdded
+            },
+            eggsHatched = playerStats.eggsHatched + eggsHatchedDelta,
+        )
+
+        persistActiveAndStats()
     }
 
     private fun persistActiveAndStats() {
