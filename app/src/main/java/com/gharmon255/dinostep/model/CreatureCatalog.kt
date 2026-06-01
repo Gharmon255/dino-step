@@ -1,7 +1,17 @@
 ﻿package com.gharmon255.dinostep.model
 
+import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
+
+/**
+ * Creature roster. Sprint 1 canonical asset-backed species (cross-platform):
+ * tiny_raptor, triceratops, trex, stegosaurus, brachiosaurus, ankylosaurus,
+ * parasaurolophus, spinosaurus, pteranodon — drawable prefix `dino_{id}` per stage.
+ */
 object CreatureCatalog {
     private const val TAG = "CreatureCatalog"
+
+    /** Species ids with baby/juvenile/adult PNG art in drawable-nodpi. */
+    val assetBackedSpeciesIds: Set<String> = CreatureAssetNames.assetBackedSpeciesIds
     // COMMON
     val tinyRaptor = d(
         id = "tiny_raptor",
@@ -344,10 +354,22 @@ object CreatureCatalog {
         return legacyCreatureIdAliases[id]?.let { legacyId -> all.find { it.id == legacyId } }
     }
 
+    /**
+     * Older saves may still reference pre-roster ids; map to canonical catalog entries.
+     * [cosmic_pterodactyl] and [volcanic_t_rex] remain distinct legendaries in [all].
+     */
     private val legacyCreatureIdAliases: Map<String, String> = mapOf(
         "t_rex" to "trex",
         "pterodactyl" to "pteranodon",
     )
+
+    fun isAssetBacked(creatureId: String): Boolean = CreatureAssetNames.hasStageAssets(creatureId)
+
+    fun assetPrefixFor(creatureId: String): String =
+        "dino_${CreatureAssetNames.resolveAssetSpeciesId(creatureId)}"
+
+    fun assetBackedCreatures(): List<CreatureDefinition> =
+        assetBackedSpeciesIds.mapNotNull { byId(it) }
 
     fun byRarity(rarity: Rarity): List<CreatureDefinition> = all.filter { it.rarity == rarity }
 
@@ -404,7 +426,8 @@ object CreatureCatalog {
         hatch: Int,
         juvenile: Int,
     ): CreatureDefinition {
-        val assetSpeciesId = com.gharmon255.dinostep.shared.visual.CreatureAssetNames.resolveAssetSpeciesId(id)
+        val assetSpeciesId = CreatureAssetNames.resolveAssetSpeciesId(id)
+        val prefix = "dino_$assetSpeciesId"
         return CreatureDefinition(
             id = id,
             name = name,
@@ -413,10 +436,10 @@ object CreatureCatalog {
             totalStepsRequired = total,
             hatchStep = hatch,
             juvenileStep = juvenile,
-            eggAssetKey = com.gharmon255.dinostep.shared.visual.CreatureAssetNames.eggDrawableName(rarity.name),
-            babyAssetKey = "dino_${assetSpeciesId}_baby",
-            juvenileAssetKey = "dino_${assetSpeciesId}_juvenile",
-            adultAssetKey = "dino_${assetSpeciesId}_adult",
+            eggAssetKey = CreatureAssetNames.eggDrawableName(rarity.name),
+            babyAssetKey = "${prefix}_baby",
+            juvenileAssetKey = "${prefix}_juvenile",
+            adultAssetKey = "${prefix}_adult",
         )
     }
 }

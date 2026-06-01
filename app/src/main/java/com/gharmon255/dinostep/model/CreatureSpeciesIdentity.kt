@@ -49,11 +49,14 @@ object CreatureSpeciesIdentity {
     ).associateBy { it.creatureId }
 
     fun forId(creatureId: String): CreatureSpeciesProfile {
-        return byId[creatureId] ?: CreatureSpeciesProfile(
-            creatureId = creatureId,
-            emoji = DEFAULT_EMOJI,
-            shortLabel = creatureId.take(3).uppercase(),
-        )
+        val canonicalId = CreatureCatalog.byId(creatureId)?.id ?: creatureId
+        return byId[canonicalId]
+            ?: byId[creatureId]
+            ?: CreatureSpeciesProfile(
+                creatureId = creatureId,
+                emoji = DEFAULT_EMOJI,
+                shortLabel = creatureId.take(3).uppercase(),
+            )
     }
 
     private fun profile(creatureId: String, emoji: String, shortLabel: String): CreatureSpeciesProfile {
