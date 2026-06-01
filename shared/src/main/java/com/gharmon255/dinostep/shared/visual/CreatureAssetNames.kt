@@ -26,6 +26,7 @@ object CreatureAssetNames {
         "parasaurolophus",
         "spinosaurus",
         "pteranodon",
+        "dilophosaurus",
     )
 
     object StageSuffix {

@@ -2,11 +2,7 @@
 
 Use this when adding a **new asset-backed species** to Dino Step. Cross-platform catalog lives in `CreatureCatalog`; art naming is shared via `CreatureAssetNames` / `DrawableCreatureResolver`.
 
-## Intentionally not in roster yet
-
-**Dilophosaurus** (`dilophosaurus`) remains in the catalog for future eggs but has **no** baby/juvenile/adult PNG set yet. Do not enable in the developer species picker or mark asset-backed until clean assets are ready.
-
-Current **asset-backed** species (9):
+Current **asset-backed** species (10):
 
 - `tiny_raptor`
 - `triceratops`
@@ -17,6 +13,7 @@ Current **asset-backed** species (9):
 - `parasaurolophus`
 - `spinosaurus`
 - `pteranodon`
+- `dilophosaurus`
 
 ---
 

@@ -50,7 +50,7 @@ Legacy payloads may omit `creature_id`, `steps_until_next_stage`, `next_stage_la
 ## Species ID rule
 
 - Phone sends `creatureId` = `CreatureDefinition.id` (catalog slug).
-- Supported **asset-backed** slugs: `tiny_raptor`, `triceratops`, `trex`, `stegosaurus`, `brachiosaurus`, `ankylosaurus`, `parasaurolophus`, `spinosaurus`, `pteranodon`.
+- Supported **asset-backed** slugs: `tiny_raptor`, `triceratops`, `trex`, `stegosaurus`, `brachiosaurus`, `ankylosaurus`, `parasaurolophus`, `spinosaurus`, `pteranodon`, `dilophosaurus`.
 - Legacy save aliases (`t_rex`, `pterodactyl`) normalize in catalog on phone; watch receives canonical id when phone maps from saved state.
 - Watch art uses `DrawableCreatureResolver` with pattern `dino_{speciesId}_{stage}` (via `CreatureAssetNames`), **not** display-name switches.
 - If `creatureId` is blank: resolver uses stage placeholders / emoji; UI does not crash.
