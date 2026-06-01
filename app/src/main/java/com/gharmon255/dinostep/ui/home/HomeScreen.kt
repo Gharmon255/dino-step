@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
+import com.gharmon255.dinostep.game.DevTools
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.model.CreatureCatalog
@@ -155,31 +156,33 @@ private fun HomeScreenContent(
             )
         }
 
-        Text(
-            text = "Debug: fake steps",
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (DevTools.isEnabled) {
+            Text(
+                text = "Debug: fake steps",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            StepButton(
-                label = "+500",
-                onClick = { onAddSteps(500) },
-                modifier = Modifier.weight(1f),
-            )
-            StepButton(
-                label = "+2000",
-                onClick = { onAddSteps(2_000) },
-                modifier = Modifier.weight(1f),
-            )
-            StepButton(
-                label = "+10000",
-                onClick = { onAddSteps(10_000) },
-                modifier = Modifier.weight(1f),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                StepButton(
+                    label = "+500",
+                    onClick = { onAddSteps(500) },
+                    modifier = Modifier.weight(1f),
+                )
+                StepButton(
+                    label = "+2000",
+                    onClick = { onAddSteps(2_000) },
+                    modifier = Modifier.weight(1f),
+                )
+                StepButton(
+                    label = "+10000",
+                    onClick = { onAddSteps(10_000) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
 
         if (isAdult) {

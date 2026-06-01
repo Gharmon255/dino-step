@@ -30,6 +30,7 @@ class GameViewModel(
     private val healthConnectRepository: HealthConnectRepository,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
 ) : ViewModel() {
+    private val testingEggFactory = TestingEggFactory(repository)
     var isReady by mutableStateOf(false)
         private set
 
@@ -129,7 +130,7 @@ class GameViewModel(
     }
 
     fun clearCollectionForTesting() {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
 
@@ -141,7 +142,7 @@ class GameViewModel(
     }
 
     fun resetGameForTesting() {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
 
@@ -167,39 +168,33 @@ class GameViewModel(
     fun getCurrentTestSpeciesOverride(): String? = nextEggTestSpecies.testSpeciesOverrideId()
 
     fun giveRandomEggForTesting() {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
-        val roll = EggRewardRoller.rollWeighted()
-        applyTestingEgg(
-            egg = repository.createRandomEggWithRarity(roll.eggRarity),
-            roll = roll,
-        )
+        val grant = testingEggFactory.grantWeightedRandomEgg()
+        applyTestingEgg(egg = grant.egg, roll = grant.roll)
     }
 
     fun giveEggForTesting(eggRarity: EggRarity) {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
         applyTestingEgg(
-            egg = repository.createRandomEggWithRarity(eggRarity),
+            egg = testingEggFactory.grantRandomEggForRarity(eggRarity),
             eggRarity = eggRarity,
         )
     }
 
+    /** Only developer action that may apply [getCurrentTestSpeciesOverride]. */
     fun forceTestEggForTesting() {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
-        val speciesOverride = getCurrentTestSpeciesOverride()
-        if (speciesOverride != null) {
-            applyTestingEgg(egg = repository.createForcedSpeciesEgg(speciesOverride))
-        } else {
-            val roll = EggRewardRoller.rollWeighted()
-            applyTestingEgg(
-                egg = repository.createRandomEggWithRarity(roll.eggRarity),
-                roll = roll,
-            )
+        when (val grant = testingEggFactory.grantForceButtonEgg(getCurrentTestSpeciesOverride())) {
+            is TestingEggFactory.ForceButtonGrant.ForcedSpecies ->
+                applyTestingEgg(egg = grant.egg)
+            is TestingEggFactory.ForceButtonGrant.WeightedRandom ->
+                applyTestingEgg(egg = grant.grant.egg, roll = grant.grant.roll)
         }
     }
 
@@ -312,6 +307,7 @@ class GameViewModel(
         playerStats = playerStats.copy(
             creaturesCompleted = playerStats.creaturesCompleted + 1,
         )
+        // Normal gameplay — never apply test species override (Sprint 3).
         val rewardRoll = EggRewardRoller.rollWeighted()
         activeCreature = repository.createRandomEggWithRarity(rewardRoll.eggRarity)
         eggRewardDebug = EggRewardDebugState(

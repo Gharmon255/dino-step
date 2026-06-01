@@ -57,6 +57,7 @@ class GameRepository(
         return CreatureCatalog.randomCreatureForEgg(eggRarity)
     }
 
+    /** Random species for [eggRarity]. Must not apply developer test species override. */
     fun createRandomEggWithRarity(eggRarity: EggRarity): ActiveCreatureState {
         return newMysteryEgg(
             creature = getRandomSpeciesForRarity(eggRarity),
@@ -64,11 +65,13 @@ class GameRepository(
         )
     }
 
+    /** Weighted random rarity + random species. Used for normal claim reward flow. */
     fun createRandomEgg(): ActiveCreatureState {
         val roll = EggRewardRoller.rollWeighted()
         return createRandomEggWithRarity(roll.eggRarity)
     }
 
+    /** Forces exact [speciesId]; egg rarity comes from that species. Developer force-button only. */
     fun createForcedSpeciesEgg(speciesId: String): ActiveCreatureState {
         val creature = CreatureCatalog.byId(speciesId)
             ?: getRandomSpeciesForRarity(EggRarity.COMMON)

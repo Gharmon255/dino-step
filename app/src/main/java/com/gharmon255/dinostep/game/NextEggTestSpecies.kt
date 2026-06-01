@@ -26,7 +26,26 @@ enum class NextEggTestSpecies(
             if (raw.isNullOrBlank()) {
                 return RANDOM
             }
-            return entries.firstOrNull { it.storageValue == raw } ?: RANDOM
+            entries.firstOrNull { it.storageValue == raw }?.let { return it }
+            entries.firstOrNull { it.displayName.equals(raw, ignoreCase = true) }?.let { return it }
+            return fromLegacyStorageAlias(raw) ?: RANDOM
+        }
+
+        /** Old saves may have stored display labels or pre-roster ids instead of stable species ids. */
+        private fun fromLegacyStorageAlias(raw: String): NextEggTestSpecies? {
+            val normalized = raw.trim().lowercase().replace('-', '_').replace(' ', '_')
+            return when (normalized) {
+                "t_rex", "trex", "tyrannosaurus", "tyrannosaurus_rex" -> T_REX
+                "pterodactyl", "pteranodon" -> PTERANODON
+                "tiny_raptor" -> TINY_RAPTOR
+                "triceratops" -> TRICERATOPS
+                "stegosaurus" -> STEGOSAURUS
+                "brachiosaurus" -> BRACHIOSAURUS
+                "ankylosaurus" -> ANKYLOSAURUS
+                "parasaurolophus" -> PARASAUROLOPHUS
+                "spinosaurus" -> SPINOSAURUS
+                else -> null
+            }
         }
     }
 

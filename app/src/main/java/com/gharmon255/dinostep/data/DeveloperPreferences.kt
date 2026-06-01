@@ -12,9 +12,14 @@ class DeveloperPreferences(context: Context) {
     }
 
     fun setNextEggTestSpecies(selection: NextEggTestSpecies) {
-        prefs.edit()
-            .putString(KEY_NEXT_EGG_TEST_SPECIES, selection.storageValue)
-            .apply()
+        prefs.edit().apply {
+            val speciesId = selection.storageValue
+            if (speciesId.isNullOrBlank()) {
+                remove(KEY_NEXT_EGG_TEST_SPECIES)
+            } else {
+                putString(KEY_NEXT_EGG_TEST_SPECIES, speciesId)
+            }
+        }.apply()
     }
 
     companion object {
