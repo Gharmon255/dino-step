@@ -27,6 +27,11 @@ import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.components.RarityBadge
 import com.gharmon255.dinostep.ui.components.RarityOutlinedButton
 import com.gharmon255.dinostep.game.EggRewardDebugState
+import com.gharmon255.dinostep.wear.WearSyncDebugState
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun DeveloperSpeciesOverrideCard(
@@ -204,6 +209,107 @@ fun DestructiveTestingToolsCard(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Reset Game")
+            }
+        }
+    }
+}
+
+@Composable
+fun WearSyncDebugCard(
+    wearDebug: WearSyncDebugState,
+    onForceWatchSync: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
+    val lastSyncTimeLabel = wearDebug.lastAttemptTimeMillis?.let { millis ->
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(millis))
+    } ?: "—"
+
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = "Wear sync debug",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = "DEBUG only. Emulator: pair phone + Wear AVDs; no real steps required.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            StatRow(
+                label = "Wear nodes connected",
+                value = numberFormat.format(wearDebug.connectedNodeCount),
+            )
+            StatRow(
+                label = "Last sync attempt",
+                value = lastSyncTimeLabel,
+            )
+            StatRow(
+                label = "Last sync status",
+                value = wearDebug.lastStatusMessage,
+            )
+            StatRow(
+                label = "Last species ID",
+                value = wearDebug.lastPayloadCreatureId,
+            )
+            StatRow(
+                label = "Last display name",
+                value = wearDebug.lastPayloadDisplayName,
+            )
+            StatRow(
+                label = "Last stage",
+                value = wearDebug.lastPayloadStage,
+            )
+            StatRow(
+                label = "Last egg rarity",
+                value = wearDebug.lastPayloadEggRarity,
+            )
+            StatRow(
+                label = "Last creature rarity",
+                value = wearDebug.lastPayloadCreatureRarity,
+            )
+            StatRow(
+                label = "Last progress %",
+                value = wearDebug.lastPayloadProgressPercent?.let { "${it.toInt()}%" } ?: "—",
+            )
+            StatRow(
+                label = "Asset-backed species",
+                value = if (wearDebug.lastPayloadIsAssetBacked) "yes" else "no",
+            )
+            StatRow(
+                label = "Last drawable key",
+                value = wearDebug.lastPayloadStageDrawableKey,
+            )
+            StatRow(
+                label = "Last steps",
+                value = wearDebug.lastPayloadSteps?.let { numberFormat.format(it) } ?: "—",
+            )
+            StatRow(
+                label = "Last steps to next stage",
+                value = wearDebug.lastPayloadStepsUntilNext?.let { numberFormat.format(it) } ?: "—",
+            )
+            StatRow(
+                label = "Last next stage label",
+                value = wearDebug.lastPayloadNextStageLabel,
+            )
+            Text(
+                text = "Payload log: ${wearDebug.lastPayloadSummary}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Button(
+                onClick = onForceWatchSync,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Force Wear Sync")
             }
         }
     }

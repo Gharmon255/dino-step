@@ -2,6 +2,11 @@ package com.gharmon255.dinostep.shared.wear
 
 /**
  * Phone and watch share the same rules for "steps until next growth stage" display.
+ *
+ * Progress ring semantics (Sprint 4): [WearCreaturePayload.progressPercent] is the percent
+ * complete within the **current** growth stage only (egg→hatch, baby→juvenile, etc.),
+ * **not** total progress from egg to fully grown. The subtitle line uses
+ * [stepsUntilNextStage] toward the **next** stage name.
  */
 object WearStageProgress {
     const val LABEL_READY_TO_CLAIM = "Ready to claim"

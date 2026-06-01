@@ -109,8 +109,10 @@ class WatchStateRepository(
         _state.value = watchState
         Log.i(
             TAG,
-            "sync state updated: displayName=${watchState.displayName}, stage=${watchState.stage}, " +
-                "fromPhone=${watchState.isFromPhone}, updatedAt=${watchState.lastUpdatedAtMillis}",
+            "sync state updated: creatureId=${watchState.speciesIdForArt.ifBlank { "(legacy)" }}, " +
+                "displayName=${watchState.displayName}, stage=${watchState.stage}, " +
+                "progress=${watchState.progressPercent}%, fromPhone=${watchState.isFromPhone}, " +
+                "updatedAt=${watchState.lastUpdatedAtMillis}",
         )
     }
 

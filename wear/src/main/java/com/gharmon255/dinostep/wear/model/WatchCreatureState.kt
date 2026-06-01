@@ -28,6 +28,10 @@ data class WatchCreatureState(
     val isFromPhone: Boolean = false,
     val lastUpdatedAtMillis: Long? = null,
 ) {
+    /** Stable catalog slug from phone; blank on legacy payloads (placeholder / emoji art). */
+    val speciesIdForArt: String
+        get() = creatureId.trim()
+
     val stageLabel: String
         get() = stage.name.lowercase(Locale.getDefault()).replaceFirstChar { char ->
             char.titlecase(Locale.getDefault())

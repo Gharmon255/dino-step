@@ -3,6 +3,7 @@ package com.gharmon255.dinostep.wear
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.GrowthStage
+import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
 import com.gharmon255.dinostep.shared.visual.RarityTheme
 import com.gharmon255.dinostep.shared.wear.WearCreaturePayload
 import com.gharmon255.dinostep.shared.wear.WearStageProgress
@@ -25,11 +26,12 @@ object WearCreaturePayloadMapper {
 
         val visual = CreatureVisualMapper.visualForActiveCreature(activeCreature)
 
+        val stageName = activeCreature.stage.name
         return WearCreaturePayload(
             creatureId = creature.id,
             creatureName = creature.name,
             displayName = activeCreature.displayName,
-            stage = activeCreature.stage.name,
+            stage = stageName,
             currentSteps = activeCreature.steps,
             nextMilestone = nextMilestone,
             totalStepsRequired = creature.totalStepsRequired,
@@ -48,6 +50,8 @@ object WearCreaturePayloadMapper {
                 eggRarityName = activeCreature.eggRarity.name,
                 creatureRarityName = creature.rarity.name.takeIf { activeCreature.isRevealed },
             ),
+            isAssetBacked = CreatureAssetNames.isAssetBacked(creature.id),
+            stageDrawableKey = CreatureAssetNames.stageDrawableLogicalName(creature.id, stageName).orEmpty(),
             eventType = eventType,
             updatedAtMillis = System.currentTimeMillis(),
         )

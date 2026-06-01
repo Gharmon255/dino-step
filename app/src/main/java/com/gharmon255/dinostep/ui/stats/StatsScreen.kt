@@ -26,8 +26,6 @@ import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -37,10 +35,6 @@ fun StatsScreen(
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
-    val wearDebug = viewModel.wearSyncDebug
-    val lastSyncTimeLabel = wearDebug.lastAttemptTimeMillis?.let { millis ->
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(millis))
-    } ?: "—"
 
     var showClearCollectionDialog by remember { mutableStateOf(false) }
     var showResetGameDialog by remember { mutableStateOf(false) }
@@ -72,67 +66,12 @@ fun StatsScreen(
             onRequestPermission = onRequestHealthPermission,
         )
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = "Watch sync debug",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-
-                StatRow(
-                    label = "Watch nodes connected",
-                    value = numberFormat.format(wearDebug.connectedNodeCount),
-                )
-                StatRow(
-                    label = "Last watch sync attempt",
-                    value = lastSyncTimeLabel,
-                )
-                StatRow(
-                    label = "Last watch sync status",
-                    value = wearDebug.lastStatusMessage,
-                )
-                StatRow(
-                    label = "Last payload name",
-                    value = wearDebug.lastPayloadDisplayName,
-                )
-                StatRow(
-                    label = "Last payload stage",
-                    value = wearDebug.lastPayloadStage,
-                )
-                StatRow(
-                    label = "Last payload steps",
-                    value = wearDebug.lastPayloadSteps?.let { numberFormat.format(it) } ?: "—",
-                )
-                StatRow(
-                    label = "Last payload steps to next",
-                    value = wearDebug.lastPayloadStepsUntilNext?.let { numberFormat.format(it) } ?: "—",
-                )
-                StatRow(
-                    label = "Last payload next stage",
-                    value = wearDebug.lastPayloadNextStageLabel,
-                )
-                Text(
-                    text = "Last payload detail: ${wearDebug.lastPayloadSummary}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Button(
-                    onClick = viewModel::forceWatchSync,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Force Watch Sync")
-                }
-            }
-        }
-
         if (DevTools.isEnabled) {
+            WearSyncDebugCard(
+                wearDebug = viewModel.wearSyncDebug,
+                onForceWatchSync = viewModel::forceWatchSync,
+            )
+
             DeveloperSpeciesOverrideCard(
                 viewModel = viewModel,
                 onForceEgg = {

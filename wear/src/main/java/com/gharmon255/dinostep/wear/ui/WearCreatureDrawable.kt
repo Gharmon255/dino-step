@@ -27,17 +27,19 @@ fun WearCreatureDrawableOrEmoji(
 ) {
     val resources = LocalContext.current.resources
     val packageName = LocalContext.current.packageName
-    val drawableId = remember(speciesId, stage, eggRarityName, packageName) {
+    val safeSpeciesId = speciesId.trim()
+    val safeEmoji = emoji.ifBlank { "🦕" }
+    val drawableId = remember(safeSpeciesId, stage, eggRarityName, packageName) {
         when (stage) {
             WearGrowthStage.EGG -> DrawableCreatureResolver.eggDrawableId(
                 resources = resources,
                 packageName = packageName,
-                eggRarityName = eggRarityName,
+                eggRarityName = eggRarityName.ifBlank { "COMMON" },
             )
             else -> DrawableCreatureResolver.stageDrawableId(
                 resources = resources,
                 packageName = packageName,
-                speciesId = speciesId,
+                speciesId = safeSpeciesId,
                 stageName = stage.name,
             )
         }
@@ -52,7 +54,7 @@ fun WearCreatureDrawableOrEmoji(
         )
     } else {
         Text(
-            text = emoji,
+            text = safeEmoji,
             fontSize = fontSizeSp.sp,
             modifier = modifier,
         )

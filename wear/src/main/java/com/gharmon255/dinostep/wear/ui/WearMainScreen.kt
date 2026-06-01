@@ -41,6 +41,7 @@ fun WearMainScreen(
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
+    // Ring = progress within current stage toward next milestone (not egg→adult lifetime).
     val progress = (state.progressPercent / 100f).coerceIn(0f, 1f)
     val stepsUntilNextLine = state.stepsUntilNextStageDisplay(numberFormat)
 
@@ -153,7 +154,7 @@ private fun ProgressRingSection(
 
         CreatureVisual(
             stage = state.stage,
-            creatureId = state.creatureId,
+            creatureId = state.speciesIdForArt,
             eggRarityName = state.eggRarity,
             emoji = state.displayEmoji,
             accentColor = accentColor,

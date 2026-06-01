@@ -3,6 +3,14 @@ package com.gharmon255.dinostep.shared.wear
 import com.google.android.gms.wearable.DataMap
 import com.gharmon255.dinostep.shared.visual.RarityTheme
 
+/**
+ * Phone → Wear Data Layer payload at [WearSyncPaths.CURRENT_CREATURE].
+ *
+ * [creatureId] is the stable catalog slug (e.g. `trex`). Empty on legacy payloads; watch
+ * falls back to [displayName] / emoji and placeholder art resolution.
+ *
+ * [progressPercent] is progress within the current stage only (see [WearStageProgress]).
+ */
 data class WearCreaturePayload(
     val creatureId: String = "",
     val creatureName: String,
@@ -11,6 +19,7 @@ data class WearCreaturePayload(
     val currentSteps: Int,
     val nextMilestone: Int,
     val totalStepsRequired: Int,
+    /** 0–100: progress within current stage segment, not lifetime to adult. */
     val progressPercent: Float,
     val stepsUntilNextMilestone: Int,
     val stepsUntilNextStage: Int,
@@ -22,6 +31,10 @@ data class WearCreaturePayload(
     val eggRarity: String = "COMMON",
     val creatureRarity: String = "",
     val accentColorArgb: Long = RarityTheme.COMMON_ARGB,
+    /** True when [creatureId] has imported stage PNGs (see CreatureAssetNames on phone). */
+    val isAssetBacked: Boolean = false,
+    /** Logical drawable base name, e.g. `dino_trex_baby` or `dino_placeholder_juvenile`. */
+    val stageDrawableKey: String = "",
     val eventType: WearSyncEventType,
     val updatedAtMillis: Long = System.currentTimeMillis(),
 ) {
@@ -50,6 +63,8 @@ object WearCreaturePayloadCodec {
     private const val KEY_EGG_RARITY = "egg_rarity"
     private const val KEY_CREATURE_RARITY = "creature_rarity"
     private const val KEY_ACCENT_COLOR = "accent_color_argb"
+    private const val KEY_IS_ASSET_BACKED = "is_asset_backed"
+    private const val KEY_STAGE_DRAWABLE_KEY = "stage_drawable_key"
     private const val KEY_EVENT_TYPE = "event_type"
     private const val KEY_UPDATED_AT = "updated_at"
 
@@ -74,6 +89,8 @@ object WearCreaturePayloadCodec {
             putString(KEY_EGG_RARITY, payload.eggRarity)
             putString(KEY_CREATURE_RARITY, payload.creatureRarity)
             putLong(KEY_ACCENT_COLOR, payload.accentColorArgb)
+            putBoolean(KEY_IS_ASSET_BACKED, payload.isAssetBacked)
+            putString(KEY_STAGE_DRAWABLE_KEY, payload.stageDrawableKey)
             putString(KEY_EVENT_TYPE, payload.eventType.name)
             putLong(KEY_UPDATED_AT, payload.updatedAtMillis)
         }
@@ -136,6 +153,8 @@ object WearCreaturePayloadCodec {
                     creatureRarityName = dataMap.getString(KEY_CREATURE_RARITY, ""),
                 )
             },
+            isAssetBacked = dataMap.getBoolean(KEY_IS_ASSET_BACKED, false),
+            stageDrawableKey = dataMap.getString(KEY_STAGE_DRAWABLE_KEY, ""),
             eventType = WearSyncEventType.fromRaw(dataMap.getString(KEY_EVENT_TYPE)),
             updatedAtMillis = dataMap.getLong(KEY_UPDATED_AT, 0L),
         )
