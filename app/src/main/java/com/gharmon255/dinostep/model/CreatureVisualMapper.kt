@@ -13,11 +13,11 @@ object CreatureVisualMapper {
         @Suppress("UNUSED_PARAMETER") eggRarity: EggRarity,
     ): StageVisual {
         val species = CreatureSpeciesIdentity.forId(creatureDefinition.id)
-        val assetKey = CreatureAssetNames.stageDrawableName(creatureDefinition.id, stage.name)
-            ?: when (stage) {
-                GrowthStage.EGG -> creatureDefinition.eggAssetKey
-                else -> creatureDefinition.babyAssetKey
-            }
+        val assetKey = when (stage) {
+            GrowthStage.EGG -> creatureDefinition.eggAssetKey
+            else -> CreatureAssetNames.stageDrawableLogicalName(creatureDefinition.id, stage.name)
+                ?: creatureDefinition.babyAssetKey
+        }
         val stagePresentation = stagePresentation(stage)
         val displayEmoji = if (stage == GrowthStage.EGG) {
             EGG_PLACEHOLDER

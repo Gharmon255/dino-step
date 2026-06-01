@@ -1,14 +1,21 @@
 package com.gharmon255.dinostep.shared.visual
 
 /**
- * Cross-platform creature drawable naming (Sprint 2).
+ * Cross-platform creature drawable naming.
  *
- * Stage PNGs: `dino_{speciesId}_{stage}` where stage is `baby`, `juvenile`, or `adult`.
- * Eggs: `egg_common`, `egg_uncommon`, etc. (by rarity, not species).
+ * Species art (only when [assetSlugForSpeciesArt] is non-null):
+ *   `dino_{slug}_baby` | `dino_{slug}_juvenile` | `dino_{slug}_adult`
+ *
+ * All other species use stage placeholders (never another real dinosaur):
+ *   `dino_placeholder_baby` | `dino_placeholder_juvenile` | `dino_placeholder_adult`
  */
 object CreatureAssetNames {
     const val DINO_DRAWABLE_PREFIX = "dino_"
+    const val PLACEHOLDER_PREFIX = "dino_placeholder"
 
+    /**
+     * Species with imported stage PNGs. Only these ids may resolve to species-specific art.
+     */
     val assetBackedSpeciesIds: Set<String> = setOf(
         "tiny_raptor",
         "triceratops",
@@ -21,7 +28,6 @@ object CreatureAssetNames {
         "pteranodon",
     )
 
-  /** Canonical stage suffixes for `dino_{speciesId}_{stage}` drawables. */
     object StageSuffix {
         const val BABY = "baby"
         const val JUVENILE = "juvenile"
@@ -29,65 +35,89 @@ object CreatureAssetNames {
     }
 
     /**
-     * Legacy / alternate ids → canonical asset-backed species id.
-     * Catalog legendaries keep their own ids; only map ids that should share base art.
+     * Save/catalog id renames only (same species, different stored id). Must NOT map legendaries
+     * to base species for artwork — e.g. volcanic_t_rex stays non-backed for art.
      */
-    private val legacySpeciesIdAliases: Map<String, String> = mapOf(
+    private val legacySaveIdToCatalogId: Map<String, String> = mapOf(
+        "t_rex" to "trex",
+        "pterodactyl" to "pteranodon",
+    )
+
+    /**
+     * Older save ids that refer to an asset-backed species under a legacy slug.
+     * Does not include variant legendaries.
+     */
+    private val legacySaveIdToAssetSlug: Map<String, String> = mapOf(
         "t_rex" to "trex",
         "tyrannosaurus" to "trex",
         "tyrannosaurus_rex" to "trex",
         "pterodactyl" to "pteranodon",
-        "volcanic_t_rex" to "trex",
-        "ancient_apex_rex" to "trex",
-        "cosmic_pterodactyl" to "pteranodon",
     )
 
-    /**
-     * Normalize a creature id for drawable lookup: lowercase, `-` and spaces → `_`, then legacy alias.
-     */
-    fun normalizeSpeciesId(creatureId: String): String {
-        val normalized = creatureId
+    fun normalizeRawSpeciesId(creatureId: String): String {
+        return creatureId
             .trim()
             .lowercase()
             .replace('-', '_')
             .replace(' ', '_')
-        return legacySpeciesIdAliases[normalized] ?: normalized
     }
 
-    /** @see normalizeSpeciesId */
-    fun resolveAssetSpeciesId(creatureId: String): String = normalizeSpeciesId(creatureId)
-
-    fun isAssetBacked(creatureId: String): Boolean {
-        return normalizeSpeciesId(creatureId) in assetBackedSpeciesIds
+    /** Catalog lookup normalization (CreatureCatalog.byId), not for drawable aliasing. */
+    fun normalizeCatalogSpeciesId(creatureId: String): String {
+        val raw = normalizeRawSpeciesId(creatureId)
+        return legacySaveIdToCatalogId[raw] ?: raw
     }
 
-    fun dinoDrawablePrefix(speciesId: String): String = "$DINO_DRAWABLE_PREFIX${normalizeSpeciesId(speciesId)}"
+    @Deprecated("Use assetSlugForSpeciesArt for drawables", ReplaceWith("assetSlugForSpeciesArt(creatureId)"))
+    fun resolveAssetSpeciesId(creatureId: String): String? = assetSlugForSpeciesArt(creatureId)
 
     /**
-     * Logical drawable name: `dino_{speciesId}_{stageSuffix}`.
-     * Returns null if [stageSuffix] is not a supported growth stage.
+     * Slug used for `dino_{slug}_{stage}` when this creature has dedicated art.
+     * Returns null for all other species (including legendaries like ancient_apex_rex).
      */
-    fun dinoStageDrawableName(speciesId: String, stageSuffix: String): String? {
-        if (stageSuffix !in supportedStageSuffixes) {
-            return null
+    fun assetSlugForSpeciesArt(creatureId: String): String? {
+        val raw = normalizeRawSpeciesId(creatureId)
+        if (raw in assetBackedSpeciesIds) {
+            return raw
         }
-        val canonicalSpecies = normalizeSpeciesId(speciesId)
-        if (canonicalSpecies !in assetBackedSpeciesIds) {
-            return null
+        return legacySaveIdToAssetSlug[raw]
+    }
+
+    fun isAssetBacked(creatureId: String): Boolean = assetSlugForSpeciesArt(creatureId) != null
+
+    fun hasStageAssets(creatureId: String): Boolean = isAssetBacked(creatureId)
+
+    fun placeholderStageDrawableName(stageSuffix: String): String {
+        require(stageSuffix in supportedStageSuffixes) {
+            "Invalid stage suffix: $stageSuffix"
         }
-        return "${DINO_DRAWABLE_PREFIX}${canonicalSpecies}_$stageSuffix"
+        return "${PLACEHOLDER_PREFIX}_$stageSuffix"
+    }
+
+    fun dinoStageDrawableNameForSlug(assetSlug: String, stageSuffix: String): String {
+        require(stageSuffix in supportedStageSuffixes)
+        return "${DINO_DRAWABLE_PREFIX}${assetSlug}_$stageSuffix"
     }
 
     /**
-     * Maps enum-style stage names (`BABY`, `JUVENILE`, `ADULT`, or suffix strings) to drawable name.
+     * Preferred logical name for a growth stage (species art or placeholder). Null for EGG.
      */
-    fun stageDrawableName(creatureId: String, stageName: String): String? {
+    fun stageDrawableLogicalName(creatureId: String, stageName: String): String? {
         if (stageName.equals("EGG", ignoreCase = true)) {
             return null
         }
         val suffix = stageSuffixFromName(stageName) ?: return null
-        return dinoStageDrawableName(creatureId, suffix)
+        val slug = assetSlugForSpeciesArt(creatureId)
+        return if (slug != null) {
+            dinoStageDrawableNameForSlug(slug, suffix)
+        } else {
+            placeholderStageDrawableName(suffix)
+        }
     }
+
+    /** @deprecated Use [stageDrawableLogicalName] */
+    fun stageDrawableName(creatureId: String, stageName: String): String? =
+        stageDrawableLogicalName(creatureId, stageName)
 
     fun stageSuffixFromName(stageName: String): String? = when (stageName.lowercase()) {
         "baby" -> StageSuffix.BABY
@@ -100,8 +130,6 @@ object CreatureAssetNames {
             else -> null
         }
     }
-
-    fun hasStageAssets(creatureId: String): Boolean = isAssetBacked(creatureId)
 
     private val supportedStageSuffixes: Set<String> = setOf(
         StageSuffix.BABY,

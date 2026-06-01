@@ -4,9 +4,7 @@ import android.content.res.Resources
 import android.util.Log
 
 /**
- * Resolves creature stage and egg drawables from stable species ids (Sprint 2).
- *
- * Phone and Wear pass their module [packageName] so `R.drawable` ids resolve locally.
+ * Single resolver for phone and Wear creature stage / egg drawables.
  */
 object DrawableCreatureResolver {
     private const val TAG = "DrawableCreatureResolver"
@@ -56,8 +54,8 @@ object DrawableCreatureResolver {
     }
 
     /**
-     * @param speciesId Stable catalog creature id (legacy ids normalized internally).
-     * @param stageName `EGG`, `BABY`, `JUVENILE`, or `ADULT` (Wear/phone growth enums).
+     * Resolves baby/juvenile/adult drawable: species PNG if backed and present, else stage placeholder.
+     * Never falls back to another species' art.
      */
     fun stageDrawableId(
         resources: Resources,
@@ -65,41 +63,65 @@ object DrawableCreatureResolver {
         speciesId: String,
         stageName: String,
     ): Int {
-        val drawableName = CreatureAssetNames.stageDrawableName(speciesId, stageName)
-            ?: return 0
+        val suffix = CreatureAssetNames.stageSuffixFromName(stageName) ?: return 0
+        val assetSlug = CreatureAssetNames.assetSlugForSpeciesArt(speciesId)
+        val logContext = DrawableResolveContext(
+            speciesId = speciesId,
+            stageName = stageName,
+            assetSlug = assetSlug,
+        )
+
+        if (assetSlug != null) {
+            val speciesDrawable = CreatureAssetNames.dinoStageDrawableNameForSlug(assetSlug, suffix)
+            val speciesId_res = resolveDrawableId(
+                resources = resources,
+                packageName = packageName,
+                drawableName = speciesDrawable,
+                logContext = logContext.copy(expectedDrawableName = speciesDrawable, isPlaceholder = false),
+            )
+            if (speciesId_res != 0) {
+                return speciesId_res
+            }
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(
+                    TAG,
+                    "Missing species drawable $speciesDrawable for speciesId=$speciesId — using placeholder",
+                )
+            }
+        }
+
+        val placeholderName = CreatureAssetNames.placeholderStageDrawableName(suffix)
         return resolveDrawableId(
             resources = resources,
             packageName = packageName,
-            drawableName = drawableName,
-            logContext = DrawableResolveContext(
-                speciesId = speciesId,
-                stageName = stageName,
-                expectedDrawableName = drawableName,
-            ),
+            drawableName = placeholderName,
+            logContext = logContext.copy(expectedDrawableName = placeholderName, isPlaceholder = true),
         )
     }
 
     private fun logMissingDrawable(drawableName: String, context: DrawableResolveContext?) {
-        if (context == null) {
+        if (context == null || !Log.isLoggable(TAG, Log.DEBUG)) {
             return
         }
-        if (!CreatureAssetNames.isAssetBacked(context.speciesId)) {
-            return
-        }
-        if (!Log.isLoggable(TAG, Log.DEBUG)) {
+        if (context.isPlaceholder) {
+            Log.d(
+                TAG,
+                "Missing placeholder drawable: $drawableName (add to res/drawable in app and wear)",
+            )
             return
         }
         Log.d(
             TAG,
-            "Missing asset-backed drawable: $drawableName " +
-                "(species=${context.speciesId}, stage=${context.stageName})",
+            "Missing species drawable: $drawableName (speciesId=${context.speciesId}, slug=${context.assetSlug})",
         )
     }
 
     data class DrawableResolveContext(
         val speciesId: String,
         val stageName: String,
-        val expectedDrawableName: String,
+        val assetSlug: String?,
+        val expectedDrawableName: String = "",
+        val isPlaceholder: Boolean = false,
     )
 }
 

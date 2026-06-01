@@ -365,7 +365,14 @@ object CreatureCatalog {
 
     fun isAssetBacked(creatureId: String): Boolean = CreatureAssetNames.isAssetBacked(creatureId)
 
-    fun assetPrefixFor(creatureId: String): String = CreatureAssetNames.dinoDrawablePrefix(creatureId)
+    fun assetPrefixFor(creatureId: String): String {
+        val slug = CreatureAssetNames.assetSlugForSpeciesArt(creatureId)
+        return if (slug != null) {
+            "${CreatureAssetNames.DINO_DRAWABLE_PREFIX}$slug"
+        } else {
+            CreatureAssetNames.PLACEHOLDER_PREFIX
+        }
+    }
 
     fun assetBackedCreatures(): List<CreatureDefinition> =
         assetBackedSpeciesIds.mapNotNull { byId(it) }
@@ -425,7 +432,6 @@ object CreatureCatalog {
         hatch: Int,
         juvenile: Int,
     ): CreatureDefinition {
-        val prefix = CreatureAssetNames.dinoDrawablePrefix(id)
         return CreatureDefinition(
             id = id,
             name = name,
@@ -435,9 +441,12 @@ object CreatureCatalog {
             hatchStep = hatch,
             juvenileStep = juvenile,
             eggAssetKey = CreatureAssetNames.eggDrawableName(rarity.name),
-            babyAssetKey = "${prefix}_${CreatureAssetNames.StageSuffix.BABY}",
-            juvenileAssetKey = "${prefix}_${CreatureAssetNames.StageSuffix.JUVENILE}",
-            adultAssetKey = "${prefix}_${CreatureAssetNames.StageSuffix.ADULT}",
+            babyAssetKey = CreatureAssetNames.stageDrawableLogicalName(id, GrowthStage.BABY.name)
+                ?: CreatureAssetNames.placeholderStageDrawableName(CreatureAssetNames.StageSuffix.BABY),
+            juvenileAssetKey = CreatureAssetNames.stageDrawableLogicalName(id, GrowthStage.JUVENILE.name)
+                ?: CreatureAssetNames.placeholderStageDrawableName(CreatureAssetNames.StageSuffix.JUVENILE),
+            adultAssetKey = CreatureAssetNames.stageDrawableLogicalName(id, GrowthStage.ADULT.name)
+                ?: CreatureAssetNames.placeholderStageDrawableName(CreatureAssetNames.StageSuffix.ADULT),
         )
     }
 }
