@@ -8,7 +8,9 @@ import com.gharmon255.dinostep.data.toEntity
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.CreatureDefinition
 import com.gharmon255.dinostep.model.EggRarity
+import com.gharmon255.dinostep.model.EggRewardRoller
 import com.gharmon255.dinostep.model.PlayerStats
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,33 +53,31 @@ class GameRepository(
         playerStatsDao.upsert(playerStats.toEntity())
     }
 
-    fun createMysteryCommonEgg(): ActiveCreatureState {
-        return createMysteryEgg(EggRarity.COMMON)
+    fun getRandomSpeciesForRarity(eggRarity: EggRarity): CreatureDefinition {
+        return CreatureCatalog.randomCreatureForEgg(eggRarity)
     }
 
-    fun createMysteryEgg(
-        eggRarity: EggRarity,
-        forcedCreatureId: String? = null,
-    ): ActiveCreatureState {
-        val creature = when {
-            forcedCreatureId != null -> {
-                CreatureCatalog.byId(forcedCreatureId)
-                    ?: CreatureCatalog.randomCreatureForEgg(eggRarity)
-            }
-            else -> CreatureCatalog.randomCreatureForEgg(eggRarity)
-        }
-        val resolvedEggRarity = if (forcedCreatureId != null && CreatureCatalog.byId(forcedCreatureId) != null) {
-            EggRarity.valueOf(creature.rarity.name)
-        } else {
-            eggRarity
-        }
-        return ActiveCreatureState(
-            creature = creature,
-            eggRarity = resolvedEggRarity,
-            steps = 0,
-            startedAt = System.currentTimeMillis(),
-            isRevealed = false,
+    fun createRandomEggWithRarity(eggRarity: EggRarity): ActiveCreatureState {
+        return newMysteryEgg(
+            creature = getRandomSpeciesForRarity(eggRarity),
+            eggRarity = eggRarity,
         )
+    }
+
+    fun createRandomEgg(): ActiveCreatureState {
+        val roll = EggRewardRoller.rollWeighted()
+        return createRandomEggWithRarity(roll.eggRarity)
+    }
+
+    fun createForcedSpeciesEgg(speciesId: String): ActiveCreatureState {
+        val creature = CreatureCatalog.byId(speciesId)
+            ?: getRandomSpeciesForRarity(EggRarity.COMMON)
+        val eggRarity = EggRarity.valueOf(creature.rarity.name)
+        return newMysteryEgg(creature = creature, eggRarity = eggRarity)
+    }
+
+    fun createMysteryCommonEgg(): ActiveCreatureState {
+        return createRandomEggWithRarity(EggRarity.COMMON)
     }
 
     suspend fun clearCollection() = withContext(Dispatchers.IO) {
@@ -106,6 +106,19 @@ class GameRepository(
             activeCreature = newEgg,
             collection = emptyList(),
             playerStats = resetStats.toDomain(),
+        )
+    }
+
+    private fun newMysteryEgg(
+        creature: CreatureDefinition,
+        eggRarity: EggRarity,
+    ): ActiveCreatureState {
+        return ActiveCreatureState(
+            creature = creature,
+            eggRarity = eggRarity,
+            steps = 0,
+            startedAt = System.currentTimeMillis(),
+            isRevealed = false,
         )
     }
 }

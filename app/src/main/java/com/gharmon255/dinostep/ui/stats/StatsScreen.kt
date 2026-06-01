@@ -154,13 +154,14 @@ fun StatsScreen(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = "Choose which species the next egg will hatch into, then force a new egg to test art and stages.",
+                    text = "Test species override applies only to Force Selected Species Egg below. " +
+                        "Rarity buttons always pick a random species for that rarity.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
-                    text = "Next Egg Species",
+                    text = "Test Species Override",
                     style = MaterialTheme.typography.labelLarge,
                 )
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -197,7 +198,7 @@ fun StatsScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Force New Egg")
+                    Text("Force Selected Species Egg")
                 }
             }
         }
@@ -210,12 +211,13 @@ fun StatsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "Egg testing",
+                    text = "Give Random Egg by Rarity",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = "Testing only. Weighted reward: Common 65%, Uncommon 22%, Rare 9%, Epic 3%, Legendary 1%.",
+                    text = "Testing only. Ignores test species override. Weighted random egg: " +
+                        "Common 65%, Uncommon 22%, Rare 9%, Epic 3%, Legendary 1%.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -239,8 +241,13 @@ fun StatsScreen(
                     onClick = { requestEggGrant(PendingEggGrant.Random) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Give Random Egg")
+                    Text("Give Random Egg (Weighted)")
                 }
+                RarityOutlinedButton(
+                    label = "Give Common Egg",
+                    eggRarity = EggRarity.COMMON,
+                    onClick = { requestEggGrant(PendingEggGrant.Specific(EggRarity.COMMON)) },
+                )
                 RarityOutlinedButton(
                     label = "Give Uncommon Egg",
                     eggRarity = EggRarity.UNCOMMON,

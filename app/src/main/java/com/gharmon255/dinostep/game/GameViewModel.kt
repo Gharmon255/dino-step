@@ -164,44 +164,58 @@ class GameViewModel(
         developerPreferences.setNextEggTestSpecies(selection)
     }
 
+    fun getCurrentTestSpeciesOverride(): String? = nextEggTestSpecies.testSpeciesOverrideId()
+
     fun giveRandomEggForTesting() {
         if (!isReady) {
             return
         }
         val roll = EggRewardRoller.rollWeighted()
-        applyNewEggForTesting(roll.eggRarity, roll)
+        applyTestingEgg(
+            egg = repository.createRandomEggWithRarity(roll.eggRarity),
+            roll = roll,
+        )
     }
 
     fun giveEggForTesting(eggRarity: EggRarity) {
         if (!isReady) {
             return
         }
-        applyNewEggForTesting(eggRarity, roll = null)
+        applyTestingEgg(
+            egg = repository.createRandomEggWithRarity(eggRarity),
+            eggRarity = eggRarity,
+        )
     }
 
     fun forceTestEggForTesting() {
         if (!isReady) {
             return
         }
-        val roll = EggRewardRoller.rollWeighted()
-        applyNewEggForTesting(roll.eggRarity, roll)
+        val speciesOverride = getCurrentTestSpeciesOverride()
+        if (speciesOverride != null) {
+            applyTestingEgg(egg = repository.createForcedSpeciesEgg(speciesOverride))
+        } else {
+            val roll = EggRewardRoller.rollWeighted()
+            applyTestingEgg(
+                egg = repository.createRandomEggWithRarity(roll.eggRarity),
+                roll = roll,
+            )
+        }
     }
 
-    private fun applyNewEggForTesting(
-        eggRarity: EggRarity,
-        roll: EggRewardRoller.RollResult?,
+    private fun applyTestingEgg(
+        egg: ActiveCreatureState,
+        roll: EggRewardRoller.RollResult? = null,
+        eggRarity: EggRarity? = null,
     ) {
-        activeCreature = repository.createMysteryEgg(
-            eggRarity = eggRarity,
-            forcedCreatureId = nextEggTestSpecies.resolveForcedCreatureId(),
-        )
-        eggRewardDebug = if (roll != null) {
-            EggRewardDebugState(
+        activeCreature = egg
+        eggRewardDebug = when {
+            roll != null -> EggRewardDebugState(
                 lastRewardedEggRarity = roll.eggRarity,
                 lastRewardRollValue = roll.rollValue,
             )
-        } else {
-            eggRewardDebug.copy(lastRewardedEggRarity = eggRarity)
+            eggRarity != null -> eggRewardDebug.copy(lastRewardedEggRarity = eggRarity)
+            else -> eggRewardDebug.copy(lastRewardedEggRarity = egg.eggRarity)
         }
         viewModelScope.launch {
             repository.saveActiveCreature(activeCreature)
@@ -299,10 +313,7 @@ class GameViewModel(
             creaturesCompleted = playerStats.creaturesCompleted + 1,
         )
         val rewardRoll = EggRewardRoller.rollWeighted()
-        activeCreature = repository.createMysteryEgg(
-            eggRarity = rewardRoll.eggRarity,
-            forcedCreatureId = nextEggTestSpecies.resolveForcedCreatureId(),
-        )
+        activeCreature = repository.createRandomEggWithRarity(rewardRoll.eggRarity)
         eggRewardDebug = EggRewardDebugState(
             lastRewardedEggRarity = rewardRoll.eggRarity,
             lastRewardRollValue = rewardRoll.rollValue,

@@ -30,7 +30,8 @@ enum class NextEggTestSpecies(
         }
     }
 
-    fun resolveForcedCreatureId(): String? {
+    /** Non-null only when a specific test species is selected (not Random / Normal). */
+    fun testSpeciesOverrideId(): String? {
         val id = forcedCreatureId ?: return null
         return if (CreatureCatalog.byId(id) != null) {
             id
