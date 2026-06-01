@@ -28,6 +28,8 @@ import com.gharmon255.dinostep.wear.model.WearGrowthStage
 @Composable
 fun CreatureVisual(
     stage: WearGrowthStage,
+    creatureId: String,
+    eggRarityName: String,
     emoji: String,
     accentColor: Color,
     speciesShortLabel: String = "",
@@ -39,8 +41,16 @@ fun CreatureVisual(
         contentAlignment = Alignment.Center,
     ) {
         when (stage) {
-            WearGrowthStage.EGG -> EggVisual(accentColor = accentColor, emoji = emoji)
+            WearGrowthStage.EGG -> EggVisual(
+                accentColor = accentColor,
+                creatureId = creatureId,
+                eggRarityName = eggRarityName,
+                emoji = emoji,
+            )
             WearGrowthStage.BABY -> SpeciesVisual(
+                creatureId = creatureId,
+                eggRarityName = eggRarityName,
+                stage = stage,
                 emoji = emoji,
                 accentColor = accentColor,
                 speciesShortLabel = speciesShortLabel,
@@ -49,6 +59,9 @@ fun CreatureVisual(
                 bounce = true,
             )
             WearGrowthStage.JUVENILE -> SpeciesVisual(
+                creatureId = creatureId,
+                eggRarityName = eggRarityName,
+                stage = stage,
                 emoji = emoji,
                 accentColor = accentColor,
                 speciesShortLabel = speciesShortLabel,
@@ -57,6 +70,9 @@ fun CreatureVisual(
                 bounce = false,
             )
             WearGrowthStage.ADULT -> SpeciesVisual(
+                creatureId = creatureId,
+                eggRarityName = eggRarityName,
+                stage = stage,
                 emoji = emoji,
                 accentColor = accentColor,
                 speciesShortLabel = speciesShortLabel,
@@ -69,7 +85,12 @@ fun CreatureVisual(
 }
 
 @Composable
-private fun EggVisual(accentColor: Color, emoji: String) {
+private fun EggVisual(
+    accentColor: Color,
+    creatureId: String,
+    eggRarityName: String,
+    emoji: String,
+) {
     val infiniteTransition = rememberInfiniteTransition(label = "wearEggRock")
     val rotation by infiniteTransition.animateFloat(
         initialValue = -5f,
@@ -90,17 +111,25 @@ private fun EggVisual(accentColor: Color, emoji: String) {
                 .border(2.dp, accentColor, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = emoji,
-                fontSize = 26.sp,
-                modifier = Modifier.graphicsLayer { rotationZ = rotation },
-            )
+            Box(modifier = Modifier.graphicsLayer { rotationZ = rotation }) {
+                WearCreatureDrawableOrEmoji(
+                    creatureId = creatureId,
+                    stage = WearGrowthStage.EGG,
+                    eggRarityName = eggRarityName,
+                    emoji = emoji,
+                    imageSize = 32.dp,
+                    fontSizeSp = 26,
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun SpeciesVisual(
+    creatureId: String,
+    eggRarityName: String,
+    stage: WearGrowthStage,
     emoji: String,
     accentColor: Color,
     speciesShortLabel: String,
@@ -109,9 +138,17 @@ private fun SpeciesVisual(
     bounce: Boolean,
 ) {
     val scaledSp = (baseFontSizeSp * stageScale).toInt().coerceIn(18, 36)
+    val imageSize = ((24f * stageScale).coerceIn(18f, 34f)).dp
     val content: @Composable () -> Unit = {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = emoji, fontSize = scaledSp.sp)
+            WearCreatureDrawableOrEmoji(
+                creatureId = creatureId,
+                stage = stage,
+                eggRarityName = eggRarityName,
+                emoji = emoji,
+                imageSize = imageSize,
+                fontSizeSp = scaledSp,
+            )
             if (speciesShortLabel.isNotBlank()) {
                 Text(
                     text = speciesShortLabel,

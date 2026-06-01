@@ -4,6 +4,7 @@ import com.google.android.gms.wearable.DataMap
 import com.gharmon255.dinostep.shared.visual.RarityTheme
 
 data class WearCreaturePayload(
+    val creatureId: String = "",
     val creatureName: String,
     val displayName: String,
     val stage: String,
@@ -30,6 +31,7 @@ data class WearCreaturePayload(
 }
 
 object WearCreaturePayloadCodec {
+    private const val KEY_CREATURE_ID = "creature_id"
     private const val KEY_CREATURE_NAME = "creature_name"
     private const val KEY_DISPLAY_NAME = "display_name"
     private const val KEY_STAGE = "stage"
@@ -53,6 +55,7 @@ object WearCreaturePayloadCodec {
 
     fun toDataMap(payload: WearCreaturePayload): DataMap {
         return DataMap().apply {
+            putString(KEY_CREATURE_ID, payload.creatureId)
             putString(KEY_CREATURE_NAME, payload.creatureName)
             putString(KEY_DISPLAY_NAME, payload.displayName)
             putString(KEY_STAGE, payload.stage)
@@ -107,6 +110,7 @@ object WearCreaturePayloadCodec {
         }
 
         return WearCreaturePayload(
+            creatureId = dataMap.getString(KEY_CREATURE_ID, ""),
             creatureName = dataMap.getString(KEY_CREATURE_NAME, ""),
             displayName = dataMap.getString(KEY_DISPLAY_NAME, "Mystery Egg"),
             stage = stage,

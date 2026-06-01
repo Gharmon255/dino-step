@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
         val app = application as DinoStepApplication
         val viewModelFactory = GameViewModelFactory(
             repository = app.gameRepository,
+            developerPreferences = app.developerPreferences,
             healthConnectRepository = app.healthConnectRepository,
             wearDataLayerPublisher = app.wearDataLayerPublisher,
         )

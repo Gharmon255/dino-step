@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class GameViewModel(
     private val repository: GameRepository,
+    private val developerPreferences: DeveloperPreferences,
     private val healthConnectRepository: HealthConnectRepository,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
 ) : ViewModel() {
@@ -53,6 +55,9 @@ class GameViewModel(
         private set
 
     var eggRewardDebug by mutableStateOf(EggRewardDebugState())
+        private set
+
+    var nextEggTestSpecies by mutableStateOf(NextEggTestSpecies.RANDOM)
         private set
 
     val readStepsPermissions: Set<String>
@@ -109,6 +114,7 @@ class GameViewModel(
             activeCreature = snapshot.activeCreature.normalized()
             collection = snapshot.collection
             playerStats = snapshot.playerStats
+            nextEggTestSpecies = developerPreferences.getNextEggTestSpecies()
             refreshHealthConnectStatus()
             isReady = true
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
@@ -153,6 +159,11 @@ class GameViewModel(
         return steps > 0 || isRevealed
     }
 
+    fun updateNextEggTestSpecies(selection: NextEggTestSpecies) {
+        nextEggTestSpecies = selection
+        developerPreferences.setNextEggTestSpecies(selection)
+    }
+
     fun giveRandomEggForTesting() {
         if (!isReady) {
             return
@@ -168,11 +179,22 @@ class GameViewModel(
         applyNewEggForTesting(eggRarity, roll = null)
     }
 
+    fun forceTestEggForTesting() {
+        if (!isReady) {
+            return
+        }
+        val roll = EggRewardRoller.rollWeighted()
+        applyNewEggForTesting(roll.eggRarity, roll)
+    }
+
     private fun applyNewEggForTesting(
         eggRarity: EggRarity,
         roll: EggRewardRoller.RollResult?,
     ) {
-        activeCreature = repository.createMysteryEgg(eggRarity)
+        activeCreature = repository.createMysteryEgg(
+            eggRarity = eggRarity,
+            forcedCreatureId = nextEggTestSpecies.resolveForcedCreatureId(),
+        )
         eggRewardDebug = if (roll != null) {
             EggRewardDebugState(
                 lastRewardedEggRarity = roll.eggRarity,
@@ -277,7 +299,10 @@ class GameViewModel(
             creaturesCompleted = playerStats.creaturesCompleted + 1,
         )
         val rewardRoll = EggRewardRoller.rollWeighted()
-        activeCreature = repository.createMysteryEgg(rewardRoll.eggRarity)
+        activeCreature = repository.createMysteryEgg(
+            eggRarity = rewardRoll.eggRarity,
+            forcedCreatureId = nextEggTestSpecies.resolveForcedCreatureId(),
+        )
         eggRewardDebug = EggRewardDebugState(
             lastRewardedEggRarity = rewardRoll.eggRarity,
             lastRewardRollValue = rewardRoll.rollValue,

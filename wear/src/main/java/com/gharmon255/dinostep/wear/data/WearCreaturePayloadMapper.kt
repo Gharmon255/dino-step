@@ -7,6 +7,7 @@ import com.gharmon255.dinostep.wear.model.WearGrowthStage
 
 fun WearCreaturePayload.toWatchCreatureState(): WatchCreatureState {
     return WatchCreatureState(
+        creatureId = creatureId,
         creatureName = creatureName,
         displayName = displayName,
         stage = WearGrowthStage.fromRaw(stage),

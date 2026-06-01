@@ -1,0 +1,130 @@
+
+> Configure project :app
+WARNING: The option setting 'android.disallowKotlinSourceSets=false' is experimental.
+The current default is 'true'.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :shared:preBuild UP-TO-DATE
+> Task :shared:preDebugBuild UP-TO-DATE
+> Task :shared:processDebugNavigationResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :shared:generateDebugResources UP-TO-DATE
+> Task :shared:packageDebugResources UP-TO-DATE
+> Task :shared:parseDebugLocalResources UP-TO-DATE
+> Task :shared:generateDebugRFile UP-TO-DATE
+> Task :shared:compileDebugKotlin UP-TO-DATE
+> Task :shared:javaPreCompileDebug UP-TO-DATE
+> Task :shared:compileDebugJavaWithJavac NO-SOURCE
+> Task :shared:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :shared:generateDebugAssets UP-TO-DATE
+> Task :shared:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:generateDebugGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :shared:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :shared:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :shared:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :shared:extractDeepLinksDebug UP-TO-DATE
+> Task :shared:processDebugManifest UP-TO-DATE
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :shared:mapDebugSourceSetPaths UP-TO-DATE
+> Task :shared:compileDebugLibraryResources UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :shared:mergeDebugJniLibFolders UP-TO-DATE
+> Task :shared:mergeDebugNativeLibs NO-SOURCE
+> Task :shared:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :shared:checkDebugAarMetadata UP-TO-DATE
+> Task :shared:stripDebugDebugSymbols NO-SOURCE
+> Task :shared:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :shared:extractDebugAnnotations UP-TO-DATE
+> Task :shared:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :shared:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :shared:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :shared:prepareDebugArtProfile UP-TO-DATE
+> Task :shared:prepareLintJarForPublish UP-TO-DATE
+> Task :shared:mergeDebugJavaResource UP-TO-DATE
+> Task :shared:syncDebugLibJars UP-TO-DATE
+> Task :shared:bundleDebugAar UP-TO-DATE
+> Task :shared:assembleDebug UP-TO-DATE
+> Task :wear:preBuild UP-TO-DATE
+> Task :wear:preDebugBuild UP-TO-DATE
+> Task :wear:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :wear:generateDebugResources UP-TO-DATE
+> Task :wear:packageDebugResources UP-TO-DATE
+> Task :wear:processDebugNavigationResources UP-TO-DATE
+> Task :wear:parseDebugLocalResources UP-TO-DATE
+> Task :wear:generateDebugRFile UP-TO-DATE
+> Task :wear:compileDebugKotlin UP-TO-DATE
+> Task :wear:javaPreCompileDebug UP-TO-DATE
+> Task :wear:compileDebugJavaWithJavac NO-SOURCE
+> Task :wear:generateDebugAssets UP-TO-DATE
+> Task :wear:mergeDebugAssets UP-TO-DATE
+> Task :wear:compressDebugAssets UP-TO-DATE
+> Task :wear:generateDebugGlobalSynthetics UP-TO-DATE
+> Task :wear:processDebugJavaRes UP-TO-DATE
+> Task :wear:mergeDebugJavaResource UP-TO-DATE
+> Task :wear:checkDebugDuplicateClasses UP-TO-DATE
+> Task :wear:desugarDebugFileDependencies UP-TO-DATE
+> Task :wear:mergeExtDexDebug UP-TO-DATE
+> Task :wear:mergeLibDexDebug UP-TO-DATE
+> Task :wear:checkDebugAarMetadata UP-TO-DATE
+> Task :wear:mapDebugSourceSetPaths UP-TO-DATE
+> Task :wear:compileDebugNavigationResources UP-TO-DATE
+> Task :wear:mergeDebugResources UP-TO-DATE
+> Task :wear:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :wear:extractDeepLinksDebug UP-TO-DATE
+> Task :wear:processDebugMainManifest
+> Task :wear:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :wear:mergeDebugJniLibFolders UP-TO-DATE
+> Task :wear:mergeDebugNativeLibs UP-TO-DATE
+> Task :wear:stripDebugDebugSymbols UP-TO-DATE
+> Task :wear:validateSigningDebug UP-TO-DATE
+> Task :wear:writeDebugAppMetadata UP-TO-DATE
+> Task :wear:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :wear:processDebugManifestForPackage
+> Task :wear:processDebugResources
+> Task :app:processDebugResources
+> Task :wear:dexBuilderDebug
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug UP-TO-DATE
+> Task :wear:mergeProjectDexDebug UP-TO-DATE
+> Task :wear:packageDebug
+> Task :wear:createDebugApkListingFileRedirect
+> Task :wear:assembleDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 2s
+102 actionable tasks: 14 executed, 88 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html

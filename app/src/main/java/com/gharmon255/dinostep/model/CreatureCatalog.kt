@@ -74,9 +74,19 @@ object CreatureCatalog {
         juvenile = 9_000,
     )
 
-    val pterodactyl = d(
-        id = "pterodactyl",
-        name = "Pterodactyl",
+    val brachiosaurus = d(
+        id = "brachiosaurus",
+        name = "Brachiosaurus",
+        rarity = Rarity.UNCOMMON,
+        habitat = Habitat.PLAINS,
+        total = 24_000,
+        hatch = 4_800,
+        juvenile = 12_000,
+    )
+
+    val pteranodon = d(
+        id = "pteranodon",
+        name = "Pteranodon",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.MOUNTAIN,
         total = 22_000,
@@ -126,7 +136,7 @@ object CreatureCatalog {
 
     // RARE
     val tRex = d(
-        id = "t_rex",
+        id = "trex",
         name = "T-Rex",
         rarity = Rarity.RARE,
         habitat = Habitat.VOLCANO,
@@ -295,7 +305,8 @@ object CreatureCatalog {
         pachycephalosaurus,
         gallimimus,
         stegosaurus,
-        pterodactyl,
+        brachiosaurus,
+        pteranodon,
         dilophosaurus,
         iguanodon,
         carnotaurus,
@@ -328,7 +339,15 @@ object CreatureCatalog {
 
     val legendaryCreatures: List<CreatureDefinition> = byRarity(Rarity.LEGENDARY)
 
-    fun byId(id: String): CreatureDefinition? = all.find { it.id == id }
+    fun byId(id: String): CreatureDefinition? {
+        all.find { it.id == id }?.let { return it }
+        return legacyCreatureIdAliases[id]?.let { legacyId -> all.find { it.id == legacyId } }
+    }
+
+    private val legacyCreatureIdAliases: Map<String, String> = mapOf(
+        "t_rex" to "trex",
+        "pterodactyl" to "pteranodon",
+    )
 
     fun byRarity(rarity: Rarity): List<CreatureDefinition> = all.filter { it.rarity == rarity }
 
@@ -385,6 +404,7 @@ object CreatureCatalog {
         hatch: Int,
         juvenile: Int,
     ): CreatureDefinition {
+        val assetSpeciesId = com.gharmon255.dinostep.shared.visual.CreatureAssetNames.resolveAssetSpeciesId(id)
         return CreatureDefinition(
             id = id,
             name = name,
@@ -393,10 +413,10 @@ object CreatureCatalog {
             totalStepsRequired = total,
             hatchStep = hatch,
             juvenileStep = juvenile,
-            eggAssetKey = "${id}_egg",
-            babyAssetKey = "${id}_baby",
-            juvenileAssetKey = "${id}_juvenile",
-            adultAssetKey = "${id}_adult",
+            eggAssetKey = com.gharmon255.dinostep.shared.visual.CreatureAssetNames.eggDrawableName(rarity.name),
+            babyAssetKey = "dino_${assetSpeciesId}_baby",
+            juvenileAssetKey = "dino_${assetSpeciesId}_juvenile",
+            adultAssetKey = "dino_${assetSpeciesId}_adult",
         )
     }
 }

@@ -26,6 +26,7 @@ object WearCreaturePayloadMapper {
         val visual = CreatureVisualMapper.visualForActiveCreature(activeCreature)
 
         return WearCreaturePayload(
+            creatureId = creature.id,
             creatureName = creature.name,
             displayName = activeCreature.displayName,
             stage = activeCreature.stage.name,

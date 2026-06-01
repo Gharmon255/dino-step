@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -41,6 +45,7 @@ import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.model.StageVisual
 import com.gharmon255.dinostep.model.toRarity
+import com.gharmon255.dinostep.shared.visual.DrawableResourceResolver
 import com.gharmon255.dinostep.ui.theme.RarityColorSet
 import com.gharmon255.dinostep.ui.theme.rarityColors
 
@@ -185,6 +190,20 @@ fun CreatureStageVisual(
     }
     val colors = rarityColors(displayRarity ?: eggRarity.toRarity())
     val baseEmojiSp = (frameSize.value * 0.42f * visual.stageScale).toInt().coerceIn(40, 110)
+    val context = LocalContext.current
+    val drawableId = when (stage) {
+        GrowthStage.EGG -> DrawableResourceResolver.eggDrawableId(
+            resources = context.resources,
+            packageName = context.packageName,
+            eggRarityName = eggRarity.name,
+        )
+        else -> DrawableResourceResolver.stageDrawableId(
+            resources = context.resources,
+            packageName = context.packageName,
+            creatureId = activeCreature.creature.id,
+            stageName = stage.name,
+        )
+    }
 
     Column(
         modifier = modifier,
@@ -197,15 +216,19 @@ fun CreatureStageVisual(
                     eggRarity = eggRarity,
                     size = frameSize,
                 ) {
-                    StageEmojiText(
+                    StageCreatureImageOrEmoji(
+                        drawableId = drawableId,
                         emoji = visual.displayEmoji,
+                        imageSize = frameSize * 0.72f,
                         fontSizeSp = (frameSize.value * 0.38f).toInt().coerceIn(48, 80),
+                        contentDescription = "${eggRarity.displayName} egg",
                     )
                 }
             }
             else -> StageDinoVisual(
                 visual = visual,
                 colors = colors,
+                drawableId = drawableId,
                 baseFontSizeSp = baseEmojiSp,
                 bounce = stage == GrowthStage.BABY,
                 frameSize = frameSize,
@@ -216,9 +239,30 @@ fun CreatureStageVisual(
 }
 
 @Composable
+private fun StageCreatureImageOrEmoji(
+    drawableId: Int,
+    emoji: String,
+    imageSize: Dp,
+    fontSizeSp: Int,
+    contentDescription: String?,
+) {
+    if (drawableId != 0) {
+        Image(
+            painter = painterResource(drawableId),
+            contentDescription = contentDescription,
+            modifier = Modifier.size(imageSize),
+            contentScale = ContentScale.Fit,
+        )
+    } else {
+        StageEmojiText(emoji = emoji, fontSizeSp = fontSizeSp)
+    }
+}
+
+@Composable
 private fun StageDinoVisual(
     visual: StageVisual,
     colors: RarityColorSet,
+    drawableId: Int,
     baseFontSizeSp: Int,
     bounce: Boolean,
     frameSize: Dp,
@@ -242,7 +286,13 @@ private fun StageDinoVisual(
         ) {
             val emojiContent: @Composable () -> Unit = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    StageEmojiText(emoji = visual.speciesEmoji, fontSizeSp = baseFontSizeSp)
+                    StageCreatureImageOrEmoji(
+                        drawableId = drawableId,
+                        emoji = visual.speciesEmoji,
+                        imageSize = frameSize * visual.stageScale.coerceAtLeast(0.7f) * 0.78f,
+                        fontSizeSp = baseFontSizeSp,
+                        contentDescription = visual.stageDetailLabel,
+                    )
                     if (showSpeciesHint) {
                         Text(
                             text = visual.speciesShortLabel,
@@ -367,11 +417,23 @@ private fun RowWithBadges(
 @Composable
 fun CollectionCreatureAvatar(
     visual: StageVisual,
+    creatureId: String,
     rarity: Rarity,
     collected: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val colors = rarityColors(rarity)
+    val context = LocalContext.current
+    val drawableId = if (collected) {
+        DrawableResourceResolver.stageDrawableId(
+            resources = context.resources,
+            packageName = context.packageName,
+            creatureId = creatureId,
+            stageName = GrowthStage.ADULT.name,
+        )
+    } else {
+        0
+    }
     Box(
         modifier = modifier
             .size(56.dp)
@@ -386,7 +448,16 @@ fun CollectionCreatureAvatar(
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = visual.speciesEmoji, fontSize = 22.sp)
+            if (drawableId != 0) {
+                Image(
+                    painter = painterResource(drawableId),
+                    contentDescription = visual.stageDetailLabel,
+                    modifier = Modifier.size(40.dp),
+                    contentScale = ContentScale.Fit,
+                )
+            } else {
+                Text(text = visual.speciesEmoji, fontSize = 22.sp)
+            }
             if (collected) {
                 Text(
                     text = visual.speciesShortLabel,

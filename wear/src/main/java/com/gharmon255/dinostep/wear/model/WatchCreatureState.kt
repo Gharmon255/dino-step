@@ -6,6 +6,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 data class WatchCreatureState(
+    val creatureId: String = "",
     val creatureName: String,
     val displayName: String,
     val stage: WearGrowthStage,

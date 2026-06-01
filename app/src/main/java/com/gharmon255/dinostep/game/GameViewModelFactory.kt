@@ -2,12 +2,14 @@ package com.gharmon255.dinostep.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class GameViewModelFactory(
     private val repository: GameRepository,
+    private val developerPreferences: DeveloperPreferences,
     private val healthConnectRepository: HealthConnectRepository,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
 ) : ViewModelProvider.Factory {
@@ -16,6 +18,7 @@ class GameViewModelFactory(
         if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
             return GameViewModel(
                 repository = repository,
+                developerPreferences = developerPreferences,
                 healthConnectRepository = healthConnectRepository,
                 wearDataLayerPublisher = wearDataLayerPublisher,
             ) as T

@@ -12,7 +12,6 @@ object CreatureVisualMapper {
         @Suppress("UNUSED_PARAMETER") eggRarity: EggRarity,
     ): StageVisual {
         val species = CreatureSpeciesIdentity.forId(creatureDefinition.id)
-        // TODO: Resolve assetKey to @DrawableRes when art pipeline is wired.
         val assetKey = when (stage) {
             GrowthStage.EGG -> creatureDefinition.eggAssetKey
             GrowthStage.BABY -> creatureDefinition.babyAssetKey

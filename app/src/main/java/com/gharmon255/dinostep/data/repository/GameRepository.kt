@@ -55,10 +55,25 @@ class GameRepository(
         return createMysteryEgg(EggRarity.COMMON)
     }
 
-    fun createMysteryEgg(eggRarity: EggRarity): ActiveCreatureState {
+    fun createMysteryEgg(
+        eggRarity: EggRarity,
+        forcedCreatureId: String? = null,
+    ): ActiveCreatureState {
+        val creature = when {
+            forcedCreatureId != null -> {
+                CreatureCatalog.byId(forcedCreatureId)
+                    ?: CreatureCatalog.randomCreatureForEgg(eggRarity)
+            }
+            else -> CreatureCatalog.randomCreatureForEgg(eggRarity)
+        }
+        val resolvedEggRarity = if (forcedCreatureId != null && CreatureCatalog.byId(forcedCreatureId) != null) {
+            EggRarity.valueOf(creature.rarity.name)
+        } else {
+            eggRarity
+        }
         return ActiveCreatureState(
-            creature = CreatureCatalog.randomCreatureForEgg(eggRarity),
-            eggRarity = eggRarity,
+            creature = creature,
+            eggRarity = resolvedEggRarity,
             steps = 0,
             startedAt = System.currentTimeMillis(),
             isRevealed = false,

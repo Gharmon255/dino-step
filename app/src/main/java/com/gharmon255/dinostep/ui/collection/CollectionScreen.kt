@@ -247,6 +247,7 @@ private fun RosterCreatureCard(
             if (avatarVisual != null) {
                 CollectionCreatureAvatar(
                     visual = avatarVisual,
+                    creatureId = entry.creature.id,
                     rarity = entry.creature.rarity,
                     collected = true,
                 )
@@ -260,6 +261,7 @@ private fun RosterCreatureCard(
                         stageDetailLabel = "Locked",
                         stageScale = 1f,
                     ),
+                    creatureId = entry.creature.id,
                     rarity = entry.creature.rarity,
                     collected = false,
                 )

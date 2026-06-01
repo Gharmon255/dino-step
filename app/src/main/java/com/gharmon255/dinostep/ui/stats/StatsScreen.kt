@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.ui.stats
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +11,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.game.NextEggTestSpecies
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
@@ -44,6 +48,8 @@ fun StatsScreen(
     val lastSyncTimeLabel = wearDebug.lastAttemptTimeMillis?.let { millis ->
         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(millis))
     } ?: "—"
+
+    var showDeveloperSpeciesMenu by remember { mutableStateOf(false) }
 
     var showClearCollectionDialog by remember { mutableStateOf(false) }
     var showResetGameDialog by remember { mutableStateOf(false) }
@@ -131,6 +137,67 @@ fun StatsScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Force Watch Sync")
+                }
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Developer Testing",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = "Choose which species the next egg will hatch into, then force a new egg to test art and stages.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+
+                Text(
+                    text = "Next Egg Species",
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = { showDeveloperSpeciesMenu = true },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(viewModel.nextEggTestSpecies.displayName)
+                    }
+                    DropdownMenu(
+                        expanded = showDeveloperSpeciesMenu,
+                        onDismissRequest = { showDeveloperSpeciesMenu = false },
+                    ) {
+                        NextEggTestSpecies.selectableOptions.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option.displayName) },
+                                onClick = {
+                                    viewModel.updateNextEggTestSpecies(option)
+                                    showDeveloperSpeciesMenu = false
+                                },
+                            )
+                        }
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        if (viewModel.needsReplaceConfirmationForNewEgg()) {
+                            pendingEggGrant = PendingEggGrant.ForceTestEgg
+                            showReplaceEggDialog = true
+                        } else {
+                            viewModel.forceTestEggForTesting()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Force New Egg")
                 }
             }
         }
@@ -376,11 +443,14 @@ private sealed class PendingEggGrant {
     data object Random : PendingEggGrant()
 
     data class Specific(val eggRarity: EggRarity) : PendingEggGrant()
+
+    data object ForceTestEgg : PendingEggGrant()
 }
 
 private fun executeEggGrant(viewModel: GameViewModel, grant: PendingEggGrant) {
     when (grant) {
         PendingEggGrant.Random -> viewModel.giveRandomEggForTesting()
         is PendingEggGrant.Specific -> viewModel.giveEggForTesting(grant.eggRarity)
+        PendingEggGrant.ForceTestEgg -> viewModel.forceTestEggForTesting()
     }
 }

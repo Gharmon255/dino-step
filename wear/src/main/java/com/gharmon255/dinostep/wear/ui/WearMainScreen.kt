@@ -62,11 +62,7 @@ fun WearMainScreen(
 
             ProgressRingSection(
                 progress = progress,
-                stage = state.stage,
-                emoji = state.displayEmoji,
-                accentColor = state.accentColorArgb.toWearColor(),
-                speciesShortLabel = state.speciesShortLabel,
-                stageScale = state.stageScale,
+                state = state,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -140,12 +136,9 @@ private fun WatchHeaderSection(state: WatchCreatureState) {
 @Composable
 private fun ProgressRingSection(
     progress: Float,
-    stage: WearGrowthStage,
-    emoji: String,
-    accentColor: Color,
-    speciesShortLabel: String,
-    stageScale: Float,
+    state: WatchCreatureState,
 ) {
+    val accentColor = state.accentColorArgb.toWearColor()
     Box(
         modifier = Modifier.size(ProgressRingSize),
         contentAlignment = Alignment.Center,
@@ -159,11 +152,13 @@ private fun ProgressRingSection(
         )
 
         CreatureVisual(
-            stage = stage,
-            emoji = emoji,
+            stage = state.stage,
+            creatureId = state.creatureId,
+            eggRarityName = state.eggRarity,
+            emoji = state.displayEmoji,
             accentColor = accentColor,
-            speciesShortLabel = speciesShortLabel,
-            stageScale = stageScale,
+            speciesShortLabel = state.speciesShortLabel,
+            stageScale = state.stageScale,
             modifier = Modifier.size(CreatureInRingSize),
         )
     }
