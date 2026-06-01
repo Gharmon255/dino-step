@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -45,7 +44,6 @@ import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.model.StageVisual
 import com.gharmon255.dinostep.model.toRarity
-import com.gharmon255.dinostep.shared.visual.DrawableResourceResolver
 import com.gharmon255.dinostep.ui.theme.RarityColorSet
 import com.gharmon255.dinostep.ui.theme.rarityColors
 
@@ -190,20 +188,11 @@ fun CreatureStageVisual(
     }
     val colors = rarityColors(displayRarity ?: eggRarity.toRarity())
     val baseEmojiSp = (frameSize.value * 0.42f * visual.stageScale).toInt().coerceIn(40, 110)
-    val context = LocalContext.current
-    val drawableId = when (stage) {
-        GrowthStage.EGG -> DrawableResourceResolver.eggDrawableId(
-            resources = context.resources,
-            packageName = context.packageName,
-            eggRarityName = eggRarity.name,
-        )
-        else -> DrawableResourceResolver.stageDrawableId(
-            resources = context.resources,
-            packageName = context.packageName,
-            creatureId = activeCreature.creature.id,
-            stageName = stage.name,
-        )
-    }
+    val drawableId = CreatureStageDrawableResolve.resolveDrawableId(
+        speciesId = activeCreature.creature.id,
+        stage = stage,
+        eggRarity = eggRarity,
+    )
 
     Column(
         modifier = modifier,
@@ -423,14 +412,8 @@ fun CollectionCreatureAvatar(
     modifier: Modifier = Modifier,
 ) {
     val colors = rarityColors(rarity)
-    val context = LocalContext.current
     val drawableId = if (collected) {
-        DrawableResourceResolver.stageDrawableId(
-            resources = context.resources,
-            packageName = context.packageName,
-            creatureId = creatureId,
-            stageName = GrowthStage.ADULT.name,
-        )
+        CreatureStageDrawableResolve.resolveAdultDrawableId(speciesId = creatureId)
     } else {
         0
     }

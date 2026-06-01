@@ -363,10 +363,9 @@ object CreatureCatalog {
         "pterodactyl" to "pteranodon",
     )
 
-    fun isAssetBacked(creatureId: String): Boolean = CreatureAssetNames.hasStageAssets(creatureId)
+    fun isAssetBacked(creatureId: String): Boolean = CreatureAssetNames.isAssetBacked(creatureId)
 
-    fun assetPrefixFor(creatureId: String): String =
-        "dino_${CreatureAssetNames.resolveAssetSpeciesId(creatureId)}"
+    fun assetPrefixFor(creatureId: String): String = CreatureAssetNames.dinoDrawablePrefix(creatureId)
 
     fun assetBackedCreatures(): List<CreatureDefinition> =
         assetBackedSpeciesIds.mapNotNull { byId(it) }
@@ -426,8 +425,7 @@ object CreatureCatalog {
         hatch: Int,
         juvenile: Int,
     ): CreatureDefinition {
-        val assetSpeciesId = CreatureAssetNames.resolveAssetSpeciesId(id)
-        val prefix = "dino_$assetSpeciesId"
+        val prefix = CreatureAssetNames.dinoDrawablePrefix(id)
         return CreatureDefinition(
             id = id,
             name = name,
@@ -437,9 +435,9 @@ object CreatureCatalog {
             hatchStep = hatch,
             juvenileStep = juvenile,
             eggAssetKey = CreatureAssetNames.eggDrawableName(rarity.name),
-            babyAssetKey = "${prefix}_baby",
-            juvenileAssetKey = "${prefix}_juvenile",
-            adultAssetKey = "${prefix}_adult",
+            babyAssetKey = "${prefix}_${CreatureAssetNames.StageSuffix.BABY}",
+            juvenileAssetKey = "${prefix}_${CreatureAssetNames.StageSuffix.JUVENILE}",
+            adultAssetKey = "${prefix}_${CreatureAssetNames.StageSuffix.ADULT}",
         )
     }
 }

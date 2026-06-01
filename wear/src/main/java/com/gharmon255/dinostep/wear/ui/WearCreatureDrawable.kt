@@ -3,6 +3,7 @@ package com.gharmon255.dinostep.wear.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -10,12 +11,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.Text
-import com.gharmon255.dinostep.shared.visual.DrawableResourceResolver
+import com.gharmon255.dinostep.shared.visual.DrawableCreatureResolver
 import com.gharmon255.dinostep.wear.model.WearGrowthStage
 
 @Composable
 fun WearCreatureDrawableOrEmoji(
-    creatureId: String,
+    speciesId: String,
     stage: WearGrowthStage,
     eggRarityName: String,
     emoji: String,
@@ -24,19 +25,22 @@ fun WearCreatureDrawableOrEmoji(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
 ) {
-    val context = LocalContext.current
-    val drawableId = when (stage) {
-        WearGrowthStage.EGG -> DrawableResourceResolver.eggDrawableId(
-            resources = context.resources,
-            packageName = context.packageName,
-            eggRarityName = eggRarityName,
-        )
-        else -> DrawableResourceResolver.stageDrawableId(
-            resources = context.resources,
-            packageName = context.packageName,
-            creatureId = creatureId,
-            stageName = stage.name,
-        )
+    val resources = LocalContext.current.resources
+    val packageName = LocalContext.current.packageName
+    val drawableId = remember(speciesId, stage, eggRarityName, packageName) {
+        when (stage) {
+            WearGrowthStage.EGG -> DrawableCreatureResolver.eggDrawableId(
+                resources = resources,
+                packageName = packageName,
+                eggRarityName = eggRarityName,
+            )
+            else -> DrawableCreatureResolver.stageDrawableId(
+                resources = resources,
+                packageName = packageName,
+                speciesId = speciesId,
+                stageName = stage.name,
+            )
+        }
     }
 
     if (drawableId != 0) {

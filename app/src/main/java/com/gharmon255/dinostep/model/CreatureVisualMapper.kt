@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.model
 
 import com.gharmon255.dinostep.game.ActiveCreatureState
+import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
 
 object CreatureVisualMapper {
     const val EGG_PLACEHOLDER = "🥚"
@@ -12,12 +13,11 @@ object CreatureVisualMapper {
         @Suppress("UNUSED_PARAMETER") eggRarity: EggRarity,
     ): StageVisual {
         val species = CreatureSpeciesIdentity.forId(creatureDefinition.id)
-        val assetKey = when (stage) {
-            GrowthStage.EGG -> creatureDefinition.eggAssetKey
-            GrowthStage.BABY -> creatureDefinition.babyAssetKey
-            GrowthStage.JUVENILE -> creatureDefinition.juvenileAssetKey
-            GrowthStage.ADULT -> creatureDefinition.adultAssetKey
-        }
+        val assetKey = CreatureAssetNames.stageDrawableName(creatureDefinition.id, stage.name)
+            ?: when (stage) {
+                GrowthStage.EGG -> creatureDefinition.eggAssetKey
+                else -> creatureDefinition.babyAssetKey
+            }
         val stagePresentation = stagePresentation(stage)
         val displayEmoji = if (stage == GrowthStage.EGG) {
             EGG_PLACEHOLDER

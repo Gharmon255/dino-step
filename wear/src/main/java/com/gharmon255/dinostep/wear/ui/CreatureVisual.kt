@@ -113,7 +113,7 @@ private fun EggVisual(
         ) {
             Box(modifier = Modifier.graphicsLayer { rotationZ = rotation }) {
                 WearCreatureDrawableOrEmoji(
-                    creatureId = creatureId,
+                    speciesId = creatureId,
                     stage = WearGrowthStage.EGG,
                     eggRarityName = eggRarityName,
                     emoji = emoji,
@@ -142,7 +142,7 @@ private fun SpeciesVisual(
     val content: @Composable () -> Unit = {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             WearCreatureDrawableOrEmoji(
-                creatureId = creatureId,
+                speciesId = creatureId,
                 stage = stage,
                 eggRarityName = eggRarityName,
                 emoji = emoji,
