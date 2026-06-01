@@ -18,6 +18,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import com.gharmon255.dinostep.model.StageVisual
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.components.CollectionCreatureAvatar
+import com.gharmon255.dinostep.ui.components.LockedCollectionAvatar
 import com.gharmon255.dinostep.ui.components.RarityBadge
 import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.DateFormat
@@ -54,7 +56,7 @@ fun CollectionScreen(
     val rosterEntries = remember(viewModel.collection) { CollectionRoster.buildEntries(viewModel.collection) }
 
     var filter by remember { mutableStateOf(CollectionFilter.ALL) }
-    var sort by remember { mutableStateOf(CollectionSort.COLLECTED_FIRST) }
+    var sort by remember { mutableStateOf(CollectionDefaultSort) }
 
     val displayedEntries = remember(rosterEntries, filter, sort) {
         CollectionRoster.applySort(
@@ -212,11 +214,7 @@ private fun RosterCreatureCard(
 ) {
     val collected = entry.isCollected
     val colors = rarityColors(entry.creature.rarity)
-    val avatarVisual = if (collected) {
-        CreatureVisualMapper.collectionVisual(entry.creature)
-    } else {
-        null
-    }
+    val avatarVisual = CreatureVisualMapper.collectionVisual(entry.creature)
 
     Card(
         modifier = Modifier
@@ -244,27 +242,14 @@ private fun RosterCreatureCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (avatarVisual != null) {
+            if (collected) {
                 CollectionCreatureAvatar(
                     visual = avatarVisual,
                     creatureId = entry.creature.id,
                     rarity = entry.creature.rarity,
-                    collected = true,
                 )
             } else {
-                CollectionCreatureAvatar(
-                    visual = StageVisual(
-                        assetKey = "locked",
-                        speciesEmoji = CreatureVisualMapper.LOCKED_PLACEHOLDER,
-                        displayEmoji = CreatureVisualMapper.LOCKED_PLACEHOLDER,
-                        speciesShortLabel = "?",
-                        stageDetailLabel = "Locked",
-                        stageScale = 1f,
-                    ),
-                    creatureId = entry.creature.id,
-                    rarity = entry.creature.rarity,
-                    collected = false,
-                )
+                LockedCollectionAvatar()
             }
 
             Column(
@@ -284,7 +269,13 @@ private fun RosterCreatureCard(
                     },
                 )
 
-                RarityBadge(rarity = entry.creature.rarity)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RarityBadge(rarity = entry.creature.rarity)
+                    CollectionStatusChip(collected = collected)
+                }
 
                 Text(
                     text = if (collected) {
@@ -297,7 +288,11 @@ private fun RosterCreatureCard(
                 )
 
                 Text(
-                    text = "${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow",
+                    text = if (collected) {
+                        "Adult · ${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow"
+                    } else {
+                        "${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow"
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -348,7 +343,32 @@ private fun sortLabel(sort: CollectionSort): String = when (sort) {
     CollectionSort.RARITY -> "Rarity"
     CollectionSort.NAME -> "Name"
     CollectionSort.COLLECTED_FIRST -> "Collected"
+    CollectionSort.CATALOG -> "Catalog"
     CollectionSort.STEPS -> "Steps"
+}
+
+@Composable
+private fun CollectionStatusChip(collected: Boolean) {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = if (collected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        },
+    ) {
+        Text(
+            text = if (collected) "Discovered" else "Locked",
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = if (collected) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        )
+    }
 }
 
 private fun habitatLabel(habitat: Habitat): String {

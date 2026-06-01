@@ -5,7 +5,8 @@ import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
 
 object CreatureVisualMapper {
     const val EGG_PLACEHOLDER = "🥚"
-    const val LOCKED_PLACEHOLDER = "❓"
+    /** Shown on locked collection entries (no species art). */
+    const val LOCKED_PLACEHOLDER = "🔒"
 
     fun getVisualForStage(
         creatureDefinition: CreatureDefinition,

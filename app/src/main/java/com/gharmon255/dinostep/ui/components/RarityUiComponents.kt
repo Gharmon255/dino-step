@@ -403,45 +403,60 @@ private fun RowWithBadges(
     }
 }
 
+/** Undiscovered roster entry: lock styling only — no species drawable or name art. */
+@Composable
+fun LockedCollectionAvatar(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(56.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = com.gharmon255.dinostep.model.CreatureVisualMapper.LOCKED_PLACEHOLDER,
+            fontSize = 24.sp,
+        )
+    }
+}
+
+/**
+ * Discovered collection entry: adult PNG via [DrawableCreatureResolver] when asset-backed,
+ * else stage placeholder vector, else species emoji — never another species' art.
+ */
 @Composable
 fun CollectionCreatureAvatar(
     visual: StageVisual,
     creatureId: String,
     rarity: Rarity,
-    collected: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val colors = rarityColors(rarity)
-    val drawableId = if (collected) {
-        CreatureStageDrawableResolve.resolveAdultDrawableId(speciesId = creatureId)
-    } else {
-        0
-    }
+    val drawableId = CreatureStageDrawableResolve.resolveAdultDrawableId(speciesId = creatureId)
+    val fallbackEmoji = visual.displayEmoji.ifBlank { visual.speciesEmoji }
     Box(
         modifier = modifier
             .size(56.dp)
-            .alpha(if (collected) 1f else 0.45f)
             .clip(CircleShape)
-            .background(if (collected) colors.container else MaterialTheme.colorScheme.surfaceVariant)
-            .border(
-                width = if (collected) 2.dp else 1.dp,
-                color = if (collected) colors.border else MaterialTheme.colorScheme.outline,
-                shape = CircleShape,
-            ),
+            .background(colors.container)
+            .border(2.dp, colors.border, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             if (drawableId != 0) {
                 Image(
                     painter = painterResource(drawableId),
-                    contentDescription = visual.stageDetailLabel,
+                    contentDescription = "${visual.stageDetailLabel} ${visual.speciesShortLabel}",
                     modifier = Modifier.size(40.dp),
                     contentScale = ContentScale.Fit,
                 )
             } else {
-                Text(text = visual.speciesEmoji, fontSize = 22.sp)
+                Text(text = fallbackEmoji, fontSize = 22.sp)
             }
-            if (collected) {
+            if (visual.speciesShortLabel.isNotBlank()) {
                 Text(
                     text = visual.speciesShortLabel,
                     fontSize = 8.sp,

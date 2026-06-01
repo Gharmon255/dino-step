@@ -19,9 +19,14 @@ enum class CollectionFilter {
 enum class CollectionSort {
     RARITY,
     NAME,
+    /** Default: discovered first, then catalog order, then rarity tier, then name. */
     COLLECTED_FIRST,
+    CATALOG,
     STEPS,
 }
+
+/** Default collection sort (Sprint 5). */
+val CollectionDefaultSort: CollectionSort = CollectionSort.COLLECTED_FIRST
 
 data class RarityProgress(
     val rarity: Rarity,
@@ -99,20 +104,38 @@ object CollectionRoster {
     fun applySort(entries: List<RosterEntry>, sort: CollectionSort): List<RosterEntry> {
         return when (sort) {
             CollectionSort.RARITY -> entries.sortedWith(
-                compareByDescending<RosterEntry> { it.creature.rarity.tier }
-                    .thenBy { it.creature.name },
-            )
-            CollectionSort.NAME -> entries.sortedBy { it.creature.name }
-            CollectionSort.COLLECTED_FIRST -> entries.sortedWith(
                 compareByDescending<RosterEntry> { it.isCollected }
                     .thenByDescending { it.creature.rarity.tier }
+                    .thenBy { catalogOrderIndex(it.creature.id) }
                     .thenBy { it.creature.name },
             )
+            CollectionSort.NAME -> entries.sortedWith(
+                compareByDescending<RosterEntry> { it.isCollected }
+                    .thenBy { it.creature.name },
+            )
+            CollectionSort.COLLECTED_FIRST -> entries.sortedWith(collectedFirstComparator())
+            CollectionSort.CATALOG -> entries.sortedWith(
+                compareByDescending<RosterEntry> { it.isCollected }
+                    .thenBy { catalogOrderIndex(it.creature.id) },
+            )
             CollectionSort.STEPS -> entries.sortedWith(
-                compareBy<RosterEntry> { it.creature.totalStepsRequired }
+                compareByDescending<RosterEntry> { it.isCollected }
+                    .thenBy { it.creature.totalStepsRequired }
                     .thenBy { it.creature.name },
             )
         }
+    }
+
+    fun catalogOrderIndex(creatureId: String): Int {
+        val index = CreatureCatalog.all.indexOfFirst { it.id == creatureId }
+        return if (index >= 0) index else Int.MAX_VALUE
+    }
+
+    private fun collectedFirstComparator(): Comparator<RosterEntry> {
+        return compareByDescending<RosterEntry> { it.isCollected }
+            .thenBy { catalogOrderIndex(it.creature.id) }
+            .thenByDescending { it.creature.rarity.tier }
+            .thenBy { it.creature.name }
     }
 }
 

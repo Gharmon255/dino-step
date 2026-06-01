@@ -59,6 +59,13 @@ fun DeveloperSpeciesOverrideCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Text(
+                text = "Collection check: force an asset-backed species egg, grow through baby/juvenile " +
+                    "(fake steps on Home if DEBUG), claim reward, then open Collection — adult art or " +
+                    "placeholder for that species only; locked rows stay 🔒 with no species PNG.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
             Text(
                 text = "Test Species Override",
