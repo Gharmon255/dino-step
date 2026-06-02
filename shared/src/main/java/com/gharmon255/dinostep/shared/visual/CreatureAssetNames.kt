@@ -32,6 +32,11 @@ object CreatureAssetNames {
         "pachycephalosaurus",
         "allosaurus",
         "iguanodon",
+        "gallimimus",
+        "baryonyx",
+        "velociraptor_alpha",
+        "therizinosaurus",
+        "giganotosaurus",
     )
 
     object StageSuffix {

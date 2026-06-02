@@ -6,7 +6,8 @@ import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
  * Creature roster. Sprint 1 canonical asset-backed species (cross-platform):
  * tiny_raptor, triceratops, trex, stegosaurus, brachiosaurus, ankylosaurus,
  * parasaurolophus, spinosaurus, pteranodon, dilophosaurus, carnotaurus, mosasaurus,
- * pachycephalosaurus, allosaurus, iguanodon — drawable prefix `dino_{id}` per stage.
+ * pachycephalosaurus, allosaurus, iguanodon, gallimimus, baryonyx, velociraptor_alpha,
+ * therizinosaurus, giganotosaurus — drawable prefix `dino_{id}` per stage.
  */
 object CreatureCatalog {
     private const val TAG = "CreatureCatalog"

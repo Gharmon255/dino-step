@@ -27,7 +27,7 @@ When code disagrees with this document, **treat this file as intended design** a
 
 ---
 
-## Asset-backed species (15)
+## Asset-backed species (20)
 
 These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `CreatureAssetNames.assetBackedSpeciesIds` (Android).
 
@@ -48,6 +48,11 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `spinosaurus` | Spinosaurus | Rare | Swamp | 12,000 | 18,000 | 30,000 | 60,000 | true | `dino_spinosaurus` | **shipped** |
 | `allosaurus` | Allosaurus | Rare | Rocky | 9,600 | 14,400 | 24,000 | 48,000 | true | `dino_allosaurus` | **shipped** |
 | `mosasaurus` | Mosasaurus | Rare | Ocean | 13,000 | 19,500 | 32,500 | 65,000 | true | `dino_mosasaurus` | **shipped** |
+| `gallimimus` | Gallimimus | Common | Plains | 1,800 | 2,700 | 4,500 | 9,000 | true | `dino_gallimimus` | **shipped** |
+| `baryonyx` | Baryonyx | Uncommon | Swamp | 5,000 | 7,500 | 12,500 | 25,000 | true | `dino_baryonyx` | **shipped** |
+| `velociraptor_alpha` | Velociraptor Alpha | Rare | Jungle | 9,000 | 13,500 | 22,500 | 45,000 | true | `dino_velociraptor_alpha` | **shipped** |
+| `therizinosaurus` | Therizinosaurus | Rare | Forest | 11,000 | 16,500 | 27,500 | 55,000 | true | `dino_therizinosaurus` | **shipped** |
+| `giganotosaurus` | Giganotosaurus | Epic | Plains | 17,000 | 25,500 | 42,500 | 85,000 | true | `dino_giganotosaurus` | **shipped** |
 
 **Stage file names (when shipped):** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult`.
 
@@ -55,17 +60,12 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 
 ---
 
-## Non-asset-backed species (14)
+## Non-asset-backed species (9)
 
 Emoji / placeholder visuals only. **Never** use another species’ `dino_*` art (Android: `dino_placeholder_{stage}`).
 
 | species id | display name | rarity | habitat | steps to hatch | steps baby → juvenile | steps juvenile → adult | total steps | asset-backed | asset prefix | notes |
 |------------|--------------|--------|---------|----------------|----------------------|------------------------|-------------|--------------|--------------|-------|
-| `gallimimus` | Gallimimus | Common | Plains | 1,800 | 2,700 | 4,500 | 9,000 | false | — | |
-| `baryonyx` | Baryonyx | Uncommon | Swamp | 5,000 | 7,500 | 12,500 | 25,000 | false | — | |
-| `velociraptor_alpha` | Velociraptor Alpha | Rare | Jungle | 9,000 | 13,500 | 22,500 | 45,000 | false | — | |
-| `therizinosaurus` | Therizinosaurus | Rare | Forest | 11,000 | 16,500 | 27,500 | 55,000 | false | — | |
-| `giganotosaurus` | Giganotosaurus | Epic | Plains | 17,000 | 25,500 | 42,500 | 85,000 | false | — | |
 | `quetzalcoatlus` | Quetzalcoatlus | Epic | Mountain | 18,000 | 27,000 | 45,000 | 90,000 | false | — | |
 | `indominus_hybrid` | Indominus Rex Style Hybrid | Epic | Lab | 19,000 | 28,500 | 47,500 | 95,000 | false | — | Canonical id; legacy slug `indominus_rex_style_hybrid` — see [Legacy IDs](#legacy-ids-and-aliases) |
 | `ancient_spinosaurus` | Ancient Spinosaurus | Epic | Swamp | 20,000 | 30,000 | 50,000 | 100,000 | false | — | Distinct legendary variant; not base `spinosaurus` art |
