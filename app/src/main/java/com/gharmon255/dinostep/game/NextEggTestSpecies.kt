@@ -18,6 +18,11 @@ enum class NextEggTestSpecies(
     SPINOSAURUS("Spinosaurus", "spinosaurus", "spinosaurus"),
     PTERANODON("Pteranodon", "pteranodon", "pteranodon"),
     DILOPHOSAURUS("Dilophosaurus", "dilophosaurus", "dilophosaurus"),
+    CARNOTAURUS("Carnotaurus", "carnotaurus", "carnotaurus"),
+    MOSASAURUS("Mosasaurus", "mosasaurus", "mosasaurus"),
+    PACHYCEPHALOSAURUS("Pachycephalosaurus", "pachycephalosaurus", "pachycephalosaurus"),
+    ALLOSAURUS("Allosaurus", "allosaurus", "allosaurus"),
+    IGUANODON("Iguanodon", "iguanodon", "iguanodon"),
     ;
 
     companion object {
@@ -46,6 +51,11 @@ enum class NextEggTestSpecies(
                 "parasaurolophus" -> PARASAUROLOPHUS
                 "spinosaurus" -> SPINOSAURUS
                 "dilophosaurus" -> DILOPHOSAURUS
+                "carnotaurus" -> CARNOTAURUS
+                "mosasaurus" -> MOSASAURUS
+                "pachycephalosaurus" -> PACHYCEPHALOSAURUS
+                "allosaurus" -> ALLOSAURUS
+                "iguanodon" -> IGUANODON
                 else -> null
             }
         }

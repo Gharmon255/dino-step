@@ -27,6 +27,11 @@ object CreatureAssetNames {
         "spinosaurus",
         "pteranodon",
         "dilophosaurus",
+        "carnotaurus",
+        "mosasaurus",
+        "pachycephalosaurus",
+        "allosaurus",
+        "iguanodon",
     )
 
     object StageSuffix {

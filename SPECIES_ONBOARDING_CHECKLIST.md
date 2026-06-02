@@ -2,7 +2,7 @@
 
 Use this when adding a **new asset-backed species** to Dino Step. Cross-platform catalog lives in `CreatureCatalog`; art naming is shared via `CreatureAssetNames` / `DrawableCreatureResolver`.
 
-Current **asset-backed** species (10):
+Current **asset-backed** species (15):
 
 - `tiny_raptor`
 - `triceratops`
@@ -14,6 +14,11 @@ Current **asset-backed** species (10):
 - `spinosaurus`
 - `pteranodon`
 - `dilophosaurus`
+- `carnotaurus`
+- `mosasaurus`
+- `pachycephalosaurus`
+- `allosaurus`
+- `iguanodon`
 
 ---
 

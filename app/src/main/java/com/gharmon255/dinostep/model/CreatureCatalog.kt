@@ -5,7 +5,8 @@ import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
 /**
  * Creature roster. Sprint 1 canonical asset-backed species (cross-platform):
  * tiny_raptor, triceratops, trex, stegosaurus, brachiosaurus, ankylosaurus,
- * parasaurolophus, spinosaurus, pteranodon, dilophosaurus — drawable prefix `dino_{id}` per stage.
+ * parasaurolophus, spinosaurus, pteranodon, dilophosaurus, carnotaurus, mosasaurus,
+ * pachycephalosaurus, allosaurus, iguanodon — drawable prefix `dino_{id}` per stage.
  */
 object CreatureCatalog {
     private const val TAG = "CreatureCatalog"
@@ -56,7 +57,7 @@ object CreatureCatalog {
     val pachycephalosaurus = d(
         id = "pachycephalosaurus",
         name = "Pachycephalosaurus",
-        rarity = Rarity.COMMON,
+        rarity = Rarity.UNCOMMON,
         habitat = Habitat.ROCKY,
         total = 12_500,
         hatch = 2_500,
@@ -127,7 +128,7 @@ object CreatureCatalog {
     val carnotaurus = d(
         id = "carnotaurus",
         name = "Carnotaurus",
-        rarity = Rarity.UNCOMMON,
+        rarity = Rarity.RARE,
         habitat = Habitat.VOLCANO,
         total = 24_000,
         hatch = 4_800,
@@ -178,7 +179,7 @@ object CreatureCatalog {
     val allosaurus = d(
         id = "allosaurus",
         name = "Allosaurus",
-        rarity = Rarity.RARE,
+        rarity = Rarity.EPIC,
         habitat = Habitat.ROCKY,
         total = 48_000,
         hatch = 9_600,
@@ -198,7 +199,7 @@ object CreatureCatalog {
     val mosasaurus = d(
         id = "mosasaurus",
         name = "Mosasaurus",
-        rarity = Rarity.RARE,
+        rarity = Rarity.LEGENDARY,
         habitat = Habitat.OCEAN,
         total = 65_000,
         hatch = 13_000,
