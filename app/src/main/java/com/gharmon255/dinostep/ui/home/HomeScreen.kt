@@ -126,9 +126,18 @@ private fun HomeScreenContent(
             ) {
                 StatRow(label = "Steps", value = numberFormat.format(steps))
                 StatRow(
-                    label = "Next milestone",
-                    value = nextMilestone?.let { numberFormat.format(it) } ?: "Complete",
+                    label = "Next stage",
+                    value = HomeStageProgressText.formatNextStageLine(
+                        activeCreature = activeCreature,
+                        numberFormat = numberFormat,
+                    ),
                 )
+                nextMilestone?.let { milestoneAt ->
+                    StatRow(
+                        label = "Milestone at",
+                        value = "${numberFormat.format(milestoneAt)} total steps",
+                    )
+                }
             }
         }
 
