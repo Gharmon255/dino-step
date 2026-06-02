@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
@@ -50,7 +51,6 @@ fun HomeScreen(
         steps = viewModel.steps,
         stage = viewModel.stage,
         nextMilestone = viewModel.nextMilestone,
-        progressPercent = viewModel.progressPercent,
         isAdult = viewModel.isAdult,
         healthConnectStatus = viewModel.healthConnectStatus,
         lastSyncedStepTotal = viewModel.lastSyncedStepTotal,
@@ -71,7 +71,6 @@ private fun HomeScreenContent(
     steps: Int,
     stage: GrowthStage,
     nextMilestone: Int?,
-    progressPercent: Float,
     isAdult: Boolean,
     healthConnectStatus: HealthConnectUiStatus,
     lastSyncedStepTotal: Int,
@@ -100,22 +99,51 @@ private fun HomeScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        val stageProgress = HomeStageProgressText.stageProgressPercent(activeCreature)
+        val overallProgress = HomeStageProgressText.overallProgressPercent(activeCreature)
+
         GameCreatureCard(
             title = displayName,
             stage = stage,
             eggRarity = activeCreature.eggRarity,
             creatureRarity = creatureRarity,
-            progressPercent = progressPercent,
         ) {
             CreatureStageVisual(activeCreature = activeCreature)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            LinearProgressIndicator(
-                progress = { progressPercent / 100f },
+            Text(
+                text = HomeStageProgressText.formatStageProgressLabel(activeCreature),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = progressColors.accent,
                 modifier = Modifier.fillMaxWidth(),
+            )
+            LinearProgressIndicator(
+                progress = { stageProgress / 100f },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
                 color = progressColors.accent,
                 trackColor = progressColors.container,
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = HomeStageProgressText.formatOverallProgressLabel(activeCreature),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            LinearProgressIndicator(
+                progress = { overallProgress / 100f },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+                    .height(6.dp),
+                color = progressColors.accent.copy(alpha = 0.55f),
+                trackColor = progressColors.container.copy(alpha = 0.6f),
             )
 
             Column(
@@ -233,7 +261,6 @@ private fun HomeScreenPreview() {
             steps = 900,
             stage = GrowthStage.EGG,
             nextMilestone = CreatureCatalog.tinyRaptor.hatchStep,
-            progressPercent = 56.25f,
             isAdult = false,
             healthConnectStatus = HealthConnectUiStatus.PermissionRequired,
             lastSyncedStepTotal = 0,

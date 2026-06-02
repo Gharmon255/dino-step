@@ -330,7 +330,6 @@ fun GameCreatureCard(
     stage: GrowthStage,
     eggRarity: EggRarity,
     creatureRarity: Rarity?,
-    progressPercent: Float,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -364,12 +363,6 @@ fun GameCreatureCard(
                 modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
             )
             content()
-            Text(
-                text = "Progress ${progressPercent.toInt()}%",
-                style = MaterialTheme.typography.labelLarge,
-                color = colors.accent,
-                modifier = Modifier.padding(top = 8.dp),
-            )
         }
     }
 }
