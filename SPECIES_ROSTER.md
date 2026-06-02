@@ -4,7 +4,20 @@
 When code disagrees with this document, **treat this file as intended design** and update the diverging platform in a dedicated catalog-alignment sprint.
 
 **Canonical source:** `dino-step-ios` — `Dino Step/Game/CreatureCatalog.swift` (June 2026).  
-**Companion docs:** `SPECIES_ONBOARDING_CHECKLIST.md`, `WATCH_SYNC_CONTRACT.md` (iOS) / `WEAR_SYNC_CONTRACT.md` (Android).
+**Companion docs:** `SPECIES_ONBOARDING_CHECKLIST.md`, `WATCH_SYNC_CONTRACT.md` (iOS) / `WEAR_SYNC_CONTRACT.md` (Android).  
+**Asset source of truth:** `dino-step-assets/dinos/` — import per `dino-step-assets/ADD_SPECIES_CHECKLIST.md` and `dino-step-assets/species_queue.md`.
+
+---
+
+## Roster summary (June 2026)
+
+| Count | Description |
+|-------|-------------|
+| **29** | Catalog species on iOS and Android (`CreatureCatalog`) |
+| **20** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
+| **9** | Non-asset-backed species (emoji / placeholder art only) |
+
+All **20** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
 
 ---
 
@@ -19,7 +32,7 @@ When code disagrees with this document, **treat this file as intended design** a
 | **total steps** | Steps required to reach adult (claim) |
 | **asset-backed** | `true` = listed in `assetBackedSpeciesIds`; resolver may use `dino_{id}_{stage}` |
 | **asset prefix** | Base name for stage PNGs: `dino_{speciesId}` |
-| **asset status** | Whether PNGs exist in app bundles today |
+| **asset status** | Whether PNGs exist in app bundles and `dino-step-assets` today |
 
 **Growth stages:** EGG (0 … hatch−1) → BABY (hatch … juvenile−1) → JUVENILE (juvenile … total−1) → ADULT (total+).
 
@@ -54,9 +67,9 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `therizinosaurus` | Therizinosaurus | Rare | Forest | 11,000 | 16,500 | 27,500 | 55,000 | true | `dino_therizinosaurus` | **shipped** |
 | `giganotosaurus` | Giganotosaurus | Epic | Plains | 17,000 | 25,500 | 42,500 | 85,000 | true | `dino_giganotosaurus` | **shipped** |
 
-**Stage file names (when shipped):** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult`.
+**Stage file names:** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult` (PNG in `dino-step-assets/dinos/`; iOS imagesets; Android `drawable-nodpi` on phone and Wear).
 
-**Iguanodon:** Baby/juvenile/adult PNGs are in `app` and `wear` `drawable-nodpi/` (`dino_iguanodon_{baby,juvenile,adult}.png`). Resolver uses species art when present; placeholders only if a file is missing.
+**Iguanodon:** **Shipped everywhere** — `dino-step-assets/dinos/`, iOS phone and watch `Assets.xcassets`, Android phone and Wear `drawable-nodpi/` (`dino_iguanodon_{baby,juvenile,adult}`).
 
 ---
 
@@ -67,8 +80,8 @@ Emoji / placeholder visuals only. **Never** use another species’ `dino_*` art 
 | species id | display name | rarity | habitat | steps to hatch | steps baby → juvenile | steps juvenile → adult | total steps | asset-backed | asset prefix | notes |
 |------------|--------------|--------|---------|----------------|----------------------|------------------------|-------------|--------------|--------------|-------|
 | `quetzalcoatlus` | Quetzalcoatlus | Epic | Mountain | 18,000 | 27,000 | 45,000 | 90,000 | false | — | |
-| `indominus_hybrid` | Indominus Rex Style Hybrid | Epic | Lab | 19,000 | 28,500 | 47,500 | 95,000 | false | — | Canonical id; legacy slug `indominus_rex_style_hybrid` — see [Legacy IDs](#legacy-ids-and-aliases) |
-| `ancient_spinosaurus` | Ancient Spinosaurus | Epic | Swamp | 20,000 | 30,000 | 50,000 | 100,000 | false | — | Distinct legendary variant; not base `spinosaurus` art |
+| `indominus_hybrid` | Indominus Rex Style Hybrid | Epic | Lab | 19,000 | 28,500 | 47,500 | 95,000 | false | — | Canonical id (aligned with Android); legacy slug `indominus_rex_style_hybrid` |
+| `ancient_spinosaurus` | Ancient Spinosaurus | Epic | Swamp | 20,000 | 30,000 | 50,000 | 100,000 | false | — | Distinct variant; not base `spinosaurus` art |
 | `volcanic_t_rex` | Volcanic T-Rex | Legendary | Volcano | 25,000 | 37,500 | 62,500 | 125,000 | false | — | Not `trex` art |
 | `frost_raptor` | Frost Raptor | Legendary | Ice | 22,000 | 33,000 | 55,000 | 110,000 | false | — | |
 | `shadow_triceratops` | Shadow Triceratops | Legendary | Dark | 26,000 | 39,000 | 65,000 | 130,000 | false | — | Not `triceratops` art |
@@ -80,23 +93,24 @@ Emoji / placeholder visuals only. **Never** use another species’ `dino_*` art 
 
 ---
 
-## Known cross-platform drift (catalog not yet aligned)
+## Cross-platform catalog alignment
 
-Canonical values are **iOS** (this document). **Android** `CreatureCatalog.kt` must be updated to match — do not change iOS catalog for these without a deliberate roster revision.
+**Status (June 2026):** iOS and Android catalogs match this roster. **No open catalog drift.**
 
-| species id | field | canonical (iOS) | Android current | platform to change |
-|------------|-------|-----------------|-----------------|-------------------|
-| `brachiosaurus` | steps to hatch | 4,000 | 4,800 | **Android** |
-| `brachiosaurus` | steps baby → juvenile | 6,000 | 7,200 | **Android** |
-| `brachiosaurus` | steps juvenile → adult | 10,000 | 12,000 | **Android** |
-| `brachiosaurus` | total steps | 20,000 | 24,000 | **Android** |
-| `pachycephalosaurus` | rarity | Common | Uncommon | **Android** |
-| `carnotaurus` | rarity | Uncommon | Rare | **Android** |
-| `allosaurus` | rarity | Rare | Epic | **Android** |
-| `mosasaurus` | rarity | Rare | Legendary | **Android** |
+### Resolved drift (historical)
 
-**iOS:** Already matches this roster for the rows above.  
-**Iguanodon:** Rarity Uncommon on both; asset gap on both — no catalog drift, only missing PNGs.
+Android `CreatureCatalog.kt` was updated to match iOS. These rows are **resolved** — do not treat Android as still diverging:
+
+| species id | field | canonical (both platforms now) | was (Android, pre-alignment) |
+|------------|-------|--------------------------------|------------------------------|
+| `brachiosaurus` | steps to hatch | 4,000 | 4,800 |
+| `brachiosaurus` | steps baby → juvenile | 6,000 | 7,200 |
+| `brachiosaurus` | steps juvenile → adult | 10,000 | 12,000 |
+| `brachiosaurus` | total steps | 20,000 | 24,000 |
+| `pachycephalosaurus` | rarity | Common | Uncommon |
+| `carnotaurus` | rarity | Uncommon | Rare |
+| `allosaurus` | rarity | Rare | Epic |
+| `mosasaurus` | rarity | Rare | Legendary |
 
 ---
 
@@ -108,9 +122,9 @@ Canonical values are **iOS** (this document). **Android** `CreatureCatalog.kt` m
 | `pterodactyl` | `pteranodon` | Older saves; display name “Pterodactyl” |
 | `Pterodactyl` (display) | `pteranodon` | iOS `legacySpeciesNameAliases` |
 | `tyrannosaurus`, `tyrannosaurus_rex` | `trex` | Dev picker / asset resolver (iOS) |
-| `indominus_rex_style_hybrid` | `indominus_hybrid` | Older iOS slug / cross-platform saves; Android `legacyCreatureIdAliases` |
+| `indominus_rex_style_hybrid` | `indominus_hybrid` | Older iOS slug / cross-platform saves; dev picker / slug lookup |
 
-**Do not** map `volcanic_t_rex` or `ancient_apex_rex` to `trex` for artwork.
+**Do not** map `volcanic_t_rex` or `ancient_apex_rex` to `trex` for artwork. Do not map variant legendaries to base species art (see `dino-step-assets/species_queue.md`).
 
 ---
 
@@ -134,7 +148,7 @@ Android may also try `egg_{rarity}_(1)` as a fallback candidate. Species stage a
 
 When a mystery egg of tier X is opened, a **random species** is chosen from all creatures whose **creature rarity** equals tier X (see tables above).
 
-After Android alignment, uncommon eggs include: Stegosaurus, Pteranodon, Brachiosaurus, Dilophosaurus, Iguanodon, Carnotaurus, Baryonyx — not Pachycephalosaurus (Common).
+Uncommon eggs include: Stegosaurus, Pteranodon, Brachiosaurus, Dilophosaurus, Iguanodon, Carnotaurus, Baryonyx — not Pachycephalosaurus (Common).
 
 ---
 
@@ -142,4 +156,9 @@ After Android alignment, uncommon eggs include: Stegosaurus, Pteranodon, Brachio
 
 | Date | Change |
 |------|--------|
-| 2026-06-01 | Initial canonical roster from iOS `CreatureCatalog.swift`; documented Android drift for Brachiosaurus steps and five rarity mismatches; Iguanodon marked code-wired / assets missing |
+| 2026-06-02 | Docs: roster summary (29 / 20 / 9); cross-platform drift marked **resolved**; Iguanodon and five new species noted shipped on all asset targets |
+| 2026-06-02 | Gallimimus, Baryonyx, Velociraptor Alpha, Therizinosaurus, Giganotosaurus asset-backed and **shipped** (`dino-step-assets`, iOS, Android phone, Wear) |
+| 2026-06-02 | Android `CreatureCatalog.kt` aligned with iOS (Brachiosaurus steps; Pachycephalosaurus, Carnotaurus, Allosaurus, Mosasaurus rarities) |
+| 2026-06-02 | Iguanodon PNGs **shipped** on `dino-step-assets`, iOS phone/watch, Android phone/Wear |
+| 2026-06-02 | Indominus Rex Style Hybrid canonical id `indominus_hybrid` on iOS (legacy slug `indominus_rex_style_hybrid`) |
+| 2026-06-01 | Initial canonical roster from iOS `CreatureCatalog.swift`; documented Android drift (later resolved 2026-06-02) |
