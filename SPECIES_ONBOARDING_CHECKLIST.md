@@ -2,23 +2,8 @@
 
 Use this when adding a **new asset-backed species** to Dino Step. Cross-platform catalog lives in `CreatureCatalog`; art naming is shared via `CreatureAssetNames` / `DrawableCreatureResolver`.
 
-Current **asset-backed** species (15):
-
-- `tiny_raptor`
-- `triceratops`
-- `trex`
-- `stegosaurus`
-- `brachiosaurus`
-- `ankylosaurus`
-- `parasaurolophus`
-- `spinosaurus`
-- `pteranodon`
-- `dilophosaurus`
-- `carnotaurus`
-- `mosasaurus`
-- `pachycephalosaurus`
-- `allosaurus`
-- `iguanodon`
+**Canonical roster (ids, rarities, steps, asset status, Android drift):** see [`SPECIES_ROSTER.md`](SPECIES_ROSTER.md).  
+Do not duplicate roster tables here — update `SPECIES_ROSTER.md` when design changes.
 
 ---
 
@@ -56,7 +41,7 @@ Do **not** rename to display names (e.g. avoid `dino_t_rex_*` unless catalog id 
 
 ## 3. Catalog & asset registry
 
-- [ ] Add or confirm `CreatureDefinition` in `app/.../model/CreatureCatalog.kt` with stable `id` matching filenames
+- [ ] Add or confirm `CreatureDefinition` in `app/.../model/CreatureCatalog.kt` matches [`SPECIES_ROSTER.md`](SPECIES_ROSTER.md) (stable `id` matching filenames)
 - [ ] Add species id to `CreatureAssetNames.assetBackedSpeciesIds` in `shared/.../visual/CreatureAssetNames.kt`
 - [ ] Confirm `CreatureCatalog.isAssetBacked(id)` returns true
 - [ ] Confirm `CreatureAssetNames.assetSlugForSpeciesArt(id)` returns the slug used in drawable names
@@ -125,6 +110,7 @@ register {id} in CreatureAssetNames, and enable DEBUG species override.
 
 ## Related docs
 
+- `SPECIES_ROSTER.md` — canonical species ids, rarities, steps, asset status
 - `WEAR_SYNC_CONTRACT.md` — phone ↔ watch payload and `creature_id`
 - `shared/.../visual/CreatureAssetNames.kt` — naming helpers
 - `shared/.../visual/DrawableCreatureResolver.kt` — safe fallback rules
