@@ -69,7 +69,7 @@ fun CollectionScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
             Text(
@@ -157,7 +157,13 @@ fun CollectionScreen(
 
 @Composable
 private fun CollectionSummaryCard(summary: CollectionSummary) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -216,31 +222,44 @@ private fun RosterCreatureCard(
     val colors = rarityColors(entry.creature.rarity)
     val avatarVisual = CreatureVisualMapper.collectionVisual(entry.creature)
 
+    val cardShape = RoundedCornerShape(18.dp)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .then(
                 if (collected) {
-                    Modifier.border(2.dp, colors.border, RoundedCornerShape(16.dp))
+                    Modifier.border(2.dp, colors.border.copy(alpha = 0.85f), cardShape)
                 } else {
-                    Modifier
+                    Modifier.border(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+                        cardShape,
+                    )
                 },
             ),
-        shape = RoundedCornerShape(16.dp),
+        shape = cardShape,
         colors = if (collected) {
-            CardDefaults.cardColors()
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface.copy(
+                    alpha = 1f,
+                ),
+            )
         } else {
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
             )
         },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (collected) 2.dp else 0.dp,
+        ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(horizontal = 18.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Top,
         ) {
             if (collected) {
                 CollectionCreatureAvatar(
@@ -254,13 +273,13 @@ private fun RosterCreatureCard(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Text(
                     text = if (collected) entry.creature.name else "Undiscovered",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     color = if (collected) {
                         MaterialTheme.colorScheme.onSurface
@@ -270,39 +289,29 @@ private fun RosterCreatureCard(
                 )
 
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     RarityBadge(rarity = entry.creature.rarity)
                     CollectionStatusChip(collected = collected)
                 }
 
-                Text(
-                    text = if (collected) {
-                        habitatLabel(entry.creature.habitat)
-                    } else {
-                        "Habitat: ???"
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
-                Text(
-                    text = if (collected) {
-                        "Adult · ${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow"
-                    } else {
-                        "${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow"
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-
                 if (collected) {
+                    Text(
+                        text = habitatLabel(entry.creature.habitat),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = "Adult · ${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                     if (entry.collectCount > 1) {
                         Text(
                             text = "Collected ×${entry.collectCount}",
                             style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.SemiBold,
                             color = colors.accent,
                         )
                     }
@@ -313,6 +322,17 @@ private fun RosterCreatureCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                } else {
+                    Text(
+                        text = "Complete this species to reveal its art",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                    )
+                    Text(
+                        text = "${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
         }
@@ -352,14 +372,14 @@ private fun CollectionStatusChip(collected: Boolean) {
     Surface(
         shape = RoundedCornerShape(8.dp),
         color = if (collected) {
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f)
         } else {
-            MaterialTheme.colorScheme.surfaceVariant
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
         },
     ) {
         Text(
             text = if (collected) "Discovered" else "Locked",
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
             color = if (collected) {

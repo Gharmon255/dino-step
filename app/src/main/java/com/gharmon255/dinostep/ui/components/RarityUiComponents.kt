@@ -396,23 +396,39 @@ private fun RowWithBadges(
     }
 }
 
-/** Undiscovered roster entry: lock styling only — no species drawable or name art. */
+private val CollectionAvatarShape = RoundedCornerShape(16.dp)
+private val LockedCollectionAvatarShape = RoundedCornerShape(14.dp)
+
+/** Undiscovered roster entry: mystery styling only — no species drawable or name art. */
 @Composable
 fun LockedCollectionAvatar(
     modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 80.dp,
 ) {
     Box(
         modifier = modifier
-            .size(56.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f))
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.6f), CircleShape),
+            .size(size)
+            .clip(LockedCollectionAvatarShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
+            .border(
+                width = 1.5.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
+                shape = LockedCollectionAvatarShape,
+            ),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = com.gharmon255.dinostep.model.CreatureVisualMapper.LOCKED_PLACEHOLDER,
-            fontSize = 24.sp,
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = com.gharmon255.dinostep.model.CreatureVisualMapper.LOCKED_PLACEHOLDER,
+                fontSize = 28.sp,
+            )
+            Text(
+                text = "?",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            )
+        }
     }
 }
 
@@ -426,37 +442,38 @@ fun CollectionCreatureAvatar(
     creatureId: String,
     rarity: Rarity,
     modifier: Modifier = Modifier,
+    frameSize: androidx.compose.ui.unit.Dp = 96.dp,
+    imageSize: androidx.compose.ui.unit.Dp = 80.dp,
 ) {
     val colors = rarityColors(rarity)
     val drawableId = CreatureStageDrawableResolve.resolveAdultDrawableId(speciesId = creatureId)
     val fallbackEmoji = visual.displayEmoji.ifBlank { visual.speciesEmoji }
+    val hasDrawable = drawableId != 0
     Box(
         modifier = modifier
-            .size(56.dp)
-            .clip(CircleShape)
-            .background(colors.container)
-            .border(2.dp, colors.border, CircleShape),
+            .size(frameSize)
+            .clip(CollectionAvatarShape)
+            .background(
+                if (hasDrawable) {
+                    colors.container.copy(alpha = 0.4f)
+                } else {
+                    colors.container
+                },
+            )
+            .border(2.5.dp, colors.border, CollectionAvatarShape),
         contentAlignment = Alignment.Center,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            if (drawableId != 0) {
-                Image(
-                    painter = painterResource(drawableId),
-                    contentDescription = "${visual.stageDetailLabel} ${visual.speciesShortLabel}",
-                    modifier = Modifier.size(40.dp),
-                    contentScale = ContentScale.Fit,
-                )
-            } else {
-                Text(text = fallbackEmoji, fontSize = 22.sp)
-            }
-            if (visual.speciesShortLabel.isNotBlank()) {
-                Text(
-                    text = visual.speciesShortLabel,
-                    fontSize = 8.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.accent,
-                )
-            }
+        if (hasDrawable) {
+            Image(
+                painter = painterResource(drawableId),
+                contentDescription = visual.stageDetailLabel,
+                modifier = Modifier
+                    .size(imageSize)
+                    .padding(4.dp),
+                contentScale = ContentScale.Fit,
+            )
+        } else {
+            Text(text = fallbackEmoji, fontSize = 36.sp)
         }
     }
 }
