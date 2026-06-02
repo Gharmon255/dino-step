@@ -57,7 +57,7 @@ object CreatureCatalog {
     val pachycephalosaurus = d(
         id = "pachycephalosaurus",
         name = "Pachycephalosaurus",
-        rarity = Rarity.UNCOMMON,
+        rarity = Rarity.COMMON,
         habitat = Habitat.ROCKY,
         total = 12_500,
         hatch = 2_500,
@@ -90,9 +90,9 @@ object CreatureCatalog {
         name = "Brachiosaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.PLAINS,
-        total = 24_000,
-        hatch = 4_800,
-        juvenile = 12_000,
+        total = 20_000,
+        hatch = 4_000,
+        juvenile = 10_000,
     )
 
     val pteranodon = d(
@@ -128,7 +128,7 @@ object CreatureCatalog {
     val carnotaurus = d(
         id = "carnotaurus",
         name = "Carnotaurus",
-        rarity = Rarity.RARE,
+        rarity = Rarity.UNCOMMON,
         habitat = Habitat.VOLCANO,
         total = 24_000,
         hatch = 4_800,
@@ -179,7 +179,7 @@ object CreatureCatalog {
     val allosaurus = d(
         id = "allosaurus",
         name = "Allosaurus",
-        rarity = Rarity.EPIC,
+        rarity = Rarity.RARE,
         habitat = Habitat.ROCKY,
         total = 48_000,
         hatch = 9_600,
@@ -199,7 +199,7 @@ object CreatureCatalog {
     val mosasaurus = d(
         id = "mosasaurus",
         name = "Mosasaurus",
-        rarity = Rarity.LEGENDARY,
+        rarity = Rarity.RARE,
         habitat = Habitat.OCEAN,
         total = 65_000,
         hatch = 13_000,
