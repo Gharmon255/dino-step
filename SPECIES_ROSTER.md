@@ -42,7 +42,7 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `pteranodon` | Pteranodon | Uncommon | Mountain | 4,400 | 6,600 | 11,000 | 22,000 | true | `dino_pteranodon` | **shipped** |
 | `brachiosaurus` | Brachiosaurus | Uncommon | Plains | 4,000 | 6,000 | 10,000 | 20,000 | true | `dino_brachiosaurus` | **shipped** |
 | `dilophosaurus` | Dilophosaurus | Uncommon | Jungle | 4,000 | 6,000 | 10,000 | 20,000 | true | `dino_dilophosaurus` | **shipped** |
-| `iguanodon` | Iguanodon | Uncommon | Forest | 3,800 | 5,700 | 9,500 | 19,000 | true | `dino_iguanodon` | **code-wired; assets missing** |
+| `iguanodon` | Iguanodon | Uncommon | Forest | 3,800 | 5,700 | 9,500 | 19,000 | true | `dino_iguanodon` | **shipped** |
 | `carnotaurus` | Carnotaurus | Uncommon | Volcano | 4,800 | 7,200 | 12,000 | 24,000 | true | `dino_carnotaurus` | **shipped** |
 | `trex` | T-Rex | Rare | Volcano | 10,000 | 15,000 | 25,000 | 50,000 | true | `dino_trex` | **shipped** |
 | `spinosaurus` | Spinosaurus | Rare | Swamp | 12,000 | 18,000 | 30,000 | 60,000 | true | `dino_spinosaurus` | **shipped** |
@@ -51,7 +51,7 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 
 **Stage file names (when shipped):** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult`.
 
-**Iguanodon:** Listed in `assetBackedSpeciesIds` on both platforms; resolver will look up PNGs and fall back to emoji/placeholder until art is imported. Do not remove from asset-backed set until assets ship or an explicit roster change.
+**Iguanodon:** Baby/juvenile/adult PNGs are in `app` and `wear` `drawable-nodpi/` (`dino_iguanodon_{baby,juvenile,adult}.png`). Resolver uses species art when present; placeholders only if a file is missing.
 
 ---
 
