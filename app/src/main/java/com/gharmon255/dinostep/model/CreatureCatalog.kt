@@ -362,6 +362,7 @@ object CreatureCatalog {
     private val legacyCreatureIdAliases: Map<String, String> = mapOf(
         "t_rex" to "trex",
         "pterodactyl" to "pteranodon",
+        "indominus_rex_style_hybrid" to "indominus_hybrid",
     )
 
     fun isAssetBacked(creatureId: String): Boolean = CreatureAssetNames.isAssetBacked(creatureId)
