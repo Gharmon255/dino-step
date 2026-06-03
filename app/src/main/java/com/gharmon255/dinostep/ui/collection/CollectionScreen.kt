@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -15,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,7 +36,6 @@ import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.Habitat
 import com.gharmon255.dinostep.model.StageVisual
 import com.gharmon255.dinostep.model.Rarity
-import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.components.CollectionCreatureAvatar
 import com.gharmon255.dinostep.ui.components.LockedCollectionAvatar
 import com.gharmon255.dinostep.ui.components.RarityBadge
@@ -157,6 +157,12 @@ fun CollectionScreen(
 
 @Composable
 private fun CollectionSummaryCard(summary: CollectionSummary) {
+    val overallProgress = if (summary.totalPossibleSpecies == 0) {
+        0f
+    } else {
+        summary.uniqueSpeciesCollected.toFloat() / summary.totalPossibleSpecies
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
@@ -168,47 +174,116 @@ private fun CollectionSummaryCard(summary: CollectionSummary) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
-                text = "Collection progress",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
+                text = "DINO DEX",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            StatRow(
-                label = "Total collected",
-                value = summary.totalCollectedDinosaurs.toString(),
-            )
-            StatRow(
-                label = "Unique species",
-                value = "${summary.uniqueSpeciesCollected} / ${summary.totalPossibleSpecies}",
-            )
-            StatRow(
-                label = "Completion",
-                value = "${summary.completionPercent}%",
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = "Discovered",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            text = summary.uniqueSpeciesCollected.toString(),
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            text = " / ${summary.totalPossibleSpecies}",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 2.dp),
+                        )
+                    }
+                }
+
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "${summary.completionPercent}%",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = "complete",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
 
             LinearProgressIndicator(
-                progress = {
-                    if (summary.totalPossibleSpecies == 0) {
-                        0f
-                    } else {
-                        summary.uniqueSpeciesCollected.toFloat() / summary.totalPossibleSpecies
-                    }
-                },
+                progress = { overallProgress },
                 modifier = Modifier.fillMaxWidth(),
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.primary,
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-            summary.rarityProgress.forEach { progress ->
-                StatRow(
-                    label = progress.rarity.name.lowercase().replaceFirstChar { it.uppercase() },
-                    value = "${progress.collectedSpecies} / ${progress.totalSpecies}",
+            if (summary.totalCollectedDinosaurs > summary.uniqueSpeciesCollected) {
+                Text(
+                    text = "${summary.totalCollectedDinosaurs} adults claimed " +
+                        "(${summary.uniqueSpeciesCollected} unique species)",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
                 )
             }
+
+            Text(
+                text = "By rarity",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            summary.rarityProgress.forEach { progress ->
+                RarityProgressRow(progress = progress)
+            }
         }
+    }
+}
+
+@Composable
+private fun RarityProgressRow(progress: RarityProgress) {
+    val colors = rarityColors(progress.rarity)
+    val fraction = if (progress.totalSpecies == 0) {
+        0f
+    } else {
+        progress.collectedSpecies.toFloat() / progress.totalSpecies
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        RarityBadge(rarity = progress.rarity)
+        LinearProgressIndicator(
+            progress = { fraction },
+            modifier = Modifier
+                .weight(1f)
+                .height(6.dp),
+            trackColor = colors.container,
+            color = colors.accent,
+        )
+        Text(
+            text = "${progress.collectedSpecies}/${progress.totalSpecies}",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = colors.accent,
+            modifier = Modifier.width(40.dp),
+        )
     }
 }
 
