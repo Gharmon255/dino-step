@@ -6,10 +6,20 @@ import com.gharmon255.dinostep.data.local.DinoStepDatabase
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
-import com.gharmon255.dinostep.garmin.StubGarminCompanionPublisher
+import com.gharmon255.dinostep.garmin.GarminConnectIQManager
+import com.gharmon255.dinostep.garmin.GarminSdkCompanionPublisher
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class DinoStepApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        garminConnectIQManager.initialize()
+    }
+
+    override fun onTerminate() {
+        garminConnectIQManager.shutdown()
+        super.onTerminate()
+    }
     val developerPreferences: DeveloperPreferences by lazy {
         DeveloperPreferences(this)
     }
@@ -26,7 +36,11 @@ class DinoStepApplication : Application() {
         WearDataLayerPublisher(this)
     }
 
+    val garminConnectIQManager: GarminConnectIQManager by lazy {
+        GarminConnectIQManager(this)
+    }
+
     val garminCompanionPublisher: GarminCompanionPublisher by lazy {
-        StubGarminCompanionPublisher()
+        GarminSdkCompanionPublisher(garminConnectIQManager)
     }
 }

@@ -5,4 +5,5 @@ data class GarminPublishResult(
     val statusMessage: String,
     val jsonPayload: String,
     val payloadSummary: String,
+    val connectedDeviceCount: Int = 0,
 )
