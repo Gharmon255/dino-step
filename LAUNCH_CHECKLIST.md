@@ -20,6 +20,9 @@ Update checkboxes as items are completed.
 
 ## Privacy & legal
 
+- [x] **Privacy policy text** — `docs/privacy-policy.html` (hosting steps: `docs/PRIVACY_POLICY_HOSTING.md`)
+- [x] **In-app privacy link** — Stats tab + Health Connect rationale screen (`privacy_policy_url` in `strings.xml`)
+- [x] **Data Safety draft answers** — `docs/DATA_SAFETY_PLAY_CONSOLE.md`
 - [ ] **Privacy policy URL** published on a public HTTPS page (required for Play Console)
 - [ ] Privacy policy linked in Play Console **App content → Privacy policy**
 - [ ] **Play Console Data Safety** form completed and matches in-app behavior:
@@ -51,7 +54,7 @@ Update checkboxes as items are completed.
 | `versionCode` | `1` |
 | `versionName` | `"1.0"` |
 | Release `isMinifyEnabled` | `false` |
-| `signingConfigs` | **Not configured** |
+| `signingConfigs` | **Wired** in `:app` and `:wear` `build.gradle.kts` when `keystore.properties` exists |
 | ProGuard rules file | Present but unused while minify is off |
 
 ### Create upload keystore (one-time, local machine)
@@ -67,9 +70,11 @@ keytool -genkey -v \
 
 Store the keystore path and passwords in a password manager. Back up the keystore file securely — loss blocks future updates.
 
-### Wire signing in Gradle (still required)
+### Wire signing in Gradle
 
-1. Create **`keystore.properties`** at project root (gitignored):
+**Gradle wiring is done.** When `keystore.properties` exists, `:app` and `:wear` release builds use the upload keystore.
+
+1. Create **`keystore.properties`** at project root (gitignored), or run **`./scripts/generate-upload-keystore.sh`**:
 
    ```properties
    storeFile=/absolute/path/to/dino-step-upload.jks
@@ -115,8 +120,9 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"  
 
 Output: `app/build/outputs/bundle/release/app-release.aab`
 
-- [ ] Upload keystore created and backed up
-- [ ] `keystore.properties` + `signingConfigs.release` wired
+- [ ] Upload keystore created and backed up (`./scripts/generate-upload-keystore.sh`)
+- [x] `signingConfigs.release` wired in Gradle (`app` + `wear` `build.gradle.kts`)
+- [ ] `keystore.properties` filled with real passwords (gitignored)
 - [ ] `./gradlew bundleRelease` produces signed AAB
 - [ ] Upload AAB to Play Console **Internal testing** track
 - [ ] Add internal testers (email list or Google Group)

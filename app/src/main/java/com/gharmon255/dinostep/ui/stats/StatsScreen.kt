@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.DevTools
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
+import com.gharmon255.dinostep.ui.common.PrivacyPolicyLink
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.NumberFormat
@@ -66,6 +67,8 @@ fun StatsScreen(
             lastSyncedStepTotal = viewModel.lastSyncedStepTotal,
             onRequestPermission = onRequestHealthPermission,
         )
+
+        PrivacyPolicyLink(modifier = Modifier.fillMaxWidth())
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(

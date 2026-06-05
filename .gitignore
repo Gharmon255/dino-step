@@ -18,3 +18,9 @@ local.properties
 **/build/
 local.properties
 .idea/deploymentTargetSelector.xml
+
+# Release signing — never commit secrets or keystores
+keystore.properties
+*.jks
+*.keystore
+upload-keystores/

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Dino Step</string>
+    <!-- Public HTTPS URL for Play Console + in-app link. Update after hosting docs/privacy-policy.html -->
+    <string name="privacy_policy_url">https://gharmon255.github.io/dino-step/privacy-policy.html</string>
 </resources>

@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.gharmon255.dinostep.ui.common.PrivacyPolicyLink
 import com.gharmon255.dinostep.ui.theme.DinoStepTheme
 
 class PermissionsRationaleActivity : ComponentActivity() {
@@ -36,6 +37,7 @@ class PermissionsRationaleActivity : ComponentActivity() {
                             "We do not read your location or track you for advertising.",
                         style = MaterialTheme.typography.bodyLarge,
                     )
+                    PrivacyPolicyLink()
                 }
             }
         }
