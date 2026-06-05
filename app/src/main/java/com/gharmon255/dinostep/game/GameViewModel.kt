@@ -18,6 +18,7 @@ import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
+import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 import com.gharmon255.dinostep.wear.WearSyncDebugState
@@ -29,6 +30,7 @@ class GameViewModel(
     private val developerPreferences: DeveloperPreferences,
     private val healthConnectRepository: HealthConnectRepository,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
+    private val garminCompanionPublisher: GarminCompanionPublisher,
 ) : ViewModel() {
     private val testingEggFactory = TestingEggFactory(repository)
     var isReady by mutableStateOf(false)
@@ -370,6 +372,7 @@ class GameViewModel(
         viewModelScope.launch {
             val result = wearDataLayerPublisher.publishActiveCreature(creature, eventType)
             updateWearSyncDebug(result)
+            garminCompanionPublisher.publishActiveCreature(creature, eventType)
         }
     }
 

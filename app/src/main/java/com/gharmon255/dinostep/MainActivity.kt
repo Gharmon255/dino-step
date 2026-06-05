@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
             developerPreferences = app.developerPreferences,
             healthConnectRepository = app.healthConnectRepository,
             wearDataLayerPublisher = app.wearDataLayerPublisher,
+            garminCompanionPublisher = app.garminCompanionPublisher,
         )
 
         setContent {
