@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +24,7 @@ import com.gharmon255.dinostep.game.DevTools
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
+import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -35,6 +35,7 @@ fun StatsScreen(
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
+    val runColors = rarityColors(viewModel.eggRarity)
 
     var showClearCollectionDialog by remember { mutableStateOf(false) }
     var showResetGameDialog by remember { mutableStateOf(false) }
@@ -66,6 +67,67 @@ fun StatsScreen(
             onRequestPermission = onRequestHealthPermission,
         )
 
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Current Run",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = runColors.accent,
+                )
+
+                StatRow(
+                    label = "Active steps",
+                    value = numberFormat.format(viewModel.steps),
+                )
+                StatRow(
+                    label = "Current egg rarity",
+                    value = viewModel.eggRarity.name,
+                )
+                StatRow(
+                    label = "Creature rarity (after hatch)",
+                    value = viewModel.hatchedCreatureRarity?.name ?: "Hidden",
+                )
+                StatRow(
+                    label = "Current stage",
+                    value = viewModel.stage.name,
+                )
+                StatRow(
+                    label = "Progress",
+                    value = "${viewModel.progressPercent.toInt()}%",
+                )
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Lifetime",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+
+                StatRow(
+                    label = "Completed dinosaurs",
+                    value = numberFormat.format(viewModel.completedCount),
+                )
+                StatRow(
+                    label = "Eggs hatched",
+                    value = numberFormat.format(viewModel.eggsHatched),
+                )
+            }
+        }
+
         if (DevTools.isEnabled) {
             WearSyncDebugCard(
                 wearDebug = viewModel.wearSyncDebug,
@@ -94,54 +156,34 @@ fun StatsScreen(
                 onClearCollection = { showClearCollectionDialog = true },
                 onResetGame = { showResetGameDialog = true },
             )
-        }
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = "Player stats",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text = "Developer diagnostics",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
 
-                StatRow(
-                    label = "Active creature steps",
-                    value = numberFormat.format(viewModel.steps),
-                )
-                StatRow(
-                    label = "Total fake steps added",
-                    value = numberFormat.format(viewModel.totalFakeStepsAdded),
-                )
-                StatRow(
-                    label = "Last synced HC total (today)",
-                    value = numberFormat.format(viewModel.lastSyncedStepTotal),
-                )
-                StatRow(
-                    label = "Eggs hatched",
-                    value = numberFormat.format(viewModel.eggsHatched),
-                )
-                StatRow(
-                    label = "Completed dinosaurs",
-                    value = numberFormat.format(viewModel.completedCount),
-                )
-                StatRow(
-                    label = "Current stage",
-                    value = viewModel.stage.name,
-                )
-                StatRow(
-                    label = "Current progress",
-                    value = "${viewModel.progressPercent.toInt()}%",
-                )
+                    StatRow(
+                        label = "Total fake steps added",
+                        value = numberFormat.format(viewModel.totalFakeStepsAdded),
+                    )
+                    StatRow(
+                        label = "Last synced HC total (today)",
+                        value = numberFormat.format(viewModel.lastSyncedStepTotal),
+                    )
+                }
             }
         }
     }
 
-    if (showReplaceEggDialog && pendingEggGrant != null) {
+    if (DevTools.isEnabled && showReplaceEggDialog && pendingEggGrant != null) {
         val grant = pendingEggGrant!!
         AlertDialog(
             onDismissRequest = {
@@ -179,7 +221,7 @@ fun StatsScreen(
         )
     }
 
-    if (showClearCollectionDialog) {
+    if (DevTools.isEnabled && showClearCollectionDialog) {
         AlertDialog(
             onDismissRequest = { showClearCollectionDialog = false },
             title = { Text("Clear collection?") },
@@ -207,7 +249,7 @@ fun StatsScreen(
         )
     }
 
-    if (showResetGameDialog) {
+    if (DevTools.isEnabled && showResetGameDialog) {
         AlertDialog(
             onDismissRequest = { showResetGameDialog = false },
             title = { Text("Reset game?") },
@@ -236,4 +278,3 @@ fun StatsScreen(
         )
     }
 }
-

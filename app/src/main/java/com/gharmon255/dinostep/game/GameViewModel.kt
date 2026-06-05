@@ -123,7 +123,7 @@ class GameViewModel(
     }
 
     fun forceWatchSync() {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
         publishActiveCreatureToWatch(WearSyncEventType.NONE)
@@ -239,7 +239,7 @@ class GameViewModel(
     }
 
     fun addSteps(amount: Int) {
-        if (!isReady) {
+        if (!DevTools.isEnabled || !isReady) {
             return
         }
         applyStepsToCreature(amount, countAsFake = true)

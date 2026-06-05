@@ -40,6 +40,11 @@ fun HealthConnectCard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Text(
+                text = "Step data stays on your device. Dino Step does not sell or share your steps for ads.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             if (status is HealthConnectUiStatus.Ready) {
                 Text(
                     text = "Last synced Health Connect total today: $lastSyncedStepTotal",

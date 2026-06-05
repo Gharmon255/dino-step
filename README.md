@@ -61,6 +61,7 @@ Non-backed species use `dino_placeholder_{stage}` vectors and species emoji — 
 - [`SPECIES_ROSTER.md`](SPECIES_ROSTER.md) — ids, rarities, steps, asset status
 - [`SPECIES_ONBOARDING_CHECKLIST.md`](SPECIES_ONBOARDING_CHECKLIST.md) — add a new asset-backed species
 - [`WEAR_SYNC_CONTRACT.md`](WEAR_SYNC_CONTRACT.md) — phone → Wear Data Layer payload
+- [`LAUNCH_CHECKLIST.md`](LAUNCH_CHECKLIST.md) — Google Play internal testing readiness (icons, privacy, signing, smoke tests)
 
 ## Developer testing (DEBUG only)
 
