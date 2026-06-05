@@ -28,6 +28,11 @@ enum class NextEggTestSpecies(
     VELOCIRAPTOR_ALPHA("Velociraptor Alpha", "velociraptor_alpha", "velociraptor_alpha"),
     THERIZINOSAURUS("Therizinosaurus", "therizinosaurus", "therizinosaurus"),
     GIGANOTOSAURUS("Giganotosaurus", "giganotosaurus", "giganotosaurus"),
+    QUETZALCOATLUS("Quetzalcoatlus", "quetzalcoatlus", "quetzalcoatlus"),
+    INDOMINUS_HYBRID("Indominus Hybrid", "indominus_hybrid", "indominus_hybrid"),
+    ANCIENT_SPINOSAURUS("Ancient Spinosaurus", "ancient_spinosaurus", "ancient_spinosaurus"),
+    FROST_RAPTOR("Frost Raptor", "frost_raptor", "frost_raptor"),
+    VOLCANIC_T_REX("Volcanic T-Rex", "volcanic_t_rex", "volcanic_t_rex"),
     ;
 
     companion object {
@@ -66,6 +71,11 @@ enum class NextEggTestSpecies(
                 "velociraptor_alpha" -> VELOCIRAPTOR_ALPHA
                 "therizinosaurus" -> THERIZINOSAURUS
                 "giganotosaurus" -> GIGANOTOSAURUS
+                "quetzalcoatlus" -> QUETZALCOATLUS
+                "indominus_hybrid", "indominus_rex_style_hybrid" -> INDOMINUS_HYBRID
+                "ancient_spinosaurus" -> ANCIENT_SPINOSAURUS
+                "frost_raptor" -> FROST_RAPTOR
+                "volcanic_t_rex" -> VOLCANIC_T_REX
                 else -> null
             }
         }

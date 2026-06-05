@@ -3,7 +3,6 @@ package com.gharmon255.dinostep.wear
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,13 +17,6 @@ class MainActivity : ComponentActivity() {
         val viewModelFactory = WearMainViewModelFactory(repository)
 
         setContent {
-            DisposableEffect(repository) {
-                repository.startListening()
-                onDispose {
-                    repository.stopListening()
-                }
-            }
-
             val viewModel: WearMainViewModel = viewModel(factory = viewModelFactory)
             val watchState by viewModel.watchState.collectAsStateWithLifecycle()
 

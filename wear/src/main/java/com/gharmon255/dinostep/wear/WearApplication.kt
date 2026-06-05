@@ -7,4 +7,9 @@ class WearApplication : Application() {
     val watchStateRepository: WatchStateRepository by lazy {
         WatchStateRepository(this)
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        watchStateRepository.startListening()
+    }
 }

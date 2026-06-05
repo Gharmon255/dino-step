@@ -24,6 +24,9 @@ data class WatchCreatureState(
     val eggRarity: String = "COMMON",
     val creatureRarity: String = "",
     val accentColorArgb: Long = com.gharmon255.dinostep.shared.visual.RarityTheme.COMMON_ARGB,
+    val isAssetBacked: Boolean = false,
+    /** Phone-synced logical drawable name, e.g. `dino_trex_baby`. */
+    val stageDrawableKey: String = "",
     val eventType: WearSyncEventType = WearSyncEventType.NONE,
     val isFromPhone: Boolean = false,
     val lastUpdatedAtMillis: Long? = null,

@@ -21,6 +21,8 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
         val app = application as DinoStepApplication
+        app.garminConnectIQManager.bindActivity(this)
+
         val viewModelFactory = GameViewModelFactory(
             repository = app.gameRepository,
             developerPreferences = app.developerPreferences,

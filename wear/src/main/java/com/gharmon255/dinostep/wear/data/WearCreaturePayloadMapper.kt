@@ -25,6 +25,8 @@ fun WearCreaturePayload.toWatchCreatureState(): WatchCreatureState {
         eggRarity = eggRarity,
         creatureRarity = creatureRarity,
         accentColorArgb = accentColorArgb,
+        isAssetBacked = isAssetBacked,
+        stageDrawableKey = stageDrawableKey,
         eventType = eventType,
         isFromPhone = true,
         lastUpdatedAtMillis = updatedAtMillis.takeIf { it > 0L },

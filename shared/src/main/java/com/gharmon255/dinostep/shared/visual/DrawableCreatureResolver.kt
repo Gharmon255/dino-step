@@ -57,6 +57,26 @@ object DrawableCreatureResolver {
      * Resolves baby/juvenile/adult drawable: species PNG if backed and present, else stage placeholder.
      * Never falls back to another species' art.
      */
+    /**
+     * Prefer [stageDrawableKey] from phone sync when present so watch art matches phone exactly.
+     */
+    fun stageDrawableIdFromSync(
+        resources: Resources,
+        packageName: String,
+        speciesId: String,
+        stageName: String,
+        stageDrawableKey: String,
+    ): Int {
+        val key = stageDrawableKey.trim()
+        if (key.isNotEmpty()) {
+            val fromKey = resolveDrawableId(resources, packageName, key)
+            if (fromKey != 0) {
+                return fromKey
+            }
+        }
+        return stageDrawableId(resources, packageName, speciesId, stageName)
+    }
+
     fun stageDrawableId(
         resources: Resources,
         packageName: String,

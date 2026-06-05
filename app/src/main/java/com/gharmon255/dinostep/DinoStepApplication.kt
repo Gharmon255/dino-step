@@ -11,11 +11,6 @@ import com.gharmon255.dinostep.garmin.GarminSdkCompanionPublisher
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class DinoStepApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        garminConnectIQManager.initialize()
-    }
-
     override fun onTerminate() {
         garminConnectIQManager.shutdown()
         super.onTerminate()

@@ -37,6 +37,11 @@ object CreatureAssetNames {
         "velociraptor_alpha",
         "therizinosaurus",
         "giganotosaurus",
+        "quetzalcoatlus",
+        "indominus_hybrid",
+        "ancient_spinosaurus",
+        "frost_raptor",
+        "volcanic_t_rex",
     )
 
     object StageSuffix {
@@ -47,7 +52,7 @@ object CreatureAssetNames {
 
     /**
      * Save/catalog id renames only (same species, different stored id). Must NOT map legendaries
-     * to base species for artwork — e.g. volcanic_t_rex stays non-backed for art.
+     * to base species for artwork — e.g. ancient_apex_rex must not map to `trex` for art.
      */
     private val legacySaveIdToCatalogId: Map<String, String> = mapOf(
         "t_rex" to "trex",

@@ -1,8 +1,11 @@
 package com.gharmon255.dinostep.wear.data
 
+import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.wear.watchface.complications.datasource.ComplicationDataSourceUpdateRequester
+import com.gharmon255.dinostep.wear.complication.DinoCreatureComplicationService
 import com.gharmon255.dinostep.shared.wear.WearCreaturePayload
 import com.gharmon255.dinostep.shared.wear.WearCreaturePayloadCodec
 import com.gharmon255.dinostep.shared.wear.WearSyncPaths
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class WatchStateRepository(
     context: Context,
@@ -66,6 +70,19 @@ class WatchStateRepository(
         Log.i(TAG, "listener stopped")
     }
 
+    suspend fun ensureStateForComplication(): WatchCreatureState {
+        if (_state.value.isFromPhone) {
+            return _state.value
+        }
+        if (!isListening) {
+            startListening()
+        }
+        withContext(Dispatchers.IO) {
+            loadInitialState()
+        }
+        return _state.value
+    }
+
     fun handleDataEvents(events: DataEventBuffer) {
         try {
             for (event in events) {
@@ -107,6 +124,7 @@ class WatchStateRepository(
 
     private fun applyPhonePayload(watchState: WatchCreatureState) {
         _state.value = watchState
+        requestComplicationUpdate()
         Log.i(
             TAG,
             "sync state updated: creatureId=${watchState.speciesIdForArt.ifBlank { "(legacy)" }}, " +
@@ -172,6 +190,20 @@ class WatchStateRepository(
             }
         }.onFailure { error ->
             Log.w(TAG, "initial Data Layer load failed; waiting for sync", error)
+        }
+    }
+
+    private fun requestComplicationUpdate() {
+        scope.launch(Dispatchers.Default) {
+            runCatching {
+                val requester = ComplicationDataSourceUpdateRequester.create(
+                    appContext,
+                    ComponentName(appContext, DinoCreatureComplicationService::class.java),
+                )
+                requester.requestUpdateAll()
+            }.onFailure { error ->
+                Log.w(TAG, "complication update request failed", error)
+            }
         }
     }
 

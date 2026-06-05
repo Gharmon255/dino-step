@@ -160,6 +160,7 @@ private fun ProgressRingSection(
             accentColor = accentColor,
             speciesShortLabel = state.speciesShortLabel,
             stageScale = state.stageScale,
+            stageDrawableKey = state.stageDrawableKey,
             modifier = Modifier.size(CreatureInRingSize),
         )
     }

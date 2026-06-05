@@ -14,10 +14,10 @@ When code disagrees with this document, **treat this file as intended design** a
 | Count | Description |
 |-------|-------------|
 | **29** | Catalog species on iOS and Android (`CreatureCatalog`) |
-| **20** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
-| **9** | Non-asset-backed species (emoji / placeholder art only) |
+| **25** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
+| **4** | Non-asset-backed species (emoji / placeholder art only) |
 
-All **20** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
+All **25** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
 
 ---
 
@@ -40,7 +40,7 @@ All **20** asset-backed species have baby, juvenile, and adult PNGs in `dino-ste
 
 ---
 
-## Asset-backed species (20)
+## Asset-backed species (25)
 
 These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `CreatureAssetNames.assetBackedSpeciesIds` (Android).
 
@@ -66,6 +66,11 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `velociraptor_alpha` | Velociraptor Alpha | Rare | Jungle | 9,000 | 13,500 | 22,500 | 45,000 | true | `dino_velociraptor_alpha` | **shipped** |
 | `therizinosaurus` | Therizinosaurus | Rare | Forest | 11,000 | 16,500 | 27,500 | 55,000 | true | `dino_therizinosaurus` | **shipped** |
 | `giganotosaurus` | Giganotosaurus | Epic | Plains | 17,000 | 25,500 | 42,500 | 85,000 | true | `dino_giganotosaurus` | **shipped** |
+| `quetzalcoatlus` | Quetzalcoatlus | Epic | Mountain | 18,000 | 27,000 | 45,000 | 90,000 | true | `dino_quetzalcoatlus` | **shipped** |
+| `indominus_hybrid` | Indominus Rex Style Hybrid | Epic | Lab | 19,000 | 28,500 | 47,500 | 95,000 | true | `dino_indominus_hybrid` | **shipped** |
+| `ancient_spinosaurus` | Ancient Spinosaurus | Epic | Swamp | 20,000 | 30,000 | 50,000 | 100,000 | true | `dino_ancient_spinosaurus` | **shipped** |
+| `frost_raptor` | Frost Raptor | Legendary | Ice | 22,000 | 33,000 | 55,000 | 110,000 | true | `dino_frost_raptor` | **shipped** |
+| `volcanic_t_rex` | Volcanic T-Rex | Legendary | Volcano | 25,000 | 37,500 | 62,500 | 125,000 | true | `dino_volcanic_t_rex` | **shipped** |
 
 **Stage file names:** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult` (PNG in `dino-step-assets/dinos/`; iOS imagesets; Android `drawable-nodpi` on phone and Wear).
 
@@ -73,17 +78,12 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 
 ---
 
-## Non-asset-backed species (9)
+## Non-asset-backed species (4)
 
 Emoji / placeholder visuals only. **Never** use another species’ `dino_*` art (Android: `dino_placeholder_{stage}`).
 
 | species id | display name | rarity | habitat | steps to hatch | steps baby → juvenile | steps juvenile → adult | total steps | asset-backed | asset prefix | notes |
 |------------|--------------|--------|---------|----------------|----------------------|------------------------|-------------|--------------|--------------|-------|
-| `quetzalcoatlus` | Quetzalcoatlus | Epic | Mountain | 18,000 | 27,000 | 45,000 | 90,000 | false | — | |
-| `indominus_hybrid` | Indominus Rex Style Hybrid | Epic | Lab | 19,000 | 28,500 | 47,500 | 95,000 | false | — | Canonical id (aligned with Android); legacy slug `indominus_rex_style_hybrid` |
-| `ancient_spinosaurus` | Ancient Spinosaurus | Epic | Swamp | 20,000 | 30,000 | 50,000 | 100,000 | false | — | Distinct variant; not base `spinosaurus` art |
-| `volcanic_t_rex` | Volcanic T-Rex | Legendary | Volcano | 25,000 | 37,500 | 62,500 | 125,000 | false | — | Not `trex` art |
-| `frost_raptor` | Frost Raptor | Legendary | Ice | 22,000 | 33,000 | 55,000 | 110,000 | false | — | |
 | `shadow_triceratops` | Shadow Triceratops | Legendary | Dark | 26,000 | 39,000 | 65,000 | 130,000 | false | — | Not `triceratops` art |
 | `titanosaur` | Titanosaur | Legendary | Plains | 30,000 | 45,000 | 75,000 | 150,000 | false | — | |
 | `cosmic_pterodactyl` | Cosmic Pterodactyl | Legendary | Sky | 35,000 | 52,500 | 87,500 | 175,000 | false | — | Not `pteranodon` art |

@@ -38,12 +38,15 @@ class GarminSdkCompanionPublisher(
         val json = GarminCreaturePayloadJson.encode(payloadToSend)
         val summary = payloadToSend.toLogString()
 
-        if (!connectIQManager.isSdkReady) {
+        if (!connectIQManager.hasBindAttempted || !connectIQManager.isSdkReady) {
             val initError = connectIQManager.lastInitError
-            val message = if (initError != null) {
-                "Connect IQ SDK not ready: $initError"
-            } else {
-                "Connect IQ SDK not ready — open Garmin Connect Mobile"
+            val message = when {
+                !connectIQManager.hasBindAttempted ->
+                    "Garmin companion not started (optional — Samsung/Wear unaffected)"
+                initError != null ->
+                    "Connect IQ SDK not ready: $initError"
+                else ->
+                    "Connect IQ SDK not ready — open Garmin Connect Mobile"
             }
             Log.w(TAG, message)
             return GarminPublishResult(
@@ -69,14 +72,15 @@ class GarminSdkCompanionPublisher(
             )
         }
 
-        Log.i(TAG, "Sending Garmin payload (${json.length} bytes) to ${devices.size} device(s)")
-        Log.d(TAG, "Garmin JSON: $json")
+        val messageMap = GarminCreaturePayloadMap.toMessageMap(payloadToSend)
+        Log.i(TAG, "Sending Garmin payload (${messageMap.size} fields) to ${devices.size} device(s)")
+        Log.d(TAG, "Garmin JSON (debug): $json")
         Log.i(TAG, "Payload: $summary")
 
         val connectIQ = connectIQManager.requireConnectIQ()
         val results = withContext(Dispatchers.Main.immediate) {
             devices.map { device ->
-                sendMessage(connectIQ, device, json)
+                sendMessage(connectIQ, device, messageMap)
             }
         }
 
@@ -101,10 +105,10 @@ class GarminSdkCompanionPublisher(
     private suspend fun sendMessage(
         connectIQ: ConnectIQ,
         device: IQDevice,
-        json: String,
+        messageMap: HashMap<String, Any>,
     ): Pair<Boolean, String> = suspendCancellableCoroutine { continuation ->
         try {
-            connectIQ.sendMessage(device, iqApp, json) { dev, _, status ->
+            connectIQ.sendMessage(device, iqApp, messageMap) { dev, _, status ->
                 val label = "${dev.friendlyName}=${status.name}"
                 val success = status == ConnectIQ.IQMessageStatus.SUCCESS
                 if (continuation.isActive) {

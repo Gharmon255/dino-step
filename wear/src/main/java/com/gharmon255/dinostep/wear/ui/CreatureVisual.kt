@@ -34,6 +34,7 @@ fun CreatureVisual(
     accentColor: Color,
     speciesShortLabel: String = "",
     stageScale: Float = 1f,
+    stageDrawableKey: String = "",
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -57,6 +58,7 @@ fun CreatureVisual(
                 baseFontSizeSp = 24,
                 stageScale = stageScale,
                 bounce = true,
+                stageDrawableKey = stageDrawableKey,
             )
             WearGrowthStage.JUVENILE -> SpeciesVisual(
                 creatureId = creatureId,
@@ -68,6 +70,7 @@ fun CreatureVisual(
                 baseFontSizeSp = 28,
                 stageScale = stageScale,
                 bounce = false,
+                stageDrawableKey = stageDrawableKey,
             )
             WearGrowthStage.ADULT -> SpeciesVisual(
                 creatureId = creatureId,
@@ -79,6 +82,7 @@ fun CreatureVisual(
                 baseFontSizeSp = 32,
                 stageScale = stageScale,
                 bounce = false,
+                stageDrawableKey = stageDrawableKey,
             )
         }
     }
@@ -136,6 +140,7 @@ private fun SpeciesVisual(
     baseFontSizeSp: Int,
     stageScale: Float,
     bounce: Boolean,
+    stageDrawableKey: String = "",
 ) {
     val scaledSp = (baseFontSizeSp * stageScale).toInt().coerceIn(18, 36)
     val imageSize = ((24f * stageScale).coerceIn(18f, 34f)).dp
@@ -148,6 +153,7 @@ private fun SpeciesVisual(
                 emoji = emoji,
                 imageSize = imageSize,
                 fontSizeSp = scaledSp,
+                stageDrawableKey = stageDrawableKey,
             )
             if (speciesShortLabel.isNotBlank()) {
                 Text(
