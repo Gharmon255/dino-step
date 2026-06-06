@@ -28,8 +28,8 @@ See [`SPECIES_ROSTER.md`](SPECIES_ROSTER.md) for the full roster.
 | | Count |
 |---|------|
 | Catalog species | **29** |
-| Asset-backed (PNG art) | **20** |
-| Placeholder / emoji only | **9** |
+| Asset-backed (PNG art) | **29** |
+| Placeholder / emoji only | **0** |
 
 **Source assets** live in the sibling repo **`dino-step-assets`** (`dinos/` folder). Copy into this project after art is ready.
 
@@ -68,7 +68,7 @@ Non-backed species use `dino_placeholder_{stage}` vectors and species emoji — 
 When `BuildConfig.DEBUG` is true (`DevTools.isEnabled`):
 
 - **Stats / developer sections** — random egg, per-rarity eggs, reset/clear helpers
-- **Force selected species egg** — `NextEggTestSpecies` picker (20 asset-backed ids)
+- **Force selected species egg** — `NextEggTestSpecies` picker (29 asset-backed ids)
 - **Home** — fake step controls for emulator testing
 - **Wear** — pair phone + Wear emulators; no real steps required for layout checks
 
@@ -114,6 +114,6 @@ No physical phone or watch is required for emulator-based development.
 
 ## Known limitations / next work
 
-- **9** catalog species still use placeholder / emoji art (see `dino-step-assets/species_queue.md`).
-- More species art, UI polish, and validation on physical phone + Wear hardware.
+- Catalog art is **complete** (29/29 species, all stages). See `dino-step-assets/species_queue.md` for expansion notes.
+- UI polish and validation on physical phone + Wear hardware.
 - Wear is read-only; progression is driven on the phone.

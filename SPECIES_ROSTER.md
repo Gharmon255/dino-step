@@ -153,6 +153,7 @@ Uncommon eggs include: Stegosaurus, Pteranodon, Brachiosaurus, Dilophosaurus, Ig
 
 | Date | Change |
 |------|--------|
+| 2026-06-06 | **29 / 29 asset-backed** — final four legendaries shipped; legacy `trex`, `triceratops`, `tiny_raptor` PNGs normalized to 1024×1024 |
 | 2026-06-02 | Docs: roster summary (29 / 20 / 9); cross-platform drift marked **resolved**; Iguanodon and five new species noted shipped on all asset targets |
 | 2026-06-02 | Gallimimus, Baryonyx, Velociraptor Alpha, Therizinosaurus, Giganotosaurus asset-backed and **shipped** (`dino-step-assets`, iOS, Android phone, Wear) |
 | 2026-06-02 | Android `CreatureCatalog.kt` aligned with iOS (Brachiosaurus steps; Pachycephalosaurus, Carnotaurus, Allosaurus, Mosasaurus rarities) |
