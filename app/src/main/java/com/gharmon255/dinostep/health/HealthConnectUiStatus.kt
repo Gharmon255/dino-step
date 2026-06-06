@@ -11,7 +11,7 @@ sealed interface HealthConnectUiStatus {
 
     data object PermissionRequired : HealthConnectUiStatus {
         override val message: String =
-            "Dino Step reads your step count from Health Connect to hatch and grow dinosaurs. " +
+            "Stepasaurus reads your step count from Health Connect to hatch and grow dinosaurs. " +
                 "Steps apply only when you tap Sync Steps on Home — not automatically in the background. " +
                 "We do not read location or use your steps for ads."
     }

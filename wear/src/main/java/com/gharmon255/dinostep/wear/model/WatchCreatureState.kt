@@ -1,5 +1,6 @@
 package com.gharmon255.dinostep.wear.model
 
+import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
 import com.gharmon255.dinostep.shared.wear.WearStageProgress
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
 import java.text.NumberFormat
@@ -31,9 +32,21 @@ data class WatchCreatureState(
     val isFromPhone: Boolean = false,
     val lastUpdatedAtMillis: Long? = null,
 ) {
-    /** Stable catalog slug from phone; blank on legacy payloads (placeholder / emoji art). */
+    /** Stable catalog slug from phone; normalized for drawable lookup. */
     val speciesIdForArt: String
-        get() = creatureId.trim()
+        get() = CreatureAssetNames.normalizeCatalogSpeciesId(creatureId)
+
+    /** Phone-synced or locally resolved drawable base name, e.g. `dino_trex_baby`. */
+    fun resolvedStageDrawableKey(): String {
+        val synced = stageDrawableKey.trim()
+        if (synced.isNotEmpty()) {
+            return synced
+        }
+        if (stage == WearGrowthStage.EGG) {
+            return ""
+        }
+        return CreatureAssetNames.stageDrawableLogicalName(speciesIdForArt, stage.name).orEmpty()
+    }
 
     val stageLabel: String
         get() = stage.name.lowercase(Locale.getDefault()).replaceFirstChar { char ->

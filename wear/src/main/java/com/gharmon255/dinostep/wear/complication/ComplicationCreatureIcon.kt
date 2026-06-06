@@ -36,7 +36,7 @@ object ComplicationCreatureIcon {
                 packageName = packageName,
                 speciesId = state.speciesIdForArt,
                 stageName = state.stage.name,
-                stageDrawableKey = state.stageDrawableKey,
+                stageDrawableKey = state.resolvedStageDrawableKey(),
             )
         }
         val resolvedId = if (drawableId != 0) drawableId else R.drawable.ic_complication_egg

@@ -128,6 +128,7 @@ class WatchStateRepository(
         Log.i(
             TAG,
             "sync state updated: creatureId=${watchState.speciesIdForArt.ifBlank { "(legacy)" }}, " +
+                "drawableKey=${watchState.resolvedStageDrawableKey().ifBlank { "—" }}, " +
                 "displayName=${watchState.displayName}, stage=${watchState.stage}, " +
                 "progress=${watchState.progressPercent}%, fromPhone=${watchState.isFromPhone}, " +
                 "updatedAt=${watchState.lastUpdatedAtMillis}",

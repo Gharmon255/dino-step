@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
+import com.gharmon255.dinostep.shared.visual.CreatureAssetNames
 import com.gharmon255.dinostep.shared.visual.DrawableCreatureResolver
 
 /**
@@ -26,12 +27,16 @@ object CreatureStageDrawableResolve {
                     packageName = packageName,
                     eggRarityName = eggRarity.name,
                 )
-                else -> DrawableCreatureResolver.stageDrawableId(
-                    resources = resources,
-                    packageName = packageName,
-                    speciesId = speciesId,
-                    stageName = stage.name,
-                )
+                else -> {
+                    val drawableKey = CreatureAssetNames.stageDrawableLogicalName(speciesId, stage.name).orEmpty()
+                    DrawableCreatureResolver.stageDrawableIdFromSync(
+                        resources = resources,
+                        packageName = packageName,
+                        speciesId = speciesId,
+                        stageName = stage.name,
+                        stageDrawableKey = drawableKey,
+                    )
+                }
             }
         }
     }
@@ -41,11 +46,16 @@ object CreatureStageDrawableResolve {
         val resources = LocalContext.current.resources
         val packageName = LocalContext.current.packageName
         return remember(speciesId, packageName) {
-            DrawableCreatureResolver.stageDrawableId(
+            val drawableKey = CreatureAssetNames.stageDrawableLogicalName(
+                speciesId,
+                GrowthStage.ADULT.name,
+            ).orEmpty()
+            DrawableCreatureResolver.stageDrawableIdFromSync(
                 resources = resources,
                 packageName = packageName,
                 speciesId = speciesId,
                 stageName = GrowthStage.ADULT.name,
+                stageDrawableKey = drawableKey,
             )
         }
     }

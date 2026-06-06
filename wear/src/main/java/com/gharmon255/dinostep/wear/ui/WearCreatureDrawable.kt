@@ -1,5 +1,6 @@
 package com.gharmon255.dinostep.wear.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -48,6 +49,14 @@ fun WearCreatureDrawableOrEmoji(
         }
     }
 
+    if (drawableId == 0 && stage != WearGrowthStage.EGG) {
+        Log.w(
+            TAG,
+            "Wear art fallback to emoji: speciesId=$safeSpeciesId stage=$stage " +
+                "drawableKey=${safeDrawableKey.ifBlank { "—" }}",
+        )
+    }
+
     if (drawableId != 0) {
         Image(
             painter = painterResource(drawableId),
@@ -63,3 +72,5 @@ fun WearCreatureDrawableOrEmoji(
         )
     }
 }
+
+private const val TAG = "WearCreatureArt"

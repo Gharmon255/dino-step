@@ -32,7 +32,7 @@ class PermissionsRationaleActivity : ComponentActivity() {
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Text(
-                        text = "Dino Step reads your step count from Health Connect to hatch and grow dinosaurs. " +
+                        text = "Stepasaurus reads your step count from Health Connect to hatch and grow dinosaurs. " +
                             "Steps apply only when you tap Sync Steps on Home — not automatically in the background. " +
                             "We do not read your location or track you for advertising.",
                         style = MaterialTheme.typography.bodyLarge,

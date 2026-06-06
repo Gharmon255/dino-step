@@ -131,6 +131,14 @@ class GameViewModel(
         publishActiveCreatureToWatch(WearSyncEventType.NONE)
     }
 
+    /** Re-publishes current creature to Wear when the phone app returns to foreground. */
+    fun republishWearStateOnForeground() {
+        if (!isReady) {
+            return
+        }
+        publishActiveCreatureToWatch(WearSyncEventType.NONE)
+    }
+
     fun clearCollectionForTesting() {
         if (!DevTools.isEnabled || !isReady) {
             return

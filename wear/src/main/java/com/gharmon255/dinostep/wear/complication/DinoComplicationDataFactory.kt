@@ -73,7 +73,7 @@ object DinoComplicationDataFactory {
         val description = if (state.isFromPhone) {
             "${state.displayName} ${state.progressPercent.toInt()}% ${state.stageLabel}"
         } else {
-            "Dino Step waiting for phone sync"
+            "Stepasaurus waiting for phone sync"
         }
         return ShortTextComplicationData.Builder(
             text = plain(emoji),
@@ -159,7 +159,7 @@ object DinoComplicationDataFactory {
             text = plain(body),
             contentDescription = plain(body),
         )
-            .setTitle(plain("Dino Step"))
+            .setTitle(plain("Stepasaurus"))
             .setTapAction(tapAction)
             .build()
     }

@@ -155,7 +155,7 @@ Output: `app/build/outputs/bundle/release/app-release.aab`
 
 ## Store listing (Play Console)
 
-- [ ] App name: **Dino Step**
+- [ ] App name: **Stepasaurus**
 - [ ] Short description (80 chars)
 - [ ] Full description (features: walk to hatch, collection, rarity tiers, Wear companion)
 - [ ] **Screenshots** — phone (required), 7-inch / 10-inch tablet if targeting tablets
