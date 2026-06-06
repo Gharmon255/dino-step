@@ -20,15 +20,18 @@ object EggRewardRoller {
         EggRarity.LEGENDARY to 1,
     )
 
-    fun rollWeighted(random: Random = Random.Default): RollResult {
-        val rollValue = random.nextInt(100)
+    fun rollWeighted(random: Random = Random.Default): RollResult = rollWeighted(random.nextInt(100))
+
+    /** Deterministic roll for unit tests (`rollValue` in 0..99). */
+    fun rollWeighted(rollValue: Int): RollResult {
+        val roll = rollValue.coerceIn(0, 99)
         var cumulative = 0
         for ((rarity, weight) in weightedTable) {
             cumulative += weight
-            if (rollValue < cumulative) {
-                return RollResult(eggRarity = rarity, rollValue = rollValue)
+            if (roll < cumulative) {
+                return RollResult(eggRarity = rarity, rollValue = roll)
             }
         }
-        return RollResult(eggRarity = EggRarity.COMMON, rollValue = rollValue)
+        return RollResult(eggRarity = EggRarity.COMMON, rollValue = roll)
     }
 }

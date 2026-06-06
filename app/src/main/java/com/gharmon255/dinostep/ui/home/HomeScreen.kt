@@ -11,12 +11,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.game.DevTools
+import com.gharmon255.dinostep.game.DuplicateTradeOffer
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.model.CreatureCatalog
@@ -62,7 +69,9 @@ fun HomeScreen(
         onAddSteps = viewModel::addSteps,
         onSyncSteps = viewModel::syncHealthSteps,
         onRequestHealthPermission = onRequestHealthPermission,
-        onClaimReward = viewModel::claimReward,
+        duplicateTradeOffer = viewModel.duplicateTradeOffer,
+        onClaimReward = viewModel::claimRandomReward,
+        onTradeDuplicates = viewModel::tradeDuplicatesForTierUpEgg,
         modifier = modifier,
     )
 }
@@ -82,9 +91,12 @@ private fun HomeScreenContent(
     onAddSteps: (Int) -> Unit,
     onSyncSteps: () -> Unit,
     onRequestHealthPermission: () -> Unit,
+    duplicateTradeOffer: DuplicateTradeOffer?,
     onClaimReward: () -> Unit,
+    onTradeDuplicates: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showTradeConfirmation by remember { mutableStateOf(false) }
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val canSync = healthConnectStatus is HealthConnectUiStatus.Ready && !isSyncing
     val creatureRarity = activeCreature.creature.rarity.takeIf { activeCreature.isRevealed }
@@ -230,10 +242,47 @@ private fun HomeScreenContent(
                 onClick = onClaimReward,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Claim Reward")
+                Text("Claim Random Egg")
+            }
+
+            duplicateTradeOffer?.let { tradeOffer ->
+                OutlinedButton(
+                    onClick = { showTradeConfirmation = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(tradeOffer.tradeButtonTitle)
+                }
+                Text(
+                    text = tradeOffer.helperText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
         }
+    }
+
+    if (showTradeConfirmation && duplicateTradeOffer != null) {
+        AlertDialog(
+            onDismissRequest = { showTradeConfirmation = false },
+            title = { Text("Trade for tier-up egg?") },
+            text = { Text(duplicateTradeOffer.confirmationMessage) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showTradeConfirmation = false
+                        onTradeDuplicates()
+                    },
+                ) {
+                    Text("Trade")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTradeConfirmation = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
     }
 }
 
@@ -273,7 +322,9 @@ private fun HomeScreenPreview() {
             onAddSteps = {},
             onSyncSteps = {},
             onRequestHealthPermission = {},
+            duplicateTradeOffer = null,
             onClaimReward = {},
+            onTradeDuplicates = {},
         )
     }
 }

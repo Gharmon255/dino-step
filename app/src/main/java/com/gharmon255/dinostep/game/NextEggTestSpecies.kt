@@ -37,6 +37,11 @@ enum class NextEggTestSpecies(
     COSMIC_PTERODACTYL("Cosmic Pterodactyl", "cosmic_pterodactyl", "cosmic_pterodactyl"),
     TITANOSAUR("Titanosaur", "titanosaur", "titanosaur"),
     ANCIENT_APEX_REX("Ancient Apex Rex", "ancient_apex_rex", "ancient_apex_rex"),
+    COMPSOGNATHUS("Compsognathus", "compsognathus", "compsognathus"),
+    PLESIOSAURUS("Plesiosaurus", "plesiosaurus", "plesiosaurus"),
+    DIPLODOCUS("Diplodocus", "diplodocus", "diplodocus"),
+    CRYSTAL_CERATOSAURUS("Crystal Ceratosaurus", "crystal_ceratosaurus", "crystal_ceratosaurus"),
+    ABYSSAL_MOSASAURUS("Abyssal Mosasaurus", "abyssal_mosasaurus", "abyssal_mosasaurus"),
     ;
 
     companion object {
@@ -84,6 +89,11 @@ enum class NextEggTestSpecies(
                 "cosmic_pterodactyl" -> COSMIC_PTERODACTYL
                 "titanosaur" -> TITANOSAUR
                 "ancient_apex_rex" -> ANCIENT_APEX_REX
+                "compsognathus" -> COMPSOGNATHUS
+                "plesiosaurus" -> PLESIOSAURUS
+                "diplodocus" -> DIPLODOCUS
+                "crystal_ceratosaurus" -> CRYSTAL_CERATOSAURUS
+                "abyssal_mosasaurus" -> ABYSSAL_MOSASAURUS
                 else -> null
             }
         }

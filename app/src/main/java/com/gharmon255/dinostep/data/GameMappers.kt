@@ -33,6 +33,7 @@ fun ActiveCreatureState.toEntity(): ActiveCreatureEntity {
 fun CompletedCreatureEntity.toDomain(): CompletedCreature {
     val creature = CreatureCatalog.fallbackCreature(creatureId)
     return CompletedCreature(
+        id = id,
         creature = creature,
         stepsCompleted = completedStepTotal,
         completedAt = completedAt,
@@ -41,6 +42,7 @@ fun CompletedCreatureEntity.toDomain(): CompletedCreature {
 
 fun CompletedCreature.toEntity(): CompletedCreatureEntity {
     return CompletedCreatureEntity(
+        id = id,
         creatureId = creature.id,
         name = creature.name,
         rarity = creature.rarity.name,

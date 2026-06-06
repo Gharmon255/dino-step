@@ -75,6 +75,16 @@ object CreatureCatalog {
         juvenile = 4_500,
     )
 
+    val compsognathus = d(
+        id = "compsognathus",
+        name = "Compsognathus",
+        rarity = Rarity.COMMON,
+        habitat = Habitat.JUNGLE,
+        total = 7_500,
+        hatch = 1_500,
+        juvenile = 3_750,
+    )
+
     // UNCOMMON
     val stegosaurus = d(
         id = "stegosaurus",
@@ -146,6 +156,16 @@ object CreatureCatalog {
         juvenile = 12_500,
     )
 
+    val plesiosaurus = d(
+        id = "plesiosaurus",
+        name = "Plesiosaurus",
+        rarity = Rarity.UNCOMMON,
+        habitat = Habitat.OCEAN,
+        total = 21_000,
+        hatch = 4_200,
+        juvenile = 10_500,
+    )
+
     // RARE
     val tRex = d(
         id = "trex",
@@ -207,6 +227,16 @@ object CreatureCatalog {
         juvenile = 32_500,
     )
 
+    val diplodocus = d(
+        id = "diplodocus",
+        name = "Diplodocus",
+        rarity = Rarity.RARE,
+        habitat = Habitat.PLAINS,
+        total = 52_000,
+        hatch = 10_400,
+        juvenile = 26_000,
+    )
+
     // EPIC
     val giganotosaurus = d(
         id = "giganotosaurus",
@@ -246,6 +276,16 @@ object CreatureCatalog {
         total = 100_000,
         hatch = 20_000,
         juvenile = 50_000,
+    )
+
+    val crystalCeratosaurus = d(
+        id = "crystal_ceratosaurus",
+        name = "Crystal Ceratosaurus",
+        rarity = Rarity.EPIC,
+        habitat = Habitat.ICE,
+        total = 92_000,
+        hatch = 18_400,
+        juvenile = 46_000,
     )
 
     // LEGENDARY
@@ -309,6 +349,16 @@ object CreatureCatalog {
         juvenile = 100_000,
     )
 
+    val abyssalMosasaurus = d(
+        id = "abyssal_mosasaurus",
+        name = "Abyssal Mosasaurus",
+        rarity = Rarity.LEGENDARY,
+        habitat = Habitat.OCEAN,
+        total = 190_000,
+        hatch = 38_000,
+        juvenile = 95_000,
+    )
+
     val all: List<CreatureDefinition> = listOf(
         tinyRaptor,
         triceratops,
@@ -316,6 +366,7 @@ object CreatureCatalog {
         parasaurolophus,
         pachycephalosaurus,
         gallimimus,
+        compsognathus,
         stegosaurus,
         brachiosaurus,
         pteranodon,
@@ -323,22 +374,26 @@ object CreatureCatalog {
         iguanodon,
         carnotaurus,
         baryonyx,
+        plesiosaurus,
         tRex,
         spinosaurus,
         velociRaptorAlpha,
         allosaurus,
         therizinosaurus,
         mosasaurus,
+        diplodocus,
         giganotosaurus,
         quetzalcoatlus,
         indominusHybrid,
         ancientSpinosaurus,
+        crystalCeratosaurus,
         volcanicTRex,
         frostRaptor,
         shadowTriceratops,
         titanosaur,
         cosmicPterodactyl,
         ancientApexRex,
+        abyssalMosasaurus,
     )
 
     val commonCreatures: List<CreatureDefinition> = byRarity(Rarity.COMMON)

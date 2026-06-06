@@ -13,11 +13,11 @@ When code disagrees with this document, **treat this file as intended design** a
 
 | Count | Description |
 |-------|-------------|
-| **29** | Catalog species on iOS and Android (`CreatureCatalog`) |
-| **29** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
-| **0** | Non-asset-backed species (emoji / placeholder art only) |
+| **34** | Catalog species on iOS and Android (`CreatureCatalog`) |
+| **32** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
+| **2** | Non-asset-backed species (emoji / placeholder art only) |
 
-All **29** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
+All **32** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
 
 ---
 
@@ -40,7 +40,7 @@ All **29** asset-backed species have baby, juvenile, and adult PNGs in `dino-ste
 
 ---
 
-## Asset-backed species (29)
+## Asset-backed species (32)
 
 These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `CreatureAssetNames.assetBackedSpeciesIds` (Android).
 
@@ -61,8 +61,11 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `spinosaurus` | Spinosaurus | Rare | Swamp | 12,000 | 18,000 | 30,000 | 60,000 | true | `dino_spinosaurus` | **shipped** |
 | `allosaurus` | Allosaurus | Rare | Rocky | 9,600 | 14,400 | 24,000 | 48,000 | true | `dino_allosaurus` | **shipped** |
 | `mosasaurus` | Mosasaurus | Rare | Ocean | 13,000 | 19,500 | 32,500 | 65,000 | true | `dino_mosasaurus` | **shipped** |
+| `diplodocus` | Diplodocus | Rare | Plains | 10,400 | 15,600 | 26,000 | 52,000 | true | `dino_diplodocus` | **shipped** |
 | `gallimimus` | Gallimimus | Common | Plains | 1,800 | 2,700 | 4,500 | 9,000 | true | `dino_gallimimus` | **shipped** |
+| `compsognathus` | Compsognathus | Common | Jungle | 1,500 | 2,250 | 3,750 | 7,500 | true | `dino_compsognathus` | **shipped** |
 | `baryonyx` | Baryonyx | Uncommon | Swamp | 5,000 | 7,500 | 12,500 | 25,000 | true | `dino_baryonyx` | **shipped** |
+| `plesiosaurus` | Plesiosaurus | Uncommon | Ocean | 4,200 | 6,300 | 10,500 | 21,000 | true | `dino_plesiosaurus` | **shipped** |
 | `velociraptor_alpha` | Velociraptor Alpha | Rare | Jungle | 9,000 | 13,500 | 22,500 | 45,000 | true | `dino_velociraptor_alpha` | **shipped** |
 | `therizinosaurus` | Therizinosaurus | Rare | Forest | 11,000 | 16,500 | 27,500 | 55,000 | true | `dino_therizinosaurus` | **shipped** |
 | `giganotosaurus` | Giganotosaurus | Epic | Plains | 17,000 | 25,500 | 42,500 | 85,000 | true | `dino_giganotosaurus` | **shipped** |
@@ -82,9 +85,14 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 
 ---
 
-## Non-asset-backed species (0)
+## Non-asset-backed species (2)
 
-None — full catalog is asset-backed.
+Expansion Pack 1 — catalog entries awaiting approved art (`dino-step-assets/EXPANSION_PACK_1.md`).
+
+| species id | display name | rarity | habitat | steps to hatch | steps baby → juvenile | steps juvenile → adult | total steps | asset-backed | notes |
+|------------|--------------|--------|---------|----------------|----------------------|------------------------|-------------|--------------|-------|
+| `crystal_ceratosaurus` | Crystal Ceratosaurus | Epic | Ice | 18,400 | 27,600 | 46,000 | 92,000 | false | Not `frost_raptor` art |
+| `abyssal_mosasaurus` | Abyssal Mosasaurus | Legendary | Ocean | 38,000 | 57,000 | 95,000 | 190,000 | false | Not `mosasaurus` art |
 
 **iOS save UUIDs:** Creatures use stable UUIDs per catalog index in `CreatureCatalog.swift`; do not reassign UUIDs when editing roster entries.
 

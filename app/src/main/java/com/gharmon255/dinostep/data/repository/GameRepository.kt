@@ -49,6 +49,12 @@ class GameRepository(
         completedCreatureDao.insert(completedCreature.toEntity())
     }
 
+    suspend fun deleteCompletedCreature(id: Long) = withContext(Dispatchers.IO) {
+        if (id > 0) {
+            completedCreatureDao.deleteById(id)
+        }
+    }
+
     suspend fun savePlayerStats(playerStats: PlayerStats) = withContext(Dispatchers.IO) {
         playerStatsDao.upsert(playerStats.toEntity())
     }

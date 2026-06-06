@@ -46,6 +46,9 @@ object CreatureAssetNames {
         "cosmic_pterodactyl",
         "titanosaur",
         "ancient_apex_rex",
+        "compsognathus",
+        "plesiosaurus",
+        "diplodocus",
     )
 
     object StageSuffix {

@@ -13,6 +13,9 @@ interface CompletedCreatureDao {
     @Insert
     suspend fun insert(creature: CompletedCreatureEntity)
 
+    @Query("DELETE FROM completed_creatures WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
     @Query("DELETE FROM completed_creatures")
     suspend fun deleteAll()
 }

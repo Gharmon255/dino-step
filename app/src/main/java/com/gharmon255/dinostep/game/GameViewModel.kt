@@ -111,6 +111,13 @@ class GameViewModel(
     val activeCreatureState: ActiveCreatureState
         get() = activeCreature
 
+    val duplicateTradeOffer: DuplicateTradeOffer?
+        get() = if (!isReady) {
+            null
+        } else {
+            DuplicateTradeLogic.offer(activeCreature, collection)
+        }
+
     init {
         viewModelScope.launch {
             val snapshot = repository.loadOrCreateGame()
@@ -302,6 +309,10 @@ class GameViewModel(
     }
 
     fun claimReward() {
+        claimRandomReward()
+    }
+
+    fun claimRandomReward() {
         if (!isReady || !activeCreature.isAdult) {
             return
         }
@@ -333,6 +344,29 @@ class GameViewModel(
             updateWearSyncDebug(completedResult)
             repository.saveCompletedCreature(completed)
             repository.savePlayerStats(playerStats)
+            repository.saveActiveCreature(activeCreature)
+            publishActiveCreatureToWatch(WearSyncEventType.NONE)
+        }
+    }
+
+    fun tradeDuplicatesForTierUpEgg() {
+        if (!isReady || !activeCreature.isAdult) {
+            return
+        }
+
+        val offer = duplicateTradeOffer ?: return
+        val removal = DuplicateTradeLogic.removeOneCompleted(offer.speciesId, collection) ?: return
+        val removed = removal.second
+
+        collection = removal.first
+        activeCreature = repository.createRandomEggWithRarity(offer.rewardEggRarity)
+        eggRewardDebug = EggRewardDebugState(
+            lastRewardedEggRarity = offer.rewardEggRarity,
+            lastRewardRollValue = null,
+        )
+
+        viewModelScope.launch {
+            repository.deleteCompletedCreature(removed.id)
             repository.saveActiveCreature(activeCreature)
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
         }

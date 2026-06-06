@@ -46,6 +46,11 @@ object CreatureSpeciesIdentity {
         profile("titanosaur", "🦕", "TI"),
         profile("cosmic_pterodactyl", "🦖", "CP"),
         profile("ancient_apex_rex", "🦖", "AR"),
+        profile("compsognathus", "🦖", "CO"),
+        profile("plesiosaurus", "🦕", "PL"),
+        profile("diplodocus", "🦕", "DI"),
+        profile("crystal_ceratosaurus", "🦖", "CC"),
+        profile("abyssal_mosasaurus", "🦖", "AB"),
     ).associateBy { it.creatureId }
 
     fun forId(creatureId: String): CreatureSpeciesProfile {
