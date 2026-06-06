@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,11 +30,13 @@ import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Rarity
+import com.gharmon255.dinostep.model.toRarity
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.components.CreatureStageVisual
 import com.gharmon255.dinostep.ui.components.GameCreatureCard
 import com.gharmon255.dinostep.ui.theme.DinoStepTheme
+import com.gharmon255.dinostep.ui.theme.RarityScreenBackground
 import com.gharmon255.dinostep.ui.theme.rarityColors
 import java.text.NumberFormat
 import java.util.Locale
@@ -85,20 +88,20 @@ private fun HomeScreenContent(
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val canSync = healthConnectStatus is HealthConnectUiStatus.Ready && !isSyncing
     val creatureRarity = activeCreature.creature.rarity.takeIf { activeCreature.isRevealed }
-    val progressColors = if (creatureRarity != null) {
-        rarityColors(creatureRarity)
-    } else {
-        rarityColors(activeCreature.eggRarity)
-    }
+    val ambientRarity = creatureRarity ?: activeCreature.eggRarity.toRarity()
+    val progressColors = rarityColors(ambientRarity)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
+        RarityScreenBackground(rarity = ambientRarity)
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
         val stageProgress = HomeStageProgressText.stageProgressPercent(activeCreature)
         val overallProgress = HomeStageProgressText.overallProgressPercent(activeCreature)
 
@@ -229,6 +232,7 @@ private fun HomeScreenContent(
             ) {
                 Text("Claim Reward")
             }
+        }
         }
     }
 }

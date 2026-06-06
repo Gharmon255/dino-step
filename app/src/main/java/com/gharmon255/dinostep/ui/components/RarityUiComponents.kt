@@ -11,13 +11,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,8 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -94,80 +92,76 @@ fun RarityBadge(
 }
 
 @Composable
-fun RarityEggFrame(
+private fun EggStageVisual(
     eggRarity: EggRarity,
-    modifier: Modifier = Modifier,
-    size: Dp = 160.dp,
-    animateEgg: Boolean = true,
-    content: @Composable BoxScope.() -> Unit,
+    drawableId: Int,
+    emoji: String,
+    frameSize: Dp,
+    imageSize: Dp,
+    animateEgg: Boolean,
 ) {
     val colors = rarityColors(eggRarity)
-    val glowSize = size + 28.dp
-    val midSize = size + 12.dp
+    val showBaseGlow = eggRarity != EggRarity.COMMON
 
     Column(
-        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            // Outer rarity glow
-            Box(
-                modifier = Modifier
-                    .size(glowSize)
-                    .clip(CircleShape)
-                    .background(colors.accent.copy(alpha = 0.28f)),
-            )
-            // Mid ring
-            Box(
-                modifier = Modifier
-                    .size(midSize)
-                    .clip(CircleShape)
-                    .background(colors.accent.copy(alpha = 0.18f))
-                    .border(2.dp, colors.border.copy(alpha = 0.9f), CircleShape),
-            )
-            // Core egg frame
-            Box(
-                modifier = Modifier
-                    .size(size)
-                    .clip(CircleShape)
-                    .background(colors.accent.copy(alpha = 0.42f))
-                    .border(4.dp, colors.accent, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
+        Box(
+            contentAlignment = Alignment.BottomCenter,
+            modifier = Modifier.size(frameSize),
+        ) {
+            if (showBaseGlow) {
                 Box(
                     modifier = Modifier
-                        .size(size - 20.dp)
-                        .clip(CircleShape)
-                        .background(colors.container.copy(alpha = 0.85f)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (animateEgg) {
-                        val infiniteTransition = rememberInfiniteTransition(label = "eggRock")
-                        val rotation by infiniteTransition.animateFloat(
-                            initialValue = -8f,
-                            targetValue = 8f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(durationMillis = 700, easing = FastOutSlowInEasing),
-                                repeatMode = RepeatMode.Reverse,
+                        .size(width = frameSize * 0.72f, height = frameSize * 0.14f)
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    colors.accent.copy(alpha = 0.42f),
+                                    colors.accent.copy(alpha = 0.12f),
+                                    colors.accent.copy(alpha = 0f),
+                                ),
                             ),
-                            label = "eggRotation",
-                        )
-                        Box(modifier = Modifier.graphicsLayer { rotationZ = rotation }) {
-                            content()
-                        }
-                    } else {
-                        content()
-                    }
+                        ),
+                )
+            }
+
+            val imageContent: @Composable () -> Unit = {
+                StageCreatureImageOrEmoji(
+                    drawableId = drawableId,
+                    emoji = emoji,
+                    imageSize = imageSize,
+                    fontSizeSp = (frameSize.value * 0.38f).toInt().coerceIn(48, 80),
+                    contentDescription = "${eggRarity.displayName} egg",
+                )
+            }
+
+            if (animateEgg) {
+                val infiniteTransition = rememberInfiniteTransition(label = "eggRock")
+                val rotation by infiniteTransition.animateFloat(
+                    initialValue = -6f,
+                    targetValue = 6f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 700, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse,
+                    ),
+                    label = "eggRotation",
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .graphicsLayer { rotationZ = rotation },
+                ) {
+                    imageContent()
+                }
+            } else {
+                Box(modifier = Modifier.align(Alignment.Center)) {
+                    imageContent()
                 }
             }
         }
-        Text(
-            text = eggRarity.name,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = colors.accent,
-        )
     }
 }
 
@@ -201,18 +195,14 @@ fun CreatureStageVisual(
     ) {
         when (stage) {
             GrowthStage.EGG -> {
-                RarityEggFrame(
+                EggStageVisual(
                     eggRarity = eggRarity,
-                    size = frameSize,
-                ) {
-                    StageCreatureImageOrEmoji(
-                        drawableId = drawableId,
-                        emoji = visual.displayEmoji,
-                        imageSize = frameSize * 0.72f,
-                        fontSizeSp = (frameSize.value * 0.38f).toInt().coerceIn(48, 80),
-                        contentDescription = "${eggRarity.displayName} egg",
-                    )
-                }
+                    drawableId = drawableId,
+                    emoji = visual.displayEmoji,
+                    frameSize = frameSize,
+                    imageSize = frameSize * 0.78f,
+                    animateEgg = true,
+                )
             }
             else -> StageDinoVisual(
                 visual = visual,
@@ -257,58 +247,44 @@ private fun StageDinoVisual(
     frameSize: Dp,
     showSpeciesHint: Boolean,
 ) {
-    val frameCorner = when {
-        visual.stageScale < 0.8f -> 18.dp
-        visual.stageScale < 0.95f -> 22.dp
-        else -> 26.dp
-    }
-    val borderWidth = if (visual.stageScale >= 0.95f) 3.dp else 2.dp
+    val visualSize = frameSize * visual.stageScale.coerceAtLeast(0.7f)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .size(frameSize * visual.stageScale.coerceAtLeast(0.7f))
-                .clip(RoundedCornerShape(frameCorner))
-                .background(colors.accent.copy(alpha = 0.12f + visual.stageScale * 0.12f))
-                .border(borderWidth, colors.border, RoundedCornerShape(frameCorner)),
-            contentAlignment = Alignment.Center,
-        ) {
-            val emojiContent: @Composable () -> Unit = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    StageCreatureImageOrEmoji(
-                        drawableId = drawableId,
-                        emoji = visual.speciesEmoji,
-                        imageSize = frameSize * visual.stageScale.coerceAtLeast(0.7f) * 0.78f,
-                        fontSizeSp = baseFontSizeSp,
-                        contentDescription = visual.stageDetailLabel,
-                    )
-                    if (showSpeciesHint) {
-                        Text(
-                            text = visual.speciesShortLabel,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = colors.accent,
-                        )
-                    }
-                }
-            }
-            if (bounce) {
-                val infiniteTransition = rememberInfiniteTransition(label = "babyBounce")
-                val offsetY by infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = -16f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(durationMillis = 450, easing = FastOutSlowInEasing),
-                        repeatMode = RepeatMode.Reverse,
-                    ),
-                    label = "babyOffset",
+        val creatureContent: @Composable () -> Unit = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                StageCreatureImageOrEmoji(
+                    drawableId = drawableId,
+                    emoji = visual.speciesEmoji,
+                    imageSize = visualSize,
+                    fontSizeSp = baseFontSizeSp,
+                    contentDescription = visual.stageDetailLabel,
                 )
-                Box(modifier = Modifier.graphicsLayer { translationY = offsetY }) {
-                    emojiContent()
+                if (showSpeciesHint) {
+                    Text(
+                        text = visual.speciesShortLabel,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.accent,
+                    )
                 }
-            } else {
-                emojiContent()
             }
+        }
+        if (bounce) {
+            val infiniteTransition = rememberInfiniteTransition(label = "babyBounce")
+            val offsetY by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = -16f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 450, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+                label = "babyOffset",
+            )
+            Box(modifier = Modifier.graphicsLayer { translationY = offsetY }) {
+                creatureContent()
+            }
+        } else {
+            creatureContent()
         }
         Text(
             text = visual.stageDetailLabel,
@@ -396,39 +372,27 @@ private fun RowWithBadges(
     }
 }
 
-private val CollectionAvatarShape = RoundedCornerShape(16.dp)
-private val LockedCollectionAvatarShape = RoundedCornerShape(14.dp)
-
 /** Undiscovered roster entry: mystery styling only — no species drawable or name art. */
 @Composable
 fun LockedCollectionAvatar(
     modifier: Modifier = Modifier,
-    size: androidx.compose.ui.unit.Dp = 80.dp,
+    size: androidx.compose.ui.unit.Dp = 88.dp,
 ) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(LockedCollectionAvatarShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
-            .border(
-                width = 1.5.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.45f),
-                shape = LockedCollectionAvatarShape,
-            ),
-        contentAlignment = Alignment.Center,
+    Column(
+        modifier = modifier.size(size),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = com.gharmon255.dinostep.model.CreatureVisualMapper.LOCKED_PLACEHOLDER,
-                fontSize = 28.sp,
-            )
-            Text(
-                text = "?",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-            )
-        }
+        Text(
+            text = "?",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "🔒",
+            fontSize = 12.sp,
+        )
     }
 }
 
@@ -445,31 +409,17 @@ fun CollectionCreatureAvatar(
     frameSize: androidx.compose.ui.unit.Dp = 96.dp,
     imageSize: androidx.compose.ui.unit.Dp = 80.dp,
 ) {
-    val colors = rarityColors(rarity)
     val drawableId = CreatureStageDrawableResolve.resolveAdultDrawableId(speciesId = creatureId)
     val fallbackEmoji = visual.displayEmoji.ifBlank { visual.speciesEmoji }
-    val hasDrawable = drawableId != 0
     Box(
-        modifier = modifier
-            .size(frameSize)
-            .clip(CollectionAvatarShape)
-            .background(
-                if (hasDrawable) {
-                    colors.container.copy(alpha = 0.4f)
-                } else {
-                    colors.container
-                },
-            )
-            .border(2.5.dp, colors.border, CollectionAvatarShape),
+        modifier = modifier.size(frameSize),
         contentAlignment = Alignment.Center,
     ) {
-        if (hasDrawable) {
+        if (drawableId != 0) {
             Image(
                 painter = painterResource(drawableId),
                 contentDescription = visual.stageDetailLabel,
-                modifier = Modifier
-                    .size(imageSize)
-                    .padding(4.dp),
+                modifier = Modifier.size(imageSize),
                 contentScale = ContentScale.Fit,
             )
         } else {
