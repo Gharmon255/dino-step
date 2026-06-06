@@ -14,10 +14,10 @@ When code disagrees with this document, **treat this file as intended design** a
 | Count | Description |
 |-------|-------------|
 | **29** | Catalog species on iOS and Android (`CreatureCatalog`) |
-| **25** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
-| **4** | Non-asset-backed species (emoji / placeholder art only) |
+| **29** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
+| **0** | Non-asset-backed species (emoji / placeholder art only) |
 
-All **25** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
+All **29** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
 
 ---
 
@@ -40,7 +40,7 @@ All **25** asset-backed species have baby, juvenile, and adult PNGs in `dino-ste
 
 ---
 
-## Asset-backed species (25)
+## Asset-backed species (29)
 
 These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `CreatureAssetNames.assetBackedSpeciesIds` (Android).
 
@@ -71,6 +71,10 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `ancient_spinosaurus` | Ancient Spinosaurus | Epic | Swamp | 20,000 | 30,000 | 50,000 | 100,000 | true | `dino_ancient_spinosaurus` | **shipped** |
 | `frost_raptor` | Frost Raptor | Legendary | Ice | 22,000 | 33,000 | 55,000 | 110,000 | true | `dino_frost_raptor` | **shipped** |
 | `volcanic_t_rex` | Volcanic T-Rex | Legendary | Volcano | 25,000 | 37,500 | 62,500 | 125,000 | true | `dino_volcanic_t_rex` | **shipped** |
+| `shadow_triceratops` | Shadow Triceratops | Legendary | Dark | 26,000 | 39,000 | 65,000 | 130,000 | true | `dino_shadow_triceratops` | **shipped** |
+| `titanosaur` | Titanosaur | Legendary | Plains | 30,000 | 45,000 | 75,000 | 150,000 | true | `dino_titanosaur` | **shipped** |
+| `cosmic_pterodactyl` | Cosmic Pterodactyl | Legendary | Sky | 35,000 | 52,500 | 87,500 | 175,000 | true | `dino_cosmic_pterodactyl` | **shipped** |
+| `ancient_apex_rex` | Ancient Apex Rex | Legendary | Volcano | 40,000 | 60,000 | 100,000 | 200,000 | true | `dino_ancient_apex_rex` | **shipped** |
 
 **Stage file names:** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult` (PNG in `dino-step-assets/dinos/`; iOS imagesets; Android `drawable-nodpi` on phone and Wear).
 
@@ -78,16 +82,9 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 
 ---
 
-## Non-asset-backed species (4)
+## Non-asset-backed species (0)
 
-Emoji / placeholder visuals only. **Never** use another species’ `dino_*` art (Android: `dino_placeholder_{stage}`).
-
-| species id | display name | rarity | habitat | steps to hatch | steps baby → juvenile | steps juvenile → adult | total steps | asset-backed | asset prefix | notes |
-|------------|--------------|--------|---------|----------------|----------------------|------------------------|-------------|--------------|--------------|-------|
-| `shadow_triceratops` | Shadow Triceratops | Legendary | Dark | 26,000 | 39,000 | 65,000 | 130,000 | false | — | Not `triceratops` art |
-| `titanosaur` | Titanosaur | Legendary | Plains | 30,000 | 45,000 | 75,000 | 150,000 | false | — | |
-| `cosmic_pterodactyl` | Cosmic Pterodactyl | Legendary | Sky | 35,000 | 52,500 | 87,500 | 175,000 | false | — | Not `pteranodon` art |
-| `ancient_apex_rex` | Ancient Apex Rex | Legendary | Volcano | 40,000 | 60,000 | 100,000 | 200,000 | false | — | Not `trex` art |
+None — full catalog is asset-backed.
 
 **iOS save UUIDs:** Creatures use stable UUIDs per catalog index in `CreatureCatalog.swift`; do not reassign UUIDs when editing roster entries.
 

@@ -33,6 +33,10 @@ enum class NextEggTestSpecies(
     ANCIENT_SPINOSAURUS("Ancient Spinosaurus", "ancient_spinosaurus", "ancient_spinosaurus"),
     FROST_RAPTOR("Frost Raptor", "frost_raptor", "frost_raptor"),
     VOLCANIC_T_REX("Volcanic T-Rex", "volcanic_t_rex", "volcanic_t_rex"),
+    SHADOW_TRICERATOPS("Shadow Triceratops", "shadow_triceratops", "shadow_triceratops"),
+    COSMIC_PTERODACTYL("Cosmic Pterodactyl", "cosmic_pterodactyl", "cosmic_pterodactyl"),
+    TITANOSAUR("Titanosaur", "titanosaur", "titanosaur"),
+    ANCIENT_APEX_REX("Ancient Apex Rex", "ancient_apex_rex", "ancient_apex_rex"),
     ;
 
     companion object {
@@ -76,6 +80,10 @@ enum class NextEggTestSpecies(
                 "ancient_spinosaurus" -> ANCIENT_SPINOSAURUS
                 "frost_raptor" -> FROST_RAPTOR
                 "volcanic_t_rex" -> VOLCANIC_T_REX
+                "shadow_triceratops" -> SHADOW_TRICERATOPS
+                "cosmic_pterodactyl" -> COSMIC_PTERODACTYL
+                "titanosaur" -> TITANOSAUR
+                "ancient_apex_rex" -> ANCIENT_APEX_REX
                 else -> null
             }
         }

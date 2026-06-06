@@ -42,6 +42,10 @@ object CreatureAssetNames {
         "ancient_spinosaurus",
         "frost_raptor",
         "volcanic_t_rex",
+        "shadow_triceratops",
+        "cosmic_pterodactyl",
+        "titanosaur",
+        "ancient_apex_rex",
     )
 
     object StageSuffix {
