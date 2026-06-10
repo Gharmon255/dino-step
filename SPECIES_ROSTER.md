@@ -14,10 +14,10 @@ When code disagrees with this document, **treat this file as intended design** a
 | Count | Description |
 |-------|-------------|
 | **34** | Catalog species on iOS and Android (`CreatureCatalog`) |
-| **32** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
-| **2** | Non-asset-backed species (emoji / placeholder art only) |
+| **34** | Asset-backed species (`assetBackedSpeciesIds` on both platforms) |
+| **0** | Non-asset-backed species (emoji / placeholder art only) |
 
-All **32** asset-backed species have baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
+All **34** catalog species are asset-backed. Each has baby, juvenile, and adult PNGs in `dino-step-assets/dinos/`, iOS phone `Assets.xcassets`, iOS watch `Assets.xcassets`, Android phone `drawable-nodpi/`, and Android Wear `drawable-nodpi/`.
 
 ---
 
@@ -40,7 +40,7 @@ All **32** asset-backed species have baby, juvenile, and adult PNGs in `dino-ste
 
 ---
 
-## Asset-backed species (32)
+## Asset-backed species (34)
 
 These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `CreatureAssetNames.assetBackedSpeciesIds` (Android).
 
@@ -78,21 +78,14 @@ These ids are in `CreatureAssetVisual.assetBackedSpeciesIds` (iOS) and `Creature
 | `titanosaur` | Titanosaur | Legendary | Plains | 30,000 | 45,000 | 75,000 | 150,000 | true | `dino_titanosaur` | **shipped** |
 | `cosmic_pterodactyl` | Cosmic Pterodactyl | Legendary | Sky | 35,000 | 52,500 | 87,500 | 175,000 | true | `dino_cosmic_pterodactyl` | **shipped** |
 | `ancient_apex_rex` | Ancient Apex Rex | Legendary | Volcano | 40,000 | 60,000 | 100,000 | 200,000 | true | `dino_ancient_apex_rex` | **shipped** |
+| `crystal_ceratosaurus` | Crystal Ceratosaurus | Epic | Ice | 18,400 | 27,600 | 46,000 | 92,000 | true | `dino_crystal_ceratosaurus` | **shipped** |
+| `abyssal_mosasaurus` | Abyssal Mosasaurus | Legendary | Ocean | 38,000 | 57,000 | 95,000 | 190,000 | true | `dino_abyssal_mosasaurus` | **shipped** |
 
 **Stage file names:** `dino_{speciesId}_baby`, `dino_{speciesId}_juvenile`, `dino_{speciesId}_adult` (PNG in `dino-step-assets/dinos/`; iOS imagesets; Android `drawable-nodpi` on phone and Wear).
 
 **Iguanodon:** **Shipped everywhere** — `dino-step-assets/dinos/`, iOS phone and watch `Assets.xcassets`, Android phone and Wear `drawable-nodpi/` (`dino_iguanodon_{baby,juvenile,adult}`).
 
 ---
-
-## Non-asset-backed species (2)
-
-Expansion Pack 1 — catalog entries awaiting approved art (`dino-step-assets/EXPANSION_PACK_1.md`).
-
-| species id | display name | rarity | habitat | steps to hatch | steps baby → juvenile | steps juvenile → adult | total steps | asset-backed | notes |
-|------------|--------------|--------|---------|----------------|----------------------|------------------------|-------------|--------------|-------|
-| `crystal_ceratosaurus` | Crystal Ceratosaurus | Epic | Ice | 18,400 | 27,600 | 46,000 | 92,000 | false | Not `frost_raptor` art |
-| `abyssal_mosasaurus` | Abyssal Mosasaurus | Legendary | Ocean | 38,000 | 57,000 | 95,000 | 190,000 | false | Not `mosasaurus` art |
 
 **iOS save UUIDs:** Creatures use stable UUIDs per catalog index in `CreatureCatalog.swift`; do not reassign UUIDs when editing roster entries.
 

@@ -49,6 +49,8 @@ object CreatureAssetNames {
         "compsognathus",
         "plesiosaurus",
         "diplodocus",
+        "crystal_ceratosaurus",
+        "abyssal_mosasaurus",
     )
 
     object StageSuffix {

@@ -8,8 +8,8 @@ import org.junit.Test
 
 class CreatureAssetNamesTest {
     @Test
-    fun assetBackedSpecies_countIs32() {
-        assertEquals(32, CreatureAssetNames.assetBackedSpeciesIds.size)
+    fun assetBackedSpecies_countIs34() {
+        assertEquals(34, CreatureAssetNames.assetBackedSpeciesIds.size)
     }
 
     @Test

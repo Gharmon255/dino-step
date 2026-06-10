@@ -7,9 +7,9 @@ import org.junit.Test
 
 class CreatureCatalogIntegrityTest {
     @Test
-    fun catalog_has32AssetBackedSpecies() {
-        assertEquals(32, CreatureCatalog.assetBackedSpeciesIds.size)
-        assertEquals(32, CreatureCatalog.assetBackedCreatures().size)
+    fun catalog_has34AssetBackedSpecies() {
+        assertEquals(34, CreatureCatalog.assetBackedSpeciesIds.size)
+        assertEquals(34, CreatureCatalog.assetBackedCreatures().size)
     }
 
     @Test
