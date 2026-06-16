@@ -14,9 +14,7 @@ class DuplicateTradeLogicTest {
     private val tinyRaptor = CreatureCatalog.tinyRaptor
 
     private fun adultTinyRaptor(steps: Int = tinyRaptor.totalStepsRequired): ActiveCreatureState =
-        ActiveCreatureState(
-            creature = tinyRaptor,
-            eggRarity = EggRarity.COMMON,
+        ActiveCreatureState.newEgg(tinyRaptor, EggRarity.COMMON).copy(
             steps = steps,
             isRevealed = true,
         )
@@ -59,9 +57,7 @@ class DuplicateTradeLogicTest {
 
     @Test
     fun offer_differentSpecies_notEligible() {
-        val active = ActiveCreatureState(
-            creature = CreatureCatalog.stegosaurus,
-            eggRarity = EggRarity.UNCOMMON,
+        val active = ActiveCreatureState.newEgg(CreatureCatalog.stegosaurus, EggRarity.UNCOMMON).copy(
             steps = CreatureCatalog.stegosaurus.totalStepsRequired,
             isRevealed = true,
         )
@@ -78,9 +74,7 @@ class DuplicateTradeLogicTest {
     @Test
     fun offer_legendarySpecies_notEligible() {
         val apex = CreatureCatalog.ancientApexRex
-        val active = ActiveCreatureState(
-            creature = apex,
-            eggRarity = EggRarity.LEGENDARY,
+        val active = ActiveCreatureState.newEgg(apex, EggRarity.LEGENDARY).copy(
             steps = apex.totalStepsRequired,
             isRevealed = true,
         )

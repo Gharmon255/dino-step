@@ -11,8 +11,15 @@ data class ActiveCreatureEntity(
     val currentSteps: Int,
     val startedAt: Long,
     val isRevealed: Boolean,
+    val hatchStep: Int = 0,
+    val juvenileStep: Int = 0,
+    val totalStepsRequired: Int = 0,
+    val economyVersion: Int = 0,
 ) {
     companion object {
         const val ACTIVE_ROW_ID = 1
     }
+
+    val hasProgressionSnapshot: Boolean
+        get() = economyVersion > 0 && hatchStep > 0 && totalStepsRequired > 0
 }

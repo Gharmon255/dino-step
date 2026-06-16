@@ -352,6 +352,8 @@ class GameViewModel(
         }
 
         val completedCreatureState = activeCreature
+        val completedSpeciesId = completedCreatureState.creature.id
+        val collectedSpeciesIds = collection.map { it.creature.id }.toSet()
         val completed = CompletedCreature(
             creature = completedCreatureState.creature,
             stepsCompleted = completedCreatureState.steps,
@@ -362,9 +364,12 @@ class GameViewModel(
         playerStats = playerStats.copy(
             creaturesCompleted = playerStats.creaturesCompleted + 1,
         )
-        // Normal gameplay — never apply test species override (Sprint 3).
         val rewardRoll = EggRewardRoller.rollWeighted()
-        activeCreature = repository.createRandomEggWithRarity(rewardRoll.eggRarity)
+        activeCreature = repository.createRandomEggWithRarity(
+            eggRarity = rewardRoll.eggRarity,
+            excludeSpeciesIds = setOf(completedSpeciesId),
+            collectedSpeciesIds = collectedSpeciesIds,
+        )
         eggRewardDebug = EggRewardDebugState(
             lastRewardedEggRarity = rewardRoll.eggRarity,
             lastRewardRollValue = rewardRoll.rollValue,
@@ -393,7 +398,11 @@ class GameViewModel(
         val removed = removal.second
 
         collection = removal.first
-        activeCreature = repository.createRandomEggWithRarity(offer.rewardEggRarity)
+        activeCreature = repository.createRandomEggWithRarity(
+            eggRarity = offer.rewardEggRarity,
+            excludeSpeciesIds = setOf(offer.speciesId),
+            collectedSpeciesIds = collection.map { it.creature.id }.toSet(),
+        )
         eggRewardDebug = EggRewardDebugState(
             lastRewardedEggRarity = offer.rewardEggRarity,
             lastRewardRollValue = null,

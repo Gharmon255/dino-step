@@ -37,6 +37,7 @@ import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.CreatureEconomy
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Rarity
@@ -363,11 +364,10 @@ private fun StepButton(
 private fun HomeScreenPreview() {
     DinoStepTheme {
         HomeScreenContent(
-            activeCreature = ActiveCreatureState(
+            activeCreature = ActiveCreatureState.newEgg(
                 creature = CreatureCatalog.tinyRaptor,
                 eggRarity = EggRarity.COMMON,
-                steps = 900,
-            ),
+            ).copy(steps = 900),
             collection = emptyList(),
             dexDiscovered = 0,
             dexTotal = CreatureCatalog.all.size,
@@ -376,7 +376,7 @@ private fun HomeScreenPreview() {
             displayName = "Mystery Egg",
             steps = 900,
             stage = GrowthStage.EGG,
-            nextMilestone = CreatureCatalog.tinyRaptor.hatchStep,
+            nextMilestone = CreatureEconomy.catalogThresholdsFor(Rarity.COMMON).hatchStep,
             isAdult = false,
             healthConnectStatus = HealthConnectUiStatus.PermissionRequired,
             lastSyncedStepTotal = 0,

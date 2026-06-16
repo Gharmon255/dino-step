@@ -5,12 +5,14 @@ import com.gharmon255.dinostep.data.local.DinoStepDatabase
 import com.gharmon255.dinostep.data.local.entity.PlayerStatsEntity
 import com.gharmon255.dinostep.data.toDomain
 import com.gharmon255.dinostep.data.toEntity
+import com.gharmon255.dinostep.data.withLegacyV1SnapshotIfMissing
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.CreatureDefinition
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.EggRewardRoller
+import com.gharmon255.dinostep.model.EggSpeciesRoller
 import com.gharmon255.dinostep.model.PlayerStats
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,7 +33,13 @@ class GameRepository(
             .getAllOrderedByCompletedAt()
             .map { it.toDomain() }
 
-        val activeCreature = activeCreatureDao.getById()?.toDomain()
+        val activeEntity = activeCreatureDao.getById()
+        val migratedEntity = activeEntity?.withLegacyV1SnapshotIfMissing()
+        if (migratedEntity != null && migratedEntity != activeEntity) {
+            activeCreatureDao.upsert(migratedEntity)
+        }
+
+        val activeCreature = migratedEntity?.toDomain()
             ?: createMysteryCommonEgg().also { saveActiveCreature(it) }
 
         GameSnapshot(
@@ -59,25 +67,45 @@ class GameRepository(
         playerStatsDao.upsert(playerStats.toEntity())
     }
 
-    fun getRandomSpeciesForRarity(eggRarity: EggRarity): CreatureDefinition {
-        return CreatureCatalog.randomCreatureForEgg(eggRarity)
+    fun getRandomSpeciesForRarity(
+        eggRarity: EggRarity,
+        excludeSpeciesIds: Set<String> = emptySet(),
+        collectedSpeciesIds: Set<String> = emptySet(),
+    ): CreatureDefinition {
+        return EggSpeciesRoller.rollSpecies(
+            eggRarity = eggRarity,
+            excludeSpeciesIds = excludeSpeciesIds,
+            collectedSpeciesIds = collectedSpeciesIds,
+        )
     }
 
-    /** Random species for [eggRarity]. Must not apply developer test species override. */
-    fun createRandomEggWithRarity(eggRarity: EggRarity): ActiveCreatureState {
+    fun createRandomEggWithRarity(
+        eggRarity: EggRarity,
+        excludeSpeciesIds: Set<String> = emptySet(),
+        collectedSpeciesIds: Set<String> = emptySet(),
+    ): ActiveCreatureState {
         return newMysteryEgg(
-            creature = getRandomSpeciesForRarity(eggRarity),
+            creature = getRandomSpeciesForRarity(
+                eggRarity = eggRarity,
+                excludeSpeciesIds = excludeSpeciesIds,
+                collectedSpeciesIds = collectedSpeciesIds,
+            ),
             eggRarity = eggRarity,
         )
     }
 
-    /** Weighted random rarity + random species. Used for normal claim reward flow. */
-    fun createRandomEgg(): ActiveCreatureState {
+    fun createRandomEgg(
+        excludeSpeciesIds: Set<String> = emptySet(),
+        collectedSpeciesIds: Set<String> = emptySet(),
+    ): ActiveCreatureState {
         val roll = EggRewardRoller.rollWeighted()
-        return createRandomEggWithRarity(roll.eggRarity)
+        return createRandomEggWithRarity(
+            eggRarity = roll.eggRarity,
+            excludeSpeciesIds = excludeSpeciesIds,
+            collectedSpeciesIds = collectedSpeciesIds,
+        )
     }
 
-    /** Forces exact [speciesId]; egg rarity comes from that species. Developer force-button only. */
     fun createForcedSpeciesEgg(speciesId: String): ActiveCreatureState {
         val creature = CreatureCatalog.byId(speciesId)
             ?: getRandomSpeciesForRarity(EggRarity.COMMON)
@@ -122,12 +150,6 @@ class GameRepository(
         creature: CreatureDefinition,
         eggRarity: EggRarity,
     ): ActiveCreatureState {
-        return ActiveCreatureState(
-            creature = creature,
-            eggRarity = eggRarity,
-            steps = 0,
-            startedAt = System.currentTimeMillis(),
-            isRevealed = false,
-        )
+        return ActiveCreatureState.newEgg(creature = creature, eggRarity = eggRarity)
     }
 }

@@ -14,7 +14,7 @@ object EggCrackLevel {
         if (activeCreature.stage != GrowthStage.EGG) {
             return 0
         }
-        val hatchStep = activeCreature.creature.hatchStep
+        val hatchStep = activeCreature.progression.hatchStep
         if (hatchStep <= 0) {
             return 0
         }

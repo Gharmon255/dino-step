@@ -21,7 +21,7 @@ object StepProgression {
 
         val wasRevealed = activeCreature.isRevealed
         val newSteps = activeCreature.steps + amount
-        val nowRevealed = wasRevealed || newSteps >= activeCreature.creature.hatchStep
+        val nowRevealed = wasRevealed || newSteps >= activeCreature.progression.hatchStep
         val eggsHatchedDelta = if (!wasRevealed && nowRevealed) 1 else 0
 
         val updatedCreature = activeCreature.copy(

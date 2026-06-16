@@ -20,9 +20,6 @@ object CreatureCatalog {
         name = "Tiny Raptor",
         rarity = Rarity.COMMON,
         habitat = Habitat.JUNGLE,
-        total = 8_000,
-        hatch = 1_600,
-        juvenile = 4_000,
     )
 
     val triceratops = d(
@@ -30,9 +27,6 @@ object CreatureCatalog {
         name = "Triceratops",
         rarity = Rarity.COMMON,
         habitat = Habitat.PLAINS,
-        total = 10_000,
-        hatch = 2_000,
-        juvenile = 5_000,
     )
 
     val ankylosaurus = d(
@@ -40,9 +34,6 @@ object CreatureCatalog {
         name = "Ankylosaurus",
         rarity = Rarity.COMMON,
         habitat = Habitat.ROCKY,
-        total = 12_000,
-        hatch = 2_400,
-        juvenile = 6_000,
     )
 
     val parasaurolophus = d(
@@ -50,9 +41,6 @@ object CreatureCatalog {
         name = "Parasaurolophus",
         rarity = Rarity.COMMON,
         habitat = Habitat.FOREST,
-        total = 11_000,
-        hatch = 2_200,
-        juvenile = 5_500,
     )
 
     val pachycephalosaurus = d(
@@ -60,9 +48,6 @@ object CreatureCatalog {
         name = "Pachycephalosaurus",
         rarity = Rarity.COMMON,
         habitat = Habitat.ROCKY,
-        total = 12_500,
-        hatch = 2_500,
-        juvenile = 6_250,
     )
 
     val gallimimus = d(
@@ -70,9 +55,6 @@ object CreatureCatalog {
         name = "Gallimimus",
         rarity = Rarity.COMMON,
         habitat = Habitat.PLAINS,
-        total = 9_000,
-        hatch = 1_800,
-        juvenile = 4_500,
     )
 
     val compsognathus = d(
@@ -80,9 +62,6 @@ object CreatureCatalog {
         name = "Compsognathus",
         rarity = Rarity.COMMON,
         habitat = Habitat.JUNGLE,
-        total = 7_500,
-        hatch = 1_500,
-        juvenile = 3_750,
     )
 
     // UNCOMMON
@@ -91,9 +70,6 @@ object CreatureCatalog {
         name = "Stegosaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.FOREST,
-        total = 18_000,
-        hatch = 3_600,
-        juvenile = 9_000,
     )
 
     val brachiosaurus = d(
@@ -101,9 +77,6 @@ object CreatureCatalog {
         name = "Brachiosaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.PLAINS,
-        total = 20_000,
-        hatch = 4_000,
-        juvenile = 10_000,
     )
 
     val pteranodon = d(
@@ -111,9 +84,6 @@ object CreatureCatalog {
         name = "Pteranodon",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.MOUNTAIN,
-        total = 22_000,
-        hatch = 4_400,
-        juvenile = 11_000,
     )
 
     val dilophosaurus = d(
@@ -121,9 +91,6 @@ object CreatureCatalog {
         name = "Dilophosaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.JUNGLE,
-        total = 20_000,
-        hatch = 4_000,
-        juvenile = 10_000,
     )
 
     val iguanodon = d(
@@ -131,9 +98,6 @@ object CreatureCatalog {
         name = "Iguanodon",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.FOREST,
-        total = 19_000,
-        hatch = 3_800,
-        juvenile = 9_500,
     )
 
     val carnotaurus = d(
@@ -141,9 +105,6 @@ object CreatureCatalog {
         name = "Carnotaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.VOLCANO,
-        total = 24_000,
-        hatch = 4_800,
-        juvenile = 12_000,
     )
 
     val baryonyx = d(
@@ -151,9 +112,6 @@ object CreatureCatalog {
         name = "Baryonyx",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.SWAMP,
-        total = 25_000,
-        hatch = 5_000,
-        juvenile = 12_500,
     )
 
     val plesiosaurus = d(
@@ -161,9 +119,6 @@ object CreatureCatalog {
         name = "Plesiosaurus",
         rarity = Rarity.UNCOMMON,
         habitat = Habitat.OCEAN,
-        total = 21_000,
-        hatch = 4_200,
-        juvenile = 10_500,
     )
 
     // RARE
@@ -172,9 +127,6 @@ object CreatureCatalog {
         name = "T-Rex",
         rarity = Rarity.RARE,
         habitat = Habitat.VOLCANO,
-        total = 50_000,
-        hatch = 10_000,
-        juvenile = 25_000,
     )
 
     val spinosaurus = d(
@@ -182,9 +134,6 @@ object CreatureCatalog {
         name = "Spinosaurus",
         rarity = Rarity.RARE,
         habitat = Habitat.SWAMP,
-        total = 60_000,
-        hatch = 12_000,
-        juvenile = 30_000,
     )
 
     val velociRaptorAlpha = d(
@@ -192,9 +141,6 @@ object CreatureCatalog {
         name = "Velociraptor Alpha",
         rarity = Rarity.RARE,
         habitat = Habitat.JUNGLE,
-        total = 45_000,
-        hatch = 9_000,
-        juvenile = 22_500,
     )
 
     val allosaurus = d(
@@ -202,9 +148,6 @@ object CreatureCatalog {
         name = "Allosaurus",
         rarity = Rarity.RARE,
         habitat = Habitat.ROCKY,
-        total = 48_000,
-        hatch = 9_600,
-        juvenile = 24_000,
     )
 
     val therizinosaurus = d(
@@ -212,9 +155,6 @@ object CreatureCatalog {
         name = "Therizinosaurus",
         rarity = Rarity.RARE,
         habitat = Habitat.FOREST,
-        total = 55_000,
-        hatch = 11_000,
-        juvenile = 27_500,
     )
 
     val mosasaurus = d(
@@ -222,9 +162,6 @@ object CreatureCatalog {
         name = "Mosasaurus",
         rarity = Rarity.RARE,
         habitat = Habitat.OCEAN,
-        total = 65_000,
-        hatch = 13_000,
-        juvenile = 32_500,
     )
 
     val diplodocus = d(
@@ -232,9 +169,6 @@ object CreatureCatalog {
         name = "Diplodocus",
         rarity = Rarity.RARE,
         habitat = Habitat.PLAINS,
-        total = 52_000,
-        hatch = 10_400,
-        juvenile = 26_000,
     )
 
     // EPIC
@@ -243,9 +177,6 @@ object CreatureCatalog {
         name = "Giganotosaurus",
         rarity = Rarity.EPIC,
         habitat = Habitat.PLAINS,
-        total = 85_000,
-        hatch = 17_000,
-        juvenile = 42_500,
     )
 
     val quetzalcoatlus = d(
@@ -253,9 +184,6 @@ object CreatureCatalog {
         name = "Quetzalcoatlus",
         rarity = Rarity.EPIC,
         habitat = Habitat.MOUNTAIN,
-        total = 90_000,
-        hatch = 18_000,
-        juvenile = 45_000,
     )
 
     val indominusHybrid = d(
@@ -263,9 +191,6 @@ object CreatureCatalog {
         name = "Indominus Rex Style Hybrid",
         rarity = Rarity.EPIC,
         habitat = Habitat.LAB,
-        total = 95_000,
-        hatch = 19_000,
-        juvenile = 47_500,
     )
 
     val ancientSpinosaurus = d(
@@ -273,9 +198,6 @@ object CreatureCatalog {
         name = "Ancient Spinosaurus",
         rarity = Rarity.EPIC,
         habitat = Habitat.SWAMP,
-        total = 100_000,
-        hatch = 20_000,
-        juvenile = 50_000,
     )
 
     val crystalCeratosaurus = d(
@@ -283,9 +205,6 @@ object CreatureCatalog {
         name = "Crystal Ceratosaurus",
         rarity = Rarity.EPIC,
         habitat = Habitat.ICE,
-        total = 92_000,
-        hatch = 18_400,
-        juvenile = 46_000,
     )
 
     // LEGENDARY
@@ -294,9 +213,6 @@ object CreatureCatalog {
         name = "Volcanic T-Rex",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.VOLCANO,
-        total = 125_000,
-        hatch = 25_000,
-        juvenile = 62_500,
     )
 
     val frostRaptor = d(
@@ -304,9 +220,6 @@ object CreatureCatalog {
         name = "Frost Raptor",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.ICE,
-        total = 110_000,
-        hatch = 22_000,
-        juvenile = 55_000,
     )
 
     val shadowTriceratops = d(
@@ -314,9 +227,6 @@ object CreatureCatalog {
         name = "Shadow Triceratops",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.DARK,
-        total = 130_000,
-        hatch = 26_000,
-        juvenile = 65_000,
     )
 
     val titanosaur = d(
@@ -324,9 +234,6 @@ object CreatureCatalog {
         name = "Titanosaur",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.PLAINS,
-        total = 150_000,
-        hatch = 30_000,
-        juvenile = 75_000,
     )
 
     val cosmicPterodactyl = d(
@@ -334,9 +241,6 @@ object CreatureCatalog {
         name = "Cosmic Pterodactyl",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.SKY,
-        total = 175_000,
-        hatch = 35_000,
-        juvenile = 87_500,
     )
 
     val ancientApexRex = d(
@@ -344,9 +248,6 @@ object CreatureCatalog {
         name = "Ancient Apex Rex",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.VOLCANO,
-        total = 200_000,
-        hatch = 40_000,
-        juvenile = 100_000,
     )
 
     val abyssalMosasaurus = d(
@@ -354,9 +255,6 @@ object CreatureCatalog {
         name = "Abyssal Mosasaurus",
         rarity = Rarity.LEGENDARY,
         habitat = Habitat.OCEAN,
-        total = 190_000,
-        hatch = 38_000,
-        juvenile = 95_000,
     )
 
     val all: List<CreatureDefinition> = listOf(
@@ -468,9 +366,9 @@ object CreatureCatalog {
             name = name,
             rarity = rarity,
             habitat = Habitat.JUNGLE,
-            totalStepsRequired = tinyRaptor.totalStepsRequired,
-            hatchStep = tinyRaptor.hatchStep,
-            juvenileStep = tinyRaptor.juvenileStep,
+            totalStepsRequired = CreatureEconomy.catalogThresholdsFor(rarity).totalStepsRequired,
+            hatchStep = CreatureEconomy.catalogThresholdsFor(rarity).hatchStep,
+            juvenileStep = CreatureEconomy.catalogThresholdsFor(rarity).juvenileStep,
             eggAssetKey = "${id}_egg",
             babyAssetKey = "${id}_baby",
             juvenileAssetKey = "${id}_juvenile",
@@ -486,18 +384,16 @@ object CreatureCatalog {
         name: String,
         rarity: Rarity,
         habitat: Habitat,
-        total: Int,
-        hatch: Int,
-        juvenile: Int,
     ): CreatureDefinition {
+        val thresholds = CreatureEconomy.catalogThresholdsFor(rarity)
         return CreatureDefinition(
             id = id,
             name = name,
             rarity = rarity,
             habitat = habitat,
-            totalStepsRequired = total,
-            hatchStep = hatch,
-            juvenileStep = juvenile,
+            totalStepsRequired = thresholds.totalStepsRequired,
+            hatchStep = thresholds.hatchStep,
+            juvenileStep = thresholds.juvenileStep,
             eggAssetKey = CreatureAssetNames.eggDrawableName(rarity.name),
             babyAssetKey = CreatureAssetNames.stageDrawableLogicalName(id, GrowthStage.BABY.name)
                 ?: CreatureAssetNames.placeholderStageDrawableName(CreatureAssetNames.StageSuffix.BABY),

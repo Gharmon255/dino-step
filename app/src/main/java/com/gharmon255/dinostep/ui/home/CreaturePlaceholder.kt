@@ -16,9 +16,10 @@ fun CreaturePlaceholder(
 ) {
     // Legacy signature kept for any external callers; stage/emoji are ignored.
     CreatureStageVisual(
-        activeCreature = ActiveCreatureState(
+        activeCreature = ActiveCreatureState.newEgg(
             creature = com.gharmon255.dinostep.model.CreatureCatalog.tinyRaptor,
             eggRarity = com.gharmon255.dinostep.model.EggRarity.COMMON,
+        ).copy(
             steps = when (stage) {
                 GrowthStage.EGG -> 0
                 GrowthStage.BABY -> 2_000

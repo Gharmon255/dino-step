@@ -27,9 +27,7 @@ class GameLogicStressTest {
     @Test
     fun activeCreatureState_normalizesRevealOnHatch() {
         val creature = CreatureCatalog.tRex
-        val state = ActiveCreatureState(
-            creature = creature,
-            eggRarity = EggRarity.COMMON,
+        val state = ActiveCreatureState.newEgg(creature, EggRarity.COMMON).copy(
             steps = creature.hatchStep,
             isRevealed = false,
         )

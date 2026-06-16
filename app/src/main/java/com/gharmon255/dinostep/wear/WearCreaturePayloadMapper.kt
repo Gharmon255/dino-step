@@ -15,13 +15,14 @@ object WearCreaturePayloadMapper {
         eventType: WearSyncEventType,
     ): WearCreaturePayload {
         val creature = activeCreature.creature
-        val nextMilestone = activeCreature.nextMilestone ?: creature.totalStepsRequired
+        val progression = activeCreature.progression
+        val nextMilestone = activeCreature.nextMilestone ?: progression.totalStepsRequired
         val stageProgress = WearStageProgress.calculate(
             stageName = activeCreature.stage.name,
             currentSteps = activeCreature.steps,
-            hatchStep = creature.hatchStep,
-            juvenileStep = creature.juvenileStep,
-            totalStepsRequired = creature.totalStepsRequired,
+            hatchStep = progression.hatchStep,
+            juvenileStep = progression.juvenileStep,
+            totalStepsRequired = progression.totalStepsRequired,
         )
 
         val visual = CreatureVisualMapper.visualForActiveCreature(activeCreature)
@@ -34,7 +35,7 @@ object WearCreaturePayloadMapper {
             stage = stageName,
             currentSteps = activeCreature.steps,
             nextMilestone = nextMilestone,
-            totalStepsRequired = creature.totalStepsRequired,
+            totalStepsRequired = progression.totalStepsRequired,
             progressPercent = activeCreature.progressPercent,
             stepsUntilNextMilestone = stageProgress.stepsUntilNextStage,
             stepsUntilNextStage = stageProgress.stepsUntilNextStage,

@@ -19,7 +19,7 @@ object HomeStageProgressText {
 
     /** Lifetime progress from 0 steps to fully adult. */
     fun overallProgressPercent(activeCreature: ActiveCreatureState): Float {
-        val total = activeCreature.creature.totalStepsRequired
+        val total = activeCreature.progression.totalStepsRequired
         if (total <= 0) {
             return 0f
         }
@@ -58,13 +58,13 @@ object HomeStageProgressText {
         activeCreature: ActiveCreatureState,
         numberFormat: NumberFormat,
     ): String {
-        val creature = activeCreature.creature
+        val progression = activeCreature.progression
         val info = WearStageProgress.calculate(
             stageName = activeCreature.stage.name,
             currentSteps = activeCreature.steps.coerceAtLeast(0),
-            hatchStep = creature.hatchStep,
-            juvenileStep = creature.juvenileStep,
-            totalStepsRequired = creature.totalStepsRequired,
+            hatchStep = progression.hatchStep,
+            juvenileStep = progression.juvenileStep,
+            totalStepsRequired = progression.totalStepsRequired,
         )
 
         if (info.nextStageLabel == WearStageProgress.LABEL_READY_TO_CLAIM) {

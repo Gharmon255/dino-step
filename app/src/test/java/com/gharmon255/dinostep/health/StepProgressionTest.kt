@@ -11,9 +11,7 @@ class StepProgressionTest {
     @Test
     fun applyStepsIncrementsCreatureAndHatchCount() {
         val creature = CreatureCatalog.randomCreatureForEgg(EggRarity.COMMON)
-        val activeCreature = ActiveCreatureState(
-            creature = creature,
-            eggRarity = EggRarity.COMMON,
+        val activeCreature = ActiveCreatureState.newEgg(creature, EggRarity.COMMON).copy(
             steps = creature.hatchStep - 100,
             isRevealed = false,
         )
