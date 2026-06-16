@@ -59,6 +59,7 @@ fun PlayerStatsEntity.toDomain(): PlayerStats {
         creaturesCompleted = creaturesCompleted,
         lastSyncedStepTotal = lastSyncedStepTotal,
         lastSyncDayStartMillis = lastSyncDayStartMillis,
+        lifetimeStepsApplied = lifetimeStepsApplied,
     )
 }
 
@@ -69,5 +70,6 @@ fun PlayerStats.toEntity(): PlayerStatsEntity {
         creaturesCompleted = creaturesCompleted,
         lastSyncedStepTotal = lastSyncedStepTotal,
         lastSyncDayStartMillis = lastSyncDayStartMillis,
+        lifetimeStepsApplied = lifetimeStepsApplied,
     )
 }

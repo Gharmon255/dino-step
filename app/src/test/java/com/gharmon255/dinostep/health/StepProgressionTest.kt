@@ -29,5 +29,6 @@ class StepProgressionTest {
         assertEquals(creature.hatchStep + 50, result.activeCreature.steps)
         assertEquals(true, result.activeCreature.isRevealed)
         assertEquals(1, result.playerStats.eggsHatched)
+        assertEquals(150, result.playerStats.lifetimeStepsApplied)
     }
 }

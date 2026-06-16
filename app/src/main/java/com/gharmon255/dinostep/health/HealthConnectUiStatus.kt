@@ -18,8 +18,7 @@ sealed interface HealthConnectUiStatus {
 
     data object Ready : HealthConnectUiStatus {
         override val message: String =
-            "Health Connect is connected. Steps sync automatically about every hour. " +
-                "Tap Sync Now on Home anytime for an immediate refresh."
+            "Health Connect is connected. Steps sync automatically about every hour."
     }
 
     data class Error(

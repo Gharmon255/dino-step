@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
@@ -65,6 +66,7 @@ fun HomeScreen(
         healthConnectStatus = viewModel.healthConnectStatus,
         lastSyncedStepTotal = viewModel.lastSyncedStepTotal,
         syncStatusMessage = viewModel.syncStatusMessage,
+        lastSyncTimeMillis = viewModel.lastSyncTimeMillis,
         isSyncing = viewModel.isSyncing,
         onAddSteps = viewModel::addSteps,
         onSyncSteps = { viewModel.syncHealthSteps(manual = true) },
@@ -87,6 +89,7 @@ private fun HomeScreenContent(
     healthConnectStatus: HealthConnectUiStatus,
     lastSyncedStepTotal: Int,
     syncStatusMessage: String?,
+    lastSyncTimeMillis: Long?,
     isSyncing: Boolean,
     onAddSteps: (Int) -> Unit,
     onSyncSteps: () -> Unit,
@@ -184,20 +187,46 @@ private fun HomeScreenContent(
             }
         }
 
-        Button(
-            onClick = onSyncSteps,
-            enabled = canSync,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(if (isSyncing) "Syncing…" else "Sync Now")
-        }
+        if (healthConnectStatus is HealthConnectUiStatus.Ready) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = HomeSyncStatusText.format(
+                        isSyncing = isSyncing,
+                        lastSyncTimeMillis = lastSyncTimeMillis,
+                        syncStatusMessage = syncStatusMessage,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                TextButton(
+                    onClick = onSyncSteps,
+                    enabled = canSync,
+                ) {
+                    Text(if (isSyncing) "Syncing…" else "Sync again")
+                }
+            }
+        } else {
+            Button(
+                onClick = onSyncSteps,
+                enabled = canSync,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(if (isSyncing) "Syncing…" else "Sync Now")
+            }
 
-        syncStatusMessage?.let { message ->
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            syncStatusMessage?.let { message ->
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
 
         if (healthConnectStatus !is HealthConnectUiStatus.Ready) {
@@ -310,7 +339,7 @@ private fun HomeScreenPreview() {
                 eggRarity = EggRarity.COMMON,
                 steps = 900,
             ),
-            displayName = "Mystery Common Egg",
+            displayName = "Mystery Egg",
             steps = 900,
             stage = GrowthStage.EGG,
             nextMilestone = CreatureCatalog.tinyRaptor.hatchStep,
@@ -318,6 +347,7 @@ private fun HomeScreenPreview() {
             healthConnectStatus = HealthConnectUiStatus.PermissionRequired,
             lastSyncedStepTotal = 0,
             syncStatusMessage = null,
+            lastSyncTimeMillis = null,
             isSyncing = false,
             onAddSteps = {},
             onSyncSteps = {},

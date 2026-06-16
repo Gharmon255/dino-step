@@ -7,6 +7,7 @@ import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthStepSyncEngine
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
+import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class GameViewModelFactory(
@@ -16,6 +17,7 @@ class GameViewModelFactory(
     private val healthStepSyncEngine: HealthStepSyncEngine,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
     private val garminCompanionPublisher: GarminCompanionPublisher,
+    private val stageMilestoneNotifier: StageMilestoneNotifier,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -27,6 +29,7 @@ class GameViewModelFactory(
                 healthStepSyncEngine = healthStepSyncEngine,
                 wearDataLayerPublisher = wearDataLayerPublisher,
                 garminCompanionPublisher = garminCompanionPublisher,
+                stageMilestoneNotifier = stageMilestoneNotifier,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

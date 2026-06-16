@@ -18,15 +18,11 @@ enum class EggRarity {
         }
 
     val mysteryDisplayName: String
-        get() = when (this) {
-            COMMON -> "Mystery Common Egg"
-            UNCOMMON -> "Mystery Uncommon Egg"
-            RARE -> "Mystery Rare Egg"
-            EPIC -> "Mystery Epic Egg"
-            LEGENDARY -> "Mystery Legendary Egg"
-        }
+        get() = MYSTERY_EGG_LABEL
 
     companion object {
+        const val MYSTERY_EGG_LABEL = "Mystery Egg"
+
         fun fromRaw(value: String?): EggRarity {
             return entries.find { it.name.equals(value, ignoreCase = true) } ?: COMMON
         }

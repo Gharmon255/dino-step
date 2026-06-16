@@ -78,56 +78,70 @@ fun StatsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = "Current Run",
+                    text = "Your stats",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = runColors.accent,
                 )
 
                 StatRow(
-                    label = "Active steps",
-                    value = numberFormat.format(viewModel.steps),
+                    label = "Today's steps",
+                    value = numberFormat.format(viewModel.todaySteps),
                 )
                 StatRow(
-                    label = "Current egg rarity",
-                    value = viewModel.eggRarity.name,
+                    label = "All-time steps",
+                    value = numberFormat.format(viewModel.lifetimeSteps),
                 )
                 StatRow(
-                    label = "Creature rarity (after hatch)",
-                    value = viewModel.hatchedCreatureRarity?.name ?: "Hidden",
-                )
-                StatRow(
-                    label = "Current stage",
-                    value = viewModel.stage.name,
-                )
-                StatRow(
-                    label = "Progress",
-                    value = "${viewModel.progressPercent.toInt()}%",
+                    label = "Dino Dex",
+                    value = "${viewModel.dexDiscovered}/${viewModel.dexTotal} discovered",
                 )
             }
         }
 
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    text = "Lifetime",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
+        if (DevTools.isEnabled) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text = "Active creature (debug)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = runColors.accent,
+                    )
 
-                StatRow(
-                    label = "Completed dinosaurs",
-                    value = numberFormat.format(viewModel.completedCount),
-                )
-                StatRow(
-                    label = "Eggs hatched",
-                    value = numberFormat.format(viewModel.eggsHatched),
-                )
+                    StatRow(
+                        label = "Active steps",
+                        value = numberFormat.format(viewModel.steps),
+                    )
+                    StatRow(
+                        label = "Current egg rarity",
+                        value = viewModel.eggRarity.name,
+                    )
+                    StatRow(
+                        label = "Creature rarity (after hatch)",
+                        value = viewModel.hatchedCreatureRarity?.name ?: "Hidden",
+                    )
+                    StatRow(
+                        label = "Current stage",
+                        value = viewModel.stage.name,
+                    )
+                    StatRow(
+                        label = "Progress",
+                        value = "${viewModel.progressPercent.toInt()}%",
+                    )
+                    StatRow(
+                        label = "Completed dinosaurs",
+                        value = numberFormat.format(viewModel.completedCount),
+                    )
+                    StatRow(
+                        label = "Eggs hatched",
+                        value = numberFormat.format(viewModel.eggsHatched),
+                    )
+                }
             }
         }
 

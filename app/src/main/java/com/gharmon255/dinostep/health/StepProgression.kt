@@ -35,6 +35,7 @@ object StepProgression {
                 playerStats.totalFakeStepsAdded
             },
             eggsHatched = playerStats.eggsHatched + eggsHatchedDelta,
+            lifetimeStepsApplied = playerStats.lifetimeStepsApplied + amount,
         )
 
         return ApplyResult(

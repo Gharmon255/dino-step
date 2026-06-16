@@ -12,12 +12,15 @@ import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.health.HealthStepSyncEngine
 import com.gharmon255.dinostep.health.StepProgression
 import com.gharmon255.dinostep.model.CompletedCreature
+import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.EggRewardRoller
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
 import com.gharmon255.dinostep.model.Rarity
+import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
+import com.gharmon255.dinostep.ui.collection.CollectionRoster
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
@@ -33,6 +36,7 @@ class GameViewModel(
     private val healthStepSyncEngine: HealthStepSyncEngine,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
     private val garminCompanionPublisher: GarminCompanionPublisher,
+    private val stageMilestoneNotifier: StageMilestoneNotifier,
 ) : ViewModel() {
     private val testingEggFactory = TestingEggFactory(repository)
     private var lastAutomaticHealthSyncAttemptMillis: Long? = null
@@ -65,6 +69,21 @@ class GameViewModel(
 
     var nextEggTestSpecies by mutableStateOf(NextEggTestSpecies.RANDOM)
         private set
+
+    var lastSyncTimeMillis by mutableStateOf<Long?>(null)
+        private set
+
+    val todaySteps: Int
+        get() = lastSyncedStepTotal
+
+    val lifetimeSteps: Int
+        get() = playerStats.lifetimeStepsApplied
+
+    val dexDiscovered: Int
+        get() = CollectionRoster.buildSummary(collection).uniqueSpeciesCollected
+
+    val dexTotal: Int
+        get() = CreatureCatalog.all.size
 
     val readStepsPermissions: Set<String>
         get() = healthConnectRepository.readStepsPermissions
@@ -293,6 +312,7 @@ class GameViewModel(
             isSyncing = true
             syncStatusMessage = null
 
+            val previousCreature = activeCreature
             try {
                 val outcome = healthStepSyncEngine.sync()
                 healthConnectStatus = outcome.status
@@ -300,6 +320,13 @@ class GameViewModel(
 
                 outcome.activeCreature?.let { activeCreature = it.normalized() }
                 outcome.playerStats?.let { playerStats = it }
+
+                if (outcome.status is HealthConnectUiStatus.Ready) {
+                    lastSyncTimeMillis = System.currentTimeMillis()
+                }
+                if (outcome.appliedDelta > 0) {
+                    stageMilestoneNotifier.notifyIfNeeded(previousCreature, activeCreature)
+                }
             } finally {
                 isSyncing = false
             }
@@ -389,6 +416,7 @@ class GameViewModel(
             previous = previous,
             current = activeCreature,
         )
+        stageMilestoneNotifier.notifyIfNeeded(previous, activeCreature)
         persistActiveAndStats()
         publishActiveCreatureToWatch(eventType)
     }

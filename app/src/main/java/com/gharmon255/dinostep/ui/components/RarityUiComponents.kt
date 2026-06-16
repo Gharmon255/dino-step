@@ -355,7 +355,7 @@ private fun RowWithBadges(
     ) {
         if (creatureRarity != null && stage != GrowthStage.EGG) {
             RarityBadge(rarity = creatureRarity)
-        } else {
+        } else if (stage != GrowthStage.EGG) {
             RarityBadge(eggRarity = eggRarity)
         }
         Surface(
