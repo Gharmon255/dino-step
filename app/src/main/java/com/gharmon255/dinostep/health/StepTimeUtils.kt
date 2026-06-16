@@ -12,4 +12,12 @@ object StepTimeUtils {
     fun startOfTodayMillis(zoneId: ZoneId = ZoneId.systemDefault()): Long {
         return startOfToday(zoneId).toEpochMilli()
     }
+
+    fun startOfYesterday(zoneId: ZoneId = ZoneId.systemDefault()): Instant {
+        return LocalDate.now(zoneId).minusDays(1).atStartOfDay(zoneId).toInstant()
+    }
+
+    fun startOfYesterdayMillis(zoneId: ZoneId = ZoneId.systemDefault()): Long {
+        return startOfYesterday(zoneId).toEpochMilli()
+    }
 }

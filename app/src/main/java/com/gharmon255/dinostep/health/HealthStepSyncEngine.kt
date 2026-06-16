@@ -1,7 +1,9 @@
 package com.gharmon255.dinostep.health
 
+import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
+import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 import kotlinx.coroutines.sync.Mutex
@@ -13,17 +15,25 @@ data class HealthStepSyncOutcome(
     val message: String,
     val activeCreature: com.gharmon255.dinostep.game.ActiveCreatureState? = null,
     val playerStats: com.gharmon255.dinostep.model.PlayerStats? = null,
+    val inactivityPenaltyApplied: Boolean = false,
 )
 
 class HealthStepSyncEngine(
     private val repository: GameRepository,
     private val healthConnectRepository: HealthConnectRepository,
+    private val appExperiencePreferences: AppExperiencePreferences,
+    private val inactivityPenaltyNotifier: InactivityPenaltyNotifier? = null,
     private val wearDataLayerPublisher: WearDataLayerPublisher? = null,
     private val garminCompanionPublisher: GarminCompanionPublisher? = null,
 ) {
     private val syncMutex = Mutex()
 
     suspend fun sync(): HealthStepSyncOutcome = syncMutex.withLock {
+        val snapshot = repository.loadOrCreateGame()
+        val rollover = performDayRollover(snapshot)
+        var activeCreature = rollover.activeCreature
+        val playerStats = snapshot.playerStats
+
         val status = runCatching {
             healthConnectRepository.resolveUiStatus()
         }.getOrElse { error ->
@@ -33,6 +43,9 @@ class HealthStepSyncEngine(
                 ),
                 appliedDelta = 0,
                 message = error.localizedMessage ?: "Unable to check Health Connect status",
+                activeCreature = activeCreature,
+                playerStats = playerStats,
+                inactivityPenaltyApplied = rollover.penalty != null,
             )
         }
 
@@ -41,6 +54,9 @@ class HealthStepSyncEngine(
                 status = status,
                 appliedDelta = 0,
                 message = status.message,
+                activeCreature = activeCreature,
+                playerStats = playerStats,
+                inactivityPenaltyApplied = rollover.penalty != null,
             )
         }
 
@@ -52,12 +68,14 @@ class HealthStepSyncEngine(
                 status = errorStatus,
                 appliedDelta = 0,
                 message = errorStatus.message,
+                activeCreature = activeCreature,
+                playerStats = playerStats,
+                inactivityPenaltyApplied = rollover.penalty != null,
             )
         }
 
-        val snapshot = repository.loadOrCreateGame()
         val syncResult = StepSyncCalculator.calculate(
-            playerStats = snapshot.playerStats,
+            playerStats = playerStats,
             currentHealthConnectTodaySteps = todaySteps,
         )
 
@@ -66,14 +84,15 @@ class HealthStepSyncEngine(
                 status = status,
                 appliedDelta = 0,
                 message = "No new steps to sync (Health Connect today: ${syncResult.currentHealthConnectSteps})",
-                activeCreature = snapshot.activeCreature,
-                playerStats = snapshot.playerStats,
+                activeCreature = activeCreature,
+                playerStats = playerStats,
+                inactivityPenaltyApplied = rollover.penalty != null,
             )
         }
 
-        val previousCreature = snapshot.activeCreature
+        val previousCreature = activeCreature
         val progression = StepProgression.applySteps(
-            activeCreature = snapshot.activeCreature,
+            activeCreature = activeCreature,
             playerStats = syncResult.updatedStats,
             amount = syncResult.delta,
             countAsFake = false,
@@ -95,6 +114,33 @@ class HealthStepSyncEngine(
             message = "Synced ${syncResult.delta} steps (Health Connect today: ${syncResult.currentHealthConnectSteps})",
             activeCreature = progression.activeCreature,
             playerStats = progression.playerStats,
+            inactivityPenaltyApplied = rollover.penalty != null,
         )
+    }
+
+    suspend fun evaluateDayRollover(): DayRolloverOutcome =
+        performDayRollover(repository.loadOrCreateGame())
+
+    private suspend fun performDayRollover(
+        snapshot: com.gharmon255.dinostep.data.GameSnapshot,
+    ): DayRolloverOutcome {
+        val rollover = DayRolloverEvaluator.evaluateIfNeeded(
+            experience = appExperiencePreferences,
+            activeCreature = snapshot.activeCreature,
+            playerStats = snapshot.playerStats,
+            fetchYesterdaySteps = {
+                val start = StepTimeUtils.startOfYesterday()
+                val end = StepTimeUtils.startOfToday()
+                healthConnectRepository.readStepTotalBetween(start, end)
+                    .getOrNull()
+                    ?.toInt()
+                    ?: 0
+            },
+        )
+        if (rollover.penalty != null) {
+            repository.saveActiveCreature(rollover.activeCreature)
+            inactivityPenaltyNotifier?.notify(rollover.penalty.yesterdaySteps)
+        }
+        return rollover
     }
 }

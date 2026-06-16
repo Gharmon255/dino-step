@@ -174,6 +174,10 @@ fun StatsScreen(
                 onResetGame = { showResetGameDialog = true },
             )
 
+            DailyActivityTestingCard(
+                onSimulateInactiveDay = viewModel::simulateInactiveDayForTesting,
+            )
+
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(
                     modifier = Modifier

@@ -2,6 +2,7 @@ package com.gharmon255.dinostep.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
@@ -13,6 +14,7 @@ import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 class GameViewModelFactory(
     private val repository: GameRepository,
     private val developerPreferences: DeveloperPreferences,
+    private val appExperiencePreferences: AppExperiencePreferences,
     private val healthConnectRepository: HealthConnectRepository,
     private val healthStepSyncEngine: HealthStepSyncEngine,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
@@ -25,6 +27,7 @@ class GameViewModelFactory(
             return GameViewModel(
                 repository = repository,
                 developerPreferences = developerPreferences,
+                appExperiencePreferences = appExperiencePreferences,
                 healthConnectRepository = healthConnectRepository,
                 healthStepSyncEngine = healthStepSyncEngine,
                 wearDataLayerPublisher = wearDataLayerPublisher,

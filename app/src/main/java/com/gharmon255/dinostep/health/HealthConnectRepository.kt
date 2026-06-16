@@ -61,16 +61,35 @@ class HealthConnectRepository(
             return@withContext Result.failure(SecurityException("Steps read permission not granted"))
         }
 
-        runCatching {
-            val startTime = StepTimeUtils.startOfToday()
-            val endTime = Instant.now()
-            val response = client.aggregate(
-                AggregateRequest(
-                    metrics = setOf(StepsRecord.COUNT_TOTAL),
-                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
-                ),
-            )
-            response[StepsRecord.COUNT_TOTAL] ?: 0L
-        }
+        readStepTotalBetween(StepTimeUtils.startOfToday(), Instant.now())
     }
+
+    suspend fun readStepTotalBetween(startTime: Instant, endTime: Instant): Result<Long> =
+        withContext(Dispatchers.IO) {
+            if (!isAvailable()) {
+                return@withContext Result.failure(
+                    IllegalStateException("Health Connect is not available"),
+                )
+            }
+
+            val client = healthConnectClient
+                ?: return@withContext Result.failure(
+                    IllegalStateException("Health Connect is not available"),
+                )
+
+            val granted = client.permissionController.getGrantedPermissions()
+            if (!granted.containsAll(readStepsPermissions)) {
+                return@withContext Result.failure(SecurityException("Steps read permission not granted"))
+            }
+
+            runCatching {
+                val response = client.aggregate(
+                    AggregateRequest(
+                        metrics = setOf(StepsRecord.COUNT_TOTAL),
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime),
+                    ),
+                )
+                response[StepsRecord.COUNT_TOTAL] ?: 0L
+            }
+        }
 }

@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep
 
 import android.app.Application
+import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.local.DinoStepDatabase
 import com.gharmon255.dinostep.data.repository.GameRepository
@@ -10,12 +11,21 @@ import com.gharmon255.dinostep.health.StepSyncScheduler
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.garmin.GarminConnectIQManager
 import com.gharmon255.dinostep.garmin.GarminSdkCompanionPublisher
+import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class DinoStepApplication : Application() {
     val stageMilestoneNotifier: StageMilestoneNotifier by lazy {
         StageMilestoneNotifier(this)
+    }
+
+    val inactivityPenaltyNotifier: InactivityPenaltyNotifier by lazy {
+        InactivityPenaltyNotifier(this)
+    }
+
+    val appExperiencePreferences: AppExperiencePreferences by lazy {
+        AppExperiencePreferences(this)
     }
 
     override fun onCreate() {
@@ -43,6 +53,8 @@ class DinoStepApplication : Application() {
         HealthStepSyncEngine(
             repository = gameRepository,
             healthConnectRepository = healthConnectRepository,
+            appExperiencePreferences = appExperiencePreferences,
+            inactivityPenaltyNotifier = inactivityPenaltyNotifier,
             wearDataLayerPublisher = wearDataLayerPublisher,
             garminCompanionPublisher = garminCompanionPublisher,
         )

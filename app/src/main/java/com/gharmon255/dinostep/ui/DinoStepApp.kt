@@ -2,6 +2,7 @@ package com.gharmon255.dinostep.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +40,7 @@ import com.gharmon255.dinostep.ui.collection.CollectionScreen
 import com.gharmon255.dinostep.ui.eggs.EggsScreen
 import com.gharmon255.dinostep.ui.home.HomeScreen
 import com.gharmon255.dinostep.ui.navigation.AppTab
+import com.gharmon255.dinostep.ui.onboarding.OnboardingScreen
 import com.gharmon255.dinostep.ui.stats.StatsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,60 +81,103 @@ fun DinoStepApp(
         }
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(selectedTab.title) },
-            )
-        },
-        bottomBar = {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 3.dp,
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    BottomNavBar(
-                        selectedTab = selectedTab,
-                        onTabSelected = { selectedTab = it },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .windowInsetsPadding(WindowInsets.navigationBars),
-                    )
+    Box(modifier = modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = { Text(selectedTab.title) },
+                )
+            },
+            bottomBar = {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 3.dp,
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        BottomNavBar(
+                            selectedTab = selectedTab,
+                            onTabSelected = { selectedTab = it },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .windowInsetsPadding(WindowInsets.navigationBars),
+                        )
+                    }
                 }
+            },
+        ) { innerPadding ->
+            when (selectedTab) {
+                AppTab.Home -> HomeScreen(
+                    viewModel = viewModel,
+                    onRequestHealthPermission = onRequestHealthPermission,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+                AppTab.Eggs -> EggsScreen(
+                    viewModel = viewModel,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+                AppTab.Collection -> CollectionScreen(
+                    viewModel = viewModel,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+                AppTab.Stats -> StatsScreen(
+                    viewModel = viewModel,
+                    onRequestHealthPermission = onRequestHealthPermission,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
             }
-        },
-    ) { innerPadding ->
-        when (selectedTab) {
-            AppTab.Home -> HomeScreen(
-                viewModel = viewModel,
-                onRequestHealthPermission = onRequestHealthPermission,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+        }
+
+        if (viewModel.showOnboarding) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background,
+            ) {
+                OnboardingScreen(onFinished = viewModel::completeOnboarding)
+            }
+        }
+
+        if (viewModel.showWhatsNew) {
+            AlertDialog(
+                onDismissRequest = viewModel::dismissWhatsNew,
+                title = { Text("What's new") },
+                text = {
+                    Text(
+                        "• Daily step goal: walk 5,000+ steps or your dino resets to an egg (500 steps left).\n\n" +
+                            "• Egg cracks, dino facts, and your collection on Home.\n\n" +
+                            "• Steps must flow into Apple Health (or Health Connect on Android).",
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = viewModel::dismissWhatsNew) {
+                        Text("Got it")
+                    }
+                },
             )
-            AppTab.Eggs -> EggsScreen(
-                viewModel = viewModel,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-            )
-            AppTab.Collection -> CollectionScreen(
-                viewModel = viewModel,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-            )
-            AppTab.Stats -> StatsScreen(
-                viewModel = viewModel,
-                onRequestHealthPermission = onRequestHealthPermission,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+        }
+
+        viewModel.inactivityPenaltyAlert?.let { message ->
+            AlertDialog(
+                onDismissRequest = viewModel::dismissInactivityPenaltyAlert,
+                title = { Text("Your dino needs more steps") },
+                text = { Text(message) },
+                confirmButton = {
+                    TextButton(onClick = viewModel::dismissInactivityPenaltyAlert) {
+                        Text("OK")
+                    }
+                },
             )
         }
     }

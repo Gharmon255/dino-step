@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
         val viewModelFactory = GameViewModelFactory(
             repository = app.gameRepository,
             developerPreferences = app.developerPreferences,
+            appExperiencePreferences = app.appExperiencePreferences,
             healthConnectRepository = app.healthConnectRepository,
             healthStepSyncEngine = app.healthStepSyncEngine,
             wearDataLayerPublisher = app.wearDataLayerPublisher,

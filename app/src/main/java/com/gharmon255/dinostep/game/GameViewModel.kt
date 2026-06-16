@@ -5,8 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
+import com.gharmon255.dinostep.health.DailyActivityPenalty
+import com.gharmon255.dinostep.health.DayRolloverEvaluator
+import com.gharmon255.dinostep.health.StepTimeUtils
 import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.health.HealthStepSyncEngine
@@ -33,6 +37,7 @@ import kotlinx.coroutines.launch
 class GameViewModel(
     private val repository: GameRepository,
     private val developerPreferences: DeveloperPreferences,
+    private val appExperiencePreferences: AppExperiencePreferences,
     private val healthConnectRepository: HealthConnectRepository,
     private val healthStepSyncEngine: HealthStepSyncEngine,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
@@ -75,6 +80,15 @@ class GameViewModel(
         private set
 
     var pendingDiscovery by mutableStateOf<DiscoveryCelebration?>(null)
+        private set
+
+    var showOnboarding by mutableStateOf(false)
+        private set
+
+    var showWhatsNew by mutableStateOf(false)
+        private set
+
+    var inactivityPenaltyAlert by mutableStateOf<String?>(null)
         private set
 
     fun clearPendingDiscovery() {
@@ -156,6 +170,7 @@ class GameViewModel(
             playerStats = snapshot.playerStats
             nextEggTestSpecies = developerPreferences.getNextEggTestSpecies()
             refreshHealthConnectStatus()
+            refreshExperiencePresentation()
             isReady = true
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
             syncHealthSteps(manual = false)
@@ -335,6 +350,9 @@ class GameViewModel(
                 if (outcome.appliedDelta > 0) {
                     stageMilestoneNotifier.notifyIfNeeded(previousCreature, activeCreature)
                 }
+                if (outcome.inactivityPenaltyApplied) {
+                    inactivityPenaltyAlert = inactivityPenaltyMessage()
+                }
                 maybeCelebrateDiscovery(previousCreature, activeCreature)
             } finally {
                 isSyncing = false
@@ -494,6 +512,70 @@ class GameViewModel(
             repository.savePlayerStats(stats)
         }
     }
+
+    fun completeOnboarding() {
+        appExperiencePreferences.setOnboardingCompleted()
+        appExperiencePreferences.setLastSeenWhatsNewVersion(AppExperiencePreferences.CURRENT_WHATS_NEW_VERSION)
+        showOnboarding = false
+        refreshExperiencePresentation()
+    }
+
+    fun dismissWhatsNew() {
+        appExperiencePreferences.setLastSeenWhatsNewVersion(AppExperiencePreferences.CURRENT_WHATS_NEW_VERSION)
+        showWhatsNew = false
+    }
+
+    fun dismissInactivityPenaltyAlert() {
+        inactivityPenaltyAlert = null
+    }
+
+    /** DEBUG: Pretend yesterday had [yesterdaySteps] and run the real day-rollover penalty check. */
+    fun simulateInactiveDayForTesting(yesterdaySteps: Int = 0) {
+        if (!DevTools.isEnabled || !isReady) {
+            return
+        }
+
+        viewModelScope.launch {
+            val yesterdayStart = StepTimeUtils.startOfYesterdayMillis()
+            appExperiencePreferences.setLastActivityEvaluationDayStartMillis(yesterdayStart)
+            playerStats = playerStats.copy(
+                lastSyncDayStartMillis = yesterdayStart,
+                lastSyncedStepTotal = yesterdaySteps.coerceAtLeast(0),
+            )
+            repository.savePlayerStats(playerStats)
+
+            val rollover = DayRolloverEvaluator.evaluateIfNeeded(
+                experience = appExperiencePreferences,
+                activeCreature = activeCreature,
+                playerStats = playerStats,
+                fetchYesterdaySteps = { yesterdaySteps.coerceAtLeast(0) },
+            )
+            activeCreature = rollover.activeCreature.normalized()
+
+            if (rollover.penalty != null) {
+                repository.saveActiveCreature(activeCreature)
+                inactivityPenaltyAlert = inactivityPenaltyMessage()
+                publishActiveCreatureToWatch(WearSyncEventType.NONE)
+                syncStatusMessage =
+                    "DEBUG: Inactivity penalty applied (yesterday=$yesterdaySteps steps)."
+            } else {
+                syncStatusMessage =
+                    "DEBUG: No penalty for yesterday=$yesterdaySteps steps " +
+                        "(need < ${DailyActivityPenalty.MINIMUM_DAILY_STEPS}, or already at minimum egg)."
+            }
+        }
+    }
+
+    private fun refreshExperiencePresentation() {
+        showOnboarding = !appExperiencePreferences.hasCompletedOnboarding()
+        showWhatsNew = !showOnboarding &&
+            appExperiencePreferences.lastSeenWhatsNewVersion() < AppExperiencePreferences.CURRENT_WHATS_NEW_VERSION
+    }
+
+    private fun inactivityPenaltyMessage(): String =
+        "You walked fewer than ${DailyActivityPenalty.MINIMUM_DAILY_STEPS} steps yesterday. " +
+            "Your dino is back in an egg with ${DailyActivityPenalty.PENALTY_REMAINING_STEPS} steps of progress. " +
+            "Keep walking every day!"
 
     companion object {
         private const val AUTOMATIC_SYNC_DEBOUNCE_MILLIS = 120_000L

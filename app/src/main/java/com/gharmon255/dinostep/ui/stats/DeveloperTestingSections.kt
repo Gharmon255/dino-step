@@ -322,6 +322,51 @@ fun WearSyncDebugCard(
     }
 }
 
+@Composable
+fun DailyActivityTestingCard(
+    onSimulateInactiveDay: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = "Daily activity penalty (debug)",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = "Simulates a new calendar day where yesterday had too few steps. " +
+                    "Uses the real rollover + penalty logic — your dino should return to an egg with 500 steps.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Button(
+                onClick = { onSimulateInactiveDay(0) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Simulate yesterday: 0 steps")
+            }
+            OutlinedButton(
+                onClick = { onSimulateInactiveDay(4_999) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Simulate yesterday: 4,999 steps (still penalized)")
+            }
+            OutlinedButton(
+                onClick = { onSimulateInactiveDay(5_000) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Simulate yesterday: 5,000 steps (no penalty)")
+            }
+        }
+    }
+}
+
 sealed class PendingEggGrant {
     data object Random : PendingEggGrant()
 
