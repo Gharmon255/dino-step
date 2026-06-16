@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CreatureVisualMapper
+import com.gharmon255.dinostep.model.EggCrackLevel
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Rarity
@@ -99,6 +100,7 @@ private fun EggStageVisual(
     frameSize: Dp,
     imageSize: Dp,
     animateEgg: Boolean,
+    crackLevel: Int,
 ) {
     val colors = rarityColors(eggRarity)
     val showBaseGlow = eggRarity != EggRarity.COMMON
@@ -161,6 +163,11 @@ private fun EggStageVisual(
                     imageContent()
                 }
             }
+
+            EggCrackOverlay(
+                crackLevel = crackLevel,
+                modifier = Modifier.matchParentSize(),
+            )
         }
     }
 }
@@ -202,6 +209,7 @@ fun CreatureStageVisual(
                     frameSize = frameSize,
                     imageSize = frameSize * 0.78f,
                     animateEgg = true,
+                    crackLevel = EggCrackLevel.forActiveEgg(activeCreature),
                 )
             }
             else -> StageDinoVisual(
@@ -368,6 +376,53 @@ private fun RowWithBadges(
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
             )
+        }
+    }
+}
+
+/** Static stage art for collection detail (egg, baby, juvenile, adult). */
+@Composable
+fun CatalogCreatureStageVisual(
+    creature: com.gharmon255.dinostep.model.CreatureDefinition,
+    stage: GrowthStage,
+    modifier: Modifier = Modifier,
+    frameSize: androidx.compose.ui.unit.Dp = 84.dp,
+) {
+    val eggRarity = EggRarity.valueOf(creature.rarity.name)
+    val visual = CreatureVisualMapper.getVisualForStage(creature, stage, eggRarity)
+    val drawableId = CreatureStageDrawableResolve.resolveDrawableId(
+        speciesId = creature.id,
+        stage = stage,
+        eggRarity = eggRarity,
+    )
+    val imageSize = frameSize * 0.78f
+    val baseEmojiSp = (frameSize.value * 0.38f * visual.stageScale).toInt().coerceIn(28, 56)
+
+    Box(
+        modifier = modifier.size(frameSize),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (stage) {
+            GrowthStage.EGG -> {
+                EggStageVisual(
+                    eggRarity = eggRarity,
+                    drawableId = drawableId,
+                    emoji = visual.displayEmoji,
+                    frameSize = frameSize,
+                    imageSize = imageSize,
+                    animateEgg = false,
+                    crackLevel = 3,
+                )
+            }
+            else -> {
+                StageCreatureImageOrEmoji(
+                    drawableId = drawableId,
+                    emoji = visual.speciesEmoji,
+                    imageSize = frameSize * visual.stageScale.coerceAtLeast(0.7f),
+                    fontSizeSp = baseEmojiSp,
+                    contentDescription = visual.stageDetailLabel,
+                )
+            }
         }
     }
 }

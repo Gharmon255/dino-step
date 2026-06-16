@@ -13,6 +13,7 @@ import com.gharmon255.dinostep.health.HealthStepSyncEngine
 import com.gharmon255.dinostep.health.StepProgression
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
+import com.gharmon255.dinostep.model.CreatureFacts
 import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.EggRewardRoller
@@ -72,6 +73,13 @@ class GameViewModel(
 
     var lastSyncTimeMillis by mutableStateOf<Long?>(null)
         private set
+
+    var pendingDiscovery by mutableStateOf<DiscoveryCelebration?>(null)
+        private set
+
+    fun clearPendingDiscovery() {
+        pendingDiscovery = null
+    }
 
     val todaySteps: Int
         get() = lastSyncedStepTotal
@@ -327,6 +335,7 @@ class GameViewModel(
                 if (outcome.appliedDelta > 0) {
                     stageMilestoneNotifier.notifyIfNeeded(previousCreature, activeCreature)
                 }
+                maybeCelebrateDiscovery(previousCreature, activeCreature)
             } finally {
                 isSyncing = false
             }
@@ -417,8 +426,22 @@ class GameViewModel(
             current = activeCreature,
         )
         stageMilestoneNotifier.notifyIfNeeded(previous, activeCreature)
+        maybeCelebrateDiscovery(previous, activeCreature)
         persistActiveAndStats()
         publishActiveCreatureToWatch(eventType)
+    }
+
+    private fun maybeCelebrateDiscovery(
+        previous: ActiveCreatureState,
+        current: ActiveCreatureState,
+    ) {
+        if (!previous.isRevealed && current.isRevealed) {
+            pendingDiscovery = DiscoveryCelebration(
+                speciesId = current.creature.id,
+                speciesName = current.creature.name,
+                funFact = CreatureFacts.forSpecies(current.creature.id),
+            )
+        }
     }
 
     private fun publishActiveCreatureToWatch(eventType: WearSyncEventType) {

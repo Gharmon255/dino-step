@@ -1,5 +1,6 @@
 package com.gharmon255.dinostep.ui.collection
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.GameViewModel
+import com.gharmon255.dinostep.model.CreatureFacts
 import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.Habitat
 import com.gharmon255.dinostep.model.StageVisual
@@ -57,6 +59,7 @@ fun CollectionScreen(
 
     var filter by remember { mutableStateOf(CollectionFilter.ALL) }
     var sort by remember { mutableStateOf(CollectionDefaultSort) }
+    var selectedEntry by remember { mutableStateOf<RosterEntry?>(null) }
 
     val displayedEntries = remember(rosterEntries, filter, sort) {
         CollectionRoster.applySort(
@@ -150,8 +153,17 @@ fun CollectionScreen(
                 entry = entry,
                 numberFormat = numberFormat,
                 dateFormat = dateFormat,
+                onCollectedClick = { selectedEntry = entry },
             )
         }
+    }
+
+    selectedEntry?.let { entry ->
+        CollectionSpeciesDetailSheet(
+            entry = entry,
+            dateFormat = dateFormat,
+            onDismiss = { selectedEntry = null },
+        )
     }
 }
 
@@ -292,6 +304,7 @@ private fun RosterCreatureCard(
     entry: RosterEntry,
     numberFormat: NumberFormat,
     dateFormat: DateFormat,
+    onCollectedClick: (RosterEntry) -> Unit,
 ) {
     val collected = entry.isCollected
     val colors = rarityColors(entry.creature.rarity)
@@ -304,7 +317,9 @@ private fun RosterCreatureCard(
             .fillMaxWidth()
             .then(
                 if (collected) {
-                    Modifier.border(2.dp, colors.border.copy(alpha = 0.85f), cardShape)
+                    Modifier
+                        .clickable { onCollectedClick(entry) }
+                        .border(2.dp, colors.border.copy(alpha = 0.85f), cardShape)
                 } else {
                     Modifier.border(
                         1.dp,
@@ -376,6 +391,19 @@ private fun RosterCreatureCard(
                         text = habitatLabel(entry.creature.habitat),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = CreatureFacts.forSpecies(entry.creature.id),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        text = "Tap to view all growth stages",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colors.accent,
                     )
                     Text(
                         text = "Adult · ${numberFormat.format(entry.creature.totalStepsRequired)} steps to grow",

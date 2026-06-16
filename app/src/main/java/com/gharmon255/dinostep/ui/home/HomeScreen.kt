@@ -31,7 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.game.DevTools
+import com.gharmon255.dinostep.game.DiscoveryCelebration
 import com.gharmon255.dinostep.game.DuplicateTradeOffer
+import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.model.CreatureCatalog
@@ -58,6 +60,11 @@ fun HomeScreen(
     val active = viewModel.activeCreatureState
     HomeScreenContent(
         activeCreature = active,
+        collection = viewModel.collection,
+        dexDiscovered = viewModel.dexDiscovered,
+        dexTotal = viewModel.dexTotal,
+        pendingDiscovery = viewModel.pendingDiscovery,
+        onDismissDiscovery = viewModel::clearPendingDiscovery,
         displayName = viewModel.displayName,
         steps = viewModel.steps,
         stage = viewModel.stage,
@@ -81,6 +88,11 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     activeCreature: ActiveCreatureState,
+    collection: List<CompletedCreature>,
+    dexDiscovered: Int,
+    dexTotal: Int,
+    pendingDiscovery: DiscoveryCelebration?,
+    onDismissDiscovery: () -> Unit,
     displayName: String,
     steps: Int,
     stage: GrowthStage,
@@ -117,6 +129,12 @@ private fun HomeScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+        Text(
+            text = "Stepasaurus",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+        )
+
         val stageProgress = HomeStageProgressText.stageProgressPercent(activeCreature)
         val overallProgress = HomeStageProgressText.overallProgressPercent(activeCreature)
 
@@ -186,6 +204,12 @@ private fun HomeScreenContent(
                 }
             }
         }
+
+        HomeCollectionStrip(
+            collection = collection,
+            dexDiscovered = dexDiscovered,
+            dexTotal = dexTotal,
+        )
 
         if (healthConnectStatus is HealthConnectUiStatus.Ready) {
             Column(
@@ -291,6 +315,11 @@ private fun HomeScreenContent(
         }
     }
 
+    DiscoveryCelebrationDialog(
+        celebration = pendingDiscovery,
+        onDismiss = onDismissDiscovery,
+    )
+
     if (showTradeConfirmation && duplicateTradeOffer != null) {
         AlertDialog(
             onDismissRequest = { showTradeConfirmation = false },
@@ -339,6 +368,11 @@ private fun HomeScreenPreview() {
                 eggRarity = EggRarity.COMMON,
                 steps = 900,
             ),
+            collection = emptyList(),
+            dexDiscovered = 0,
+            dexTotal = CreatureCatalog.all.size,
+            pendingDiscovery = null,
+            onDismissDiscovery = {},
             displayName = "Mystery Egg",
             steps = 900,
             stage = GrowthStage.EGG,
