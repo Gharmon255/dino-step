@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.health.connect.client)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(project(":shared"))
     implementation(libs.play.services.wearable)
     implementation(libs.kotlinx.coroutines.play.services)

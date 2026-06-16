@@ -53,7 +53,7 @@ fun DinoStepApp(
     DisposableEffect(lifecycleOwner, viewModel.isReady) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME && viewModel.isReady) {
-                viewModel.republishWearStateOnForeground()
+                viewModel.onAppForeground()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

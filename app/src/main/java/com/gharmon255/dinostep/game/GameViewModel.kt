@@ -9,7 +9,8 @@ import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
-import com.gharmon255.dinostep.health.StepSyncCalculator
+import com.gharmon255.dinostep.health.HealthStepSyncEngine
+import com.gharmon255.dinostep.health.StepProgression
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureVisualMapper
 import com.gharmon255.dinostep.model.EggRarity
@@ -29,10 +30,12 @@ class GameViewModel(
     private val repository: GameRepository,
     private val developerPreferences: DeveloperPreferences,
     private val healthConnectRepository: HealthConnectRepository,
+    private val healthStepSyncEngine: HealthStepSyncEngine,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
     private val garminCompanionPublisher: GarminCompanionPublisher,
 ) : ViewModel() {
     private val testingEggFactory = TestingEggFactory(repository)
+    private var lastAutomaticHealthSyncAttemptMillis: Long? = null
     var isReady by mutableStateOf(false)
         private set
 
@@ -128,7 +131,16 @@ class GameViewModel(
             refreshHealthConnectStatus()
             isReady = true
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
+            syncHealthSteps(manual = false)
         }
+    }
+
+    fun onAppForeground() {
+        if (!isReady) {
+            return
+        }
+        syncHealthSteps(manual = false)
+        republishWearStateOnForeground()
     }
 
     fun forceWatchSync() {
@@ -250,6 +262,7 @@ class GameViewModel(
     fun onHealthPermissionsResult(granted: Set<String>) {
         if (granted.containsAll(readStepsPermissions)) {
             healthConnectStatus = HealthConnectUiStatus.Ready
+            syncHealthSteps(manual = false)
         } else {
             healthConnectStatus = HealthConnectUiStatus.PermissionRequired
         }
@@ -262,9 +275,18 @@ class GameViewModel(
         applyStepsToCreature(amount, countAsFake = true)
     }
 
-    fun syncHealthSteps() {
+    fun syncHealthSteps(manual: Boolean = false) {
         if (!isReady || isSyncing) {
             return
+        }
+
+        val now = System.currentTimeMillis()
+        if (!manual) {
+            val lastAttempt = lastAutomaticHealthSyncAttemptMillis
+            if (lastAttempt != null && now - lastAttempt < AUTOMATIC_SYNC_DEBOUNCE_MILLIS) {
+                return
+            }
+            lastAutomaticHealthSyncAttemptMillis = now
         }
 
         viewModelScope.launch {
@@ -272,36 +294,12 @@ class GameViewModel(
             syncStatusMessage = null
 
             try {
-                val status = healthConnectRepository.resolveUiStatus()
-                healthConnectStatus = status
+                val outcome = healthStepSyncEngine.sync()
+                healthConnectStatus = outcome.status
+                syncStatusMessage = outcome.message
 
-                if (status !is HealthConnectUiStatus.Ready) {
-                    syncStatusMessage = status.message
-                    return@launch
-                }
-
-                val todaySteps = healthConnectRepository.readTodayStepTotal().getOrElse { error ->
-                    healthConnectStatus = HealthConnectUiStatus.Error(
-                        error.localizedMessage ?: "Failed to read steps from Health Connect",
-                    )
-                    syncStatusMessage = healthConnectStatus.message
-                    return@launch
-                }
-
-                val syncResult = StepSyncCalculator.calculate(
-                    playerStats = playerStats,
-                    currentHealthConnectTodaySteps = todaySteps,
-                )
-
-                if (syncResult.delta > 0) {
-                    applyStepsToCreature(syncResult.delta, countAsFake = false)
-                    playerStats = syncResult.updatedStats
-                    repository.savePlayerStats(playerStats)
-                    syncStatusMessage =
-                        "Synced ${syncResult.delta} steps (Health Connect today: ${syncResult.currentHealthConnectSteps})"
-                } else {
-                    syncStatusMessage = "No new steps to sync (Health Connect today: ${syncResult.currentHealthConnectSteps})"
-                }
+                outcome.activeCreature?.let { activeCreature = it.normalized() }
+                outcome.playerStats?.let { playerStats = it }
             } finally {
                 isSyncing = false
             }
@@ -378,24 +376,14 @@ class GameViewModel(
         }
 
         val previous = activeCreature
-        val wasRevealed = activeCreature.isRevealed
-        val newSteps = activeCreature.steps + amount
-        val nowRevealed = wasRevealed || newSteps >= activeCreature.creature.hatchStep
-        val eggsHatchedDelta = if (!wasRevealed && nowRevealed) 1 else 0
-
-        activeCreature = activeCreature.copy(
-            steps = newSteps,
-            isRevealed = nowRevealed,
+        val progression = StepProgression.applySteps(
+            activeCreature = activeCreature,
+            playerStats = playerStats,
+            amount = amount,
+            countAsFake = countAsFake,
         )
-
-        playerStats = playerStats.copy(
-            totalFakeStepsAdded = if (countAsFake) {
-                playerStats.totalFakeStepsAdded + amount
-            } else {
-                playerStats.totalFakeStepsAdded
-            },
-            eggsHatched = playerStats.eggsHatched + eggsHatchedDelta,
-        )
+        activeCreature = progression.activeCreature
+        playerStats = progression.playerStats
 
         val eventType = WearCreaturePayloadMapper.detectEventType(
             previous = previous,
@@ -445,5 +433,9 @@ class GameViewModel(
             repository.saveActiveCreature(creature)
             repository.savePlayerStats(stats)
         }
+    }
+
+    companion object {
+        private const val AUTOMATIC_SYNC_DEBOUNCE_MILLIS = 120_000L
     }
 }

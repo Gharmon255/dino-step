@@ -41,7 +41,7 @@ fun HealthConnectCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = "Step data stays on your device. Stepasaurus does not sell or share your steps for ads.",
+                text = "Step data stays on your device. Stepasaurus reads steps from Health Connect when you open the app and about once per hour in the background. We do not sell or share your steps for ads.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

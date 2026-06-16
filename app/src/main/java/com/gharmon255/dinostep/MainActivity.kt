@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
             repository = app.gameRepository,
             developerPreferences = app.developerPreferences,
             healthConnectRepository = app.healthConnectRepository,
+            healthStepSyncEngine = app.healthStepSyncEngine,
             wearDataLayerPublisher = app.wearDataLayerPublisher,
             garminCompanionPublisher = app.garminCompanionPublisher,
         )

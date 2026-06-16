@@ -5,12 +5,19 @@ import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.local.DinoStepDatabase
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
+import com.gharmon255.dinostep.health.HealthStepSyncEngine
+import com.gharmon255.dinostep.health.StepSyncScheduler
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.garmin.GarminConnectIQManager
 import com.gharmon255.dinostep.garmin.GarminSdkCompanionPublisher
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 class DinoStepApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        StepSyncScheduler.schedule(this)
+    }
+
     override fun onTerminate() {
         garminConnectIQManager.shutdown()
         super.onTerminate()
@@ -25,6 +32,15 @@ class DinoStepApplication : Application() {
 
     val healthConnectRepository: HealthConnectRepository by lazy {
         HealthConnectRepository(this)
+    }
+
+    val healthStepSyncEngine: HealthStepSyncEngine by lazy {
+        HealthStepSyncEngine(
+            repository = gameRepository,
+            healthConnectRepository = healthConnectRepository,
+            wearDataLayerPublisher = wearDataLayerPublisher,
+            garminCompanionPublisher = garminCompanionPublisher,
+        )
     }
 
     val wearDataLayerPublisher: WearDataLayerPublisher by lazy {

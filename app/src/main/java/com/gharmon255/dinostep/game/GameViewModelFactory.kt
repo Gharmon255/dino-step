@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.health.HealthConnectRepository
+import com.gharmon255.dinostep.health.HealthStepSyncEngine
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
@@ -12,6 +13,7 @@ class GameViewModelFactory(
     private val repository: GameRepository,
     private val developerPreferences: DeveloperPreferences,
     private val healthConnectRepository: HealthConnectRepository,
+    private val healthStepSyncEngine: HealthStepSyncEngine,
     private val wearDataLayerPublisher: WearDataLayerPublisher,
     private val garminCompanionPublisher: GarminCompanionPublisher,
 ) : ViewModelProvider.Factory {
@@ -22,6 +24,7 @@ class GameViewModelFactory(
                 repository = repository,
                 developerPreferences = developerPreferences,
                 healthConnectRepository = healthConnectRepository,
+                healthStepSyncEngine = healthStepSyncEngine,
                 wearDataLayerPublisher = wearDataLayerPublisher,
                 garminCompanionPublisher = garminCompanionPublisher,
             ) as T

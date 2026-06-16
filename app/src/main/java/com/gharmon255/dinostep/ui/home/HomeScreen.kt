@@ -67,7 +67,7 @@ fun HomeScreen(
         syncStatusMessage = viewModel.syncStatusMessage,
         isSyncing = viewModel.isSyncing,
         onAddSteps = viewModel::addSteps,
-        onSyncSteps = viewModel::syncHealthSteps,
+        onSyncSteps = { viewModel.syncHealthSteps(manual = true) },
         onRequestHealthPermission = onRequestHealthPermission,
         duplicateTradeOffer = viewModel.duplicateTradeOffer,
         onClaimReward = viewModel::claimRandomReward,
@@ -189,7 +189,7 @@ private fun HomeScreenContent(
             enabled = canSync,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(if (isSyncing) "Syncing…" else "Sync Steps")
+            Text(if (isSyncing) "Syncing…" else "Sync Now")
         }
 
         syncStatusMessage?.let { message ->

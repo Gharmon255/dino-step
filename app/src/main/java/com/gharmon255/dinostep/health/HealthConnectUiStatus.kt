@@ -12,14 +12,14 @@ sealed interface HealthConnectUiStatus {
     data object PermissionRequired : HealthConnectUiStatus {
         override val message: String =
             "Stepasaurus reads your step count from Health Connect to hatch and grow dinosaurs. " +
-                "Steps apply only when you tap Sync Steps on Home — not automatically in the background. " +
+                "Steps sync when you open the app and about once per hour in the background. " +
                 "We do not read location or use your steps for ads."
     }
 
     data object Ready : HealthConnectUiStatus {
         override val message: String =
-            "Health Connect is connected. Tap Sync Steps on Home to apply today's walking steps " +
-                "to your egg or dinosaur."
+            "Health Connect is connected. Steps sync automatically about every hour. " +
+                "Tap Sync Now on Home anytime for an immediate refresh."
     }
 
     data class Error(
