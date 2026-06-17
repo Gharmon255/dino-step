@@ -43,7 +43,7 @@ fun HomeCollectionStrip(
             ),
         ) {
             Text(
-                text = "Hatch your first dino to start your collection!",
+                text = "Gotta grow them to full adult before your first dino joins the collection.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),

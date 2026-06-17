@@ -27,7 +27,7 @@ android {
         applicationId = "com.gharmon255.dinostep"
         minSdk = 30
         targetSdk = 36
-        versionCode = 9
+        versionCode = 10
         versionName = "1.0"
     }
 
