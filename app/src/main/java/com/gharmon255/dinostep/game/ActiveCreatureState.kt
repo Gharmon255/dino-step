@@ -2,6 +2,7 @@ package com.gharmon255.dinostep.game
 
 import com.gharmon255.dinostep.model.CreatureDefinition
 import com.gharmon255.dinostep.model.CreatureEconomy
+import com.gharmon255.dinostep.model.CreatureNickname
 import com.gharmon255.dinostep.model.EggRarity
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.ProgressionThresholds
@@ -13,12 +14,25 @@ data class ActiveCreatureState(
     val steps: Int = 0,
     val startedAt: Long = System.currentTimeMillis(),
     val isRevealed: Boolean = false,
+    val nickname: String? = null,
 ) {
     val stage: GrowthStage
         get() = progression.stageForSteps(steps)
 
     val displayName: String
-        get() = if (isRevealed) creature.name else eggRarity.mysteryDisplayName
+        get() = CreatureNickname.activeDisplayName(
+            speciesName = creature.name,
+            nickname = nickname,
+            isRevealed = isRevealed,
+            mysteryDisplayName = eggRarity.mysteryDisplayName,
+        )
+
+    val speciesSubtitle: String?
+        get() = CreatureNickname.speciesSubtitle(
+            speciesName = creature.name,
+            nickname = nickname,
+            isRevealed = isRevealed,
+        )
 
     val nextMilestone: Int?
         get() = progression.nextMilestone(steps)

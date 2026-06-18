@@ -19,7 +19,7 @@ import com.gharmon255.dinostep.data.local.entity.PlayerStatsEntity
         CompletedCreatureEntity::class,
         PlayerStatsEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = false,
 )
 abstract class DinoStepDatabase : RoomDatabase() {
@@ -77,6 +77,17 @@ abstract class DinoStepDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE active_creature ADD COLUMN nickname TEXT",
+                )
+                db.execSQL(
+                    "ALTER TABLE completed_creatures ADD COLUMN nickname TEXT",
+                )
+            }
+        }
+
         fun getInstance(context: Context): DinoStepDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -84,7 +95,7 @@ abstract class DinoStepDatabase : RoomDatabase() {
                     DinoStepDatabase::class.java,
                     "dino_step.db",
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .build()
                     .also { instance = it }
             }

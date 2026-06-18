@@ -43,6 +43,7 @@ import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.model.toRarity
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
+import com.gharmon255.dinostep.ui.common.NicknameEditDialog
 import com.gharmon255.dinostep.ui.common.StatRow
 import com.gharmon255.dinostep.ui.components.CreatureStageVisual
 import com.gharmon255.dinostep.ui.components.GameCreatureCard
@@ -82,6 +83,7 @@ fun HomeScreen(
         duplicateTradeOffer = viewModel.duplicateTradeOffer,
         onClaimReward = viewModel::claimRandomReward,
         onTradeDuplicates = viewModel::tradeDuplicatesForTierUpEgg,
+        onEditNickname = viewModel::setActiveCreatureNickname,
         modifier = modifier,
     )
 }
@@ -110,9 +112,11 @@ private fun HomeScreenContent(
     duplicateTradeOffer: DuplicateTradeOffer?,
     onClaimReward: () -> Unit,
     onTradeDuplicates: () -> Unit,
+    onEditNickname: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showTradeConfirmation by remember { mutableStateOf(false) }
+    var showNicknameDialog by remember { mutableStateOf(false) }
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val canSync = healthConnectStatus is HealthConnectUiStatus.Ready && !isSyncing
     val creatureRarity = activeCreature.creature.rarity.takeIf { activeCreature.isRevealed }
@@ -141,9 +145,15 @@ private fun HomeScreenContent(
 
         GameCreatureCard(
             title = displayName,
+            subtitle = activeCreature.speciesSubtitle,
             stage = stage,
             eggRarity = activeCreature.eggRarity,
             creatureRarity = creatureRarity,
+            onEditNickname = if (activeCreature.isRevealed) {
+                { showNicknameDialog = true }
+            } else {
+                null
+            },
         ) {
             CreatureStageVisual(activeCreature = activeCreature)
 
@@ -343,6 +353,16 @@ private fun HomeScreenContent(
             },
         )
     }
+
+    if (showNicknameDialog && activeCreature.isRevealed) {
+        NicknameEditDialog(
+            title = "Nickname your dino",
+            speciesName = activeCreature.creature.name,
+            initialNickname = activeCreature.nickname,
+            onDismiss = { showNicknameDialog = false },
+            onSave = onEditNickname,
+        )
+    }
 }
 
 @Composable
@@ -389,6 +409,7 @@ private fun HomeScreenPreview() {
             duplicateTradeOffer = null,
             onClaimReward = {},
             onTradeDuplicates = {},
+            onEditNickname = {},
         )
     }
 }

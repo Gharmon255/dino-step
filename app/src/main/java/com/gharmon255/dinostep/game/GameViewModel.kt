@@ -15,6 +15,7 @@ import com.gharmon255.dinostep.health.HealthConnectRepository
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.health.HealthStepSyncEngine
 import com.gharmon255.dinostep.health.StepProgression
+import com.gharmon255.dinostep.model.CreatureNickname
 import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.CreatureFacts
@@ -376,6 +377,7 @@ class GameViewModel(
             creature = completedCreatureState.creature,
             stepsCompleted = completedCreatureState.steps,
             completedAt = System.currentTimeMillis(),
+            nickname = completedCreatureState.nickname,
         )
 
         collection = collection + completed
@@ -431,6 +433,52 @@ class GameViewModel(
             repository.saveActiveCreature(activeCreature)
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
         }
+    }
+
+    fun setActiveCreatureNickname(rawNickname: String?) {
+        if (!isReady || !activeCreature.isRevealed) {
+            return
+        }
+
+        val nickname = CreatureNickname.normalize(rawNickname)
+        if (nickname == activeCreature.nickname) {
+            return
+        }
+
+        activeCreature = activeCreature.copy(nickname = nickname)
+        viewModelScope.launch {
+            repository.saveActiveCreature(activeCreature)
+            publishActiveCreatureToWatch(WearSyncEventType.NONE)
+        }
+    }
+
+    fun updateCompletedCreatureNickname(creatureId: Long, rawNickname: String?) {
+        if (!isReady || creatureId <= 0L) {
+            return
+        }
+
+        val nickname = CreatureNickname.normalize(rawNickname)
+        val index = collection.indexOfFirst { it.id == creatureId }
+        if (index < 0) {
+            return
+        }
+
+        val existing = collection[index]
+        if (existing.nickname == nickname) {
+            return
+        }
+
+        val updated = existing.copy(nickname = nickname)
+        collection = collection.toMutableList().also { it[index] = updated }
+        viewModelScope.launch {
+            repository.updateCompletedCreatureNickname(creatureId, nickname)
+        }
+    }
+
+    fun completedCreaturesForSpecies(speciesId: String): List<CompletedCreature> {
+        return collection
+            .filter { it.creature.id == speciesId }
+            .sortedByDescending { it.completedAt }
     }
 
     private fun applyStepsToCreature(amount: Int, countAsFake: Boolean) {

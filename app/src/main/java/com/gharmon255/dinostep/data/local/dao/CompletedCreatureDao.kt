@@ -13,6 +13,9 @@ interface CompletedCreatureDao {
     @Insert
     suspend fun insert(creature: CompletedCreatureEntity)
 
+    @Query("UPDATE completed_creatures SET nickname = :nickname WHERE id = :id")
+    suspend fun updateNickname(id: Long, nickname: String?)
+
     @Query("DELETE FROM completed_creatures WHERE id = :id")
     suspend fun deleteById(id: Long)
 

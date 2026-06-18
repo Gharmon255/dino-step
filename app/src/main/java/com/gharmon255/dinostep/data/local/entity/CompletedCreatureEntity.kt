@@ -12,4 +12,5 @@ data class CompletedCreatureEntity(
     val habitat: String,
     val completedStepTotal: Int,
     val completedAt: Long,
+    val nickname: String? = null,
 )

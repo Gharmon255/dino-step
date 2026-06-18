@@ -11,6 +11,7 @@ data class ActiveCreatureEntity(
     val currentSteps: Int,
     val startedAt: Long,
     val isRevealed: Boolean,
+    val nickname: String? = null,
     val hatchStep: Int = 0,
     val juvenileStep: Int = 0,
     val totalStepsRequired: Int = 0,

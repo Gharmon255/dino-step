@@ -46,6 +46,7 @@ data class RosterEntry(
     val creature: CreatureDefinition,
     val collectCount: Int,
     val latestCompletedAt: Long?,
+    val latestDisplayName: String,
 ) {
     val isCollected: Boolean
         get() = collectCount > 0
@@ -84,6 +85,7 @@ object CollectionRoster {
                 creature = creature,
                 collectCount = completions.size,
                 latestCompletedAt = completions.maxOfOrNull { it.completedAt },
+                latestDisplayName = completions.maxByOrNull { it.completedAt }?.displayName ?: creature.name,
             )
         }
     }

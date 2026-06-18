@@ -8,6 +8,7 @@ import com.gharmon255.dinostep.data.toEntity
 import com.gharmon255.dinostep.data.withLegacyV1SnapshotIfMissing
 import com.gharmon255.dinostep.game.ActiveCreatureState
 import com.gharmon255.dinostep.model.CompletedCreature
+import com.gharmon255.dinostep.model.CreatureNickname
 import com.gharmon255.dinostep.model.CreatureCatalog
 import com.gharmon255.dinostep.model.CreatureDefinition
 import com.gharmon255.dinostep.model.EggRarity
@@ -55,6 +56,12 @@ class GameRepository(
 
     suspend fun saveCompletedCreature(completedCreature: CompletedCreature) = withContext(Dispatchers.IO) {
         completedCreatureDao.insert(completedCreature.toEntity())
+    }
+
+    suspend fun updateCompletedCreatureNickname(id: Long, nickname: String?) = withContext(Dispatchers.IO) {
+        if (id > 0) {
+            completedCreatureDao.updateNickname(id, CreatureNickname.normalize(nickname))
+        }
     }
 
     suspend fun deleteCompletedCreature(id: Long) = withContext(Dispatchers.IO) {

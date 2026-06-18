@@ -30,6 +30,7 @@ fun ActiveCreatureEntity.toDomain(): ActiveCreatureState {
         steps = currentSteps,
         startedAt = startedAt,
         isRevealed = isRevealed,
+        nickname = nickname,
     )
 }
 
@@ -40,6 +41,7 @@ fun ActiveCreatureState.toEntity(): ActiveCreatureEntity {
         currentSteps = steps,
         startedAt = startedAt,
         isRevealed = isRevealed,
+        nickname = nickname,
         hatchStep = progression.hatchStep,
         juvenileStep = progression.juvenileStep,
         totalStepsRequired = progression.totalStepsRequired,
@@ -54,6 +56,7 @@ fun CompletedCreatureEntity.toDomain(): CompletedCreature {
         creature = creature,
         stepsCompleted = completedStepTotal,
         completedAt = completedAt,
+        nickname = nickname,
     )
 }
 
@@ -66,6 +69,7 @@ fun CompletedCreature.toEntity(): CompletedCreatureEntity {
         habitat = creature.habitat.name,
         completedStepTotal = stepsCompleted,
         completedAt = completedAt,
+        nickname = nickname,
     )
 }
 

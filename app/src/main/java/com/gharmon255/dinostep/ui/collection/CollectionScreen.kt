@@ -161,8 +161,10 @@ fun CollectionScreen(
     selectedEntry?.let { entry ->
         CollectionSpeciesDetailSheet(
             entry = entry,
+            completedCreatures = viewModel.completedCreaturesForSpecies(entry.creature.id),
             dateFormat = dateFormat,
             onDismiss = { selectedEntry = null },
+            onUpdateNickname = viewModel::updateCompletedCreatureNickname,
         )
     }
 }

@@ -12,12 +12,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gharmon255.dinostep.model.CompletedCreature
 import com.gharmon255.dinostep.model.CreatureFacts
+import com.gharmon255.dinostep.ui.common.NicknameEditDialog
 import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.ui.components.CatalogCreatureStageVisual
 import com.gharmon255.dinostep.ui.components.RarityBadge
@@ -36,12 +43,15 @@ private val detailStages = listOf(
 @Composable
 fun CollectionSpeciesDetailSheet(
     entry: RosterEntry,
+    completedCreatures: List<CompletedCreature>,
     dateFormat: DateFormat,
     onDismiss: () -> Unit,
+    onUpdateNickname: (Long, String?) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val creature = entry.creature
     val colors = rarityColors(creature.rarity)
+    var editingCreature by remember { mutableStateOf<CompletedCreature?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -94,6 +104,44 @@ fun CollectionSpeciesDetailSheet(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
+            if (entry.isCollected) {
+                Text(
+                    text = "Your adults",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                completedCreatures.forEach { completed ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = completed.displayName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            if (completed.nickname != null) {
+                                Text(
+                                    text = creature.name,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Text(
+                                text = dateFormat.format(Date(completed.completedAt)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        TextButton(onClick = { editingCreature = completed }) {
+                            Text("Nickname")
+                        }
+                    }
+                }
+            }
+
             if (entry.collectCount > 1) {
                 Text(
                     text = "Collected ×${entry.collectCount}",
@@ -110,6 +158,18 @@ fun CollectionSpeciesDetailSheet(
                 )
             }
         }
+    }
+
+    editingCreature?.let { completed ->
+        NicknameEditDialog(
+            title = "Nickname your dino",
+            speciesName = creature.name,
+            initialNickname = completed.nickname,
+            onDismiss = { editingCreature = null },
+            onSave = { nickname ->
+                onUpdateNickname(completed.id, nickname)
+            },
+        )
     }
 }
 

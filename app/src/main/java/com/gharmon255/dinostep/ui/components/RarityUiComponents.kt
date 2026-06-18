@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -315,6 +316,8 @@ fun GameCreatureCard(
     eggRarity: EggRarity,
     creatureRarity: Rarity?,
     modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    onEditNickname: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     val accentRarity = creatureRarity ?: eggRarity.toRarity()
@@ -340,12 +343,40 @@ fun GameCreatureCard(
                 creatureRarity = creatureRarity,
                 stage = stage,
             )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (onEditNickname != null) {
+                            Modifier.clickable(onClick = onEditNickname)
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .padding(top = 8.dp, bottom = 4.dp),
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (onEditNickname != null) {
+                    Text(
+                        text = "Tap to nickname",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
+                }
+            }
             content()
         }
     }

@@ -90,7 +90,7 @@ fun HomeCollectionStrip(
                             imageSize = 52.dp,
                         )
                         Text(
-                            text = entry.creature.name,
+                            text = entry.latestDisplayName,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 1,
