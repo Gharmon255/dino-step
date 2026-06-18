@@ -135,7 +135,7 @@ Phone and Wear share **`com.gharmon255.dinostep`**. In each release:
 2. Expand **Advanced settings** → **Wear OS** and upload **`wear-release.aab`** there only.
 3. Do **not** put the Wear AAB in the phone slot — Play may treat the app as watch-only and phones show **“Your device isn’t compatible.”**
 4. Do **not** add `android.hardware.type.watch` to the phone manifest — Play rejects phone bundles that declare it (even with `required="false"`).
-5. Keep Wear `versionCode` **≥** phone `versionCode` (currently both **10**).
+5. Keep Wear `versionCode` **≥** phone `versionCode` (phone **11**, wear **12**).
 
 ---
 
