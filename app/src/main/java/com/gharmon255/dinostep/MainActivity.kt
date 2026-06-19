@@ -15,15 +15,36 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gharmon255.dinostep.cloud.extractGoogleIdToken
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.game.GameViewModelFactory
 import com.gharmon255.dinostep.ui.DinoStepApp
 import com.gharmon255.dinostep.ui.theme.DinoStepTheme
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class MainActivity : ComponentActivity() {
+    private var googleSignInTokenHandler: ((String) -> Unit)? = null
+    private var gameViewModel: GameViewModel? = null
+
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { _ -> }
+
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        val handler = googleSignInTokenHandler
+        googleSignInTokenHandler = null
+        if (result.resultCode == RESULT_OK && handler != null) {
+            try {
+                val idToken = extractGoogleIdToken(result.data)
+                handler(idToken)
+            } catch (_: Exception) {
+                // ViewModel surfaces errors via cloud sync state.
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,16 +63,20 @@ class MainActivity : ComponentActivity() {
             wearDataLayerPublisher = app.wearDataLayerPublisher,
             garminCompanionPublisher = app.garminCompanionPublisher,
             stageMilestoneNotifier = app.stageMilestoneNotifier,
+            cloudSaveSyncEngine = app.cloudSaveSyncEngine,
         )
 
         setContent {
             DinoStepTheme {
                 val viewModel: GameViewModel = viewModel(factory = viewModelFactory)
+                gameViewModel = viewModel
 
                 if (viewModel.isReady) {
                     DinoStepApp(
                         viewModel = viewModel,
                         healthConnectPermissionContract = app.healthConnectRepository.permissionContract,
+                        supabaseConfig = app.supabaseConfig,
+                        onGoogleSignIn = { startGoogleSignIn(app.supabaseConfig.googleWebClientId) },
                     )
                 } else {
                     Box(
@@ -63,6 +88,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun startGoogleSignIn(webClientId: String) {
+        if (webClientId.isBlank()) {
+            return
+        }
+        googleSignInTokenHandler = { idToken ->
+            gameViewModel?.signInWithGoogleIdToken(idToken)
+        }
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(webClientId)
+            .requestEmail()
+            .build()
+        googleSignInLauncher.launch(GoogleSignIn.getClient(this, gso).signInIntent)
     }
 
     private fun requestNotificationPermissionIfNeeded() {

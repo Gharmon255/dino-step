@@ -2,6 +2,7 @@ package com.gharmon255.dinostep.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.gharmon255.dinostep.cloud.CloudSaveSyncEngine
 import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
@@ -20,6 +21,7 @@ class GameViewModelFactory(
     private val wearDataLayerPublisher: WearDataLayerPublisher,
     private val garminCompanionPublisher: GarminCompanionPublisher,
     private val stageMilestoneNotifier: StageMilestoneNotifier,
+    private val cloudSaveSyncEngine: CloudSaveSyncEngine,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -33,6 +35,7 @@ class GameViewModelFactory(
                 wearDataLayerPublisher = wearDataLayerPublisher,
                 garminCompanionPublisher = garminCompanionPublisher,
                 stageMilestoneNotifier = stageMilestoneNotifier,
+                cloudSaveSyncEngine = cloudSaveSyncEngine,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

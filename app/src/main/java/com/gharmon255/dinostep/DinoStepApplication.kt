@@ -1,6 +1,12 @@
 package com.gharmon255.dinostep
 
 import android.app.Application
+import com.gharmon255.dinostep.cloud.CloudAuthRepository
+import com.gharmon255.dinostep.cloud.CloudSaveSyncEngine
+import com.gharmon255.dinostep.cloud.CloudSessionStore
+import com.gharmon255.dinostep.cloud.CloudSyncPreferences
+import com.gharmon255.dinostep.cloud.SupabaseConfig
+import com.gharmon255.dinostep.cloud.SupabaseHttpClient
 import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.local.DinoStepDatabase
@@ -15,7 +21,47 @@ import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+
 class DinoStepApplication : Application() {
+    private val applicationScope = CoroutineScope(SupervisorJob())
+
+    val supabaseConfig: SupabaseConfig by lazy {
+        SupabaseConfig.fromBuildConfig()
+    }
+
+    val cloudSessionStore: CloudSessionStore by lazy {
+        CloudSessionStore(this)
+    }
+
+    val cloudSyncPreferences: CloudSyncPreferences by lazy {
+        CloudSyncPreferences(this)
+    }
+
+    val supabaseHttpClient: SupabaseHttpClient by lazy {
+        SupabaseHttpClient(supabaseConfig)
+    }
+
+    val cloudAuthRepository: CloudAuthRepository by lazy {
+        CloudAuthRepository(
+            config = supabaseConfig,
+            httpClient = supabaseHttpClient,
+            sessionStore = cloudSessionStore,
+        )
+    }
+
+    val cloudSaveSyncEngine: CloudSaveSyncEngine by lazy {
+        CloudSaveSyncEngine(
+            scope = applicationScope,
+            config = supabaseConfig,
+            httpClient = supabaseHttpClient,
+            authRepository = cloudAuthRepository,
+            syncPreferences = cloudSyncPreferences,
+            gameRepository = gameRepository,
+        )
+    }
+
     val stageMilestoneNotifier: StageMilestoneNotifier by lazy {
         StageMilestoneNotifier(this)
     }

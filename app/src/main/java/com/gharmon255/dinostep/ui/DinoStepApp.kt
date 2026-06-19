@@ -34,6 +34,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.gharmon255.dinostep.cloud.SupabaseConfig
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
 import com.gharmon255.dinostep.ui.collection.CollectionScreen
@@ -48,6 +49,8 @@ import com.gharmon255.dinostep.ui.stats.StatsScreen
 fun DinoStepApp(
     viewModel: GameViewModel,
     healthConnectPermissionContract: ActivityResultContract<Set<String>, Set<String>>,
+    supabaseConfig: SupabaseConfig,
+    onGoogleSignIn: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.Home) }
@@ -133,6 +136,8 @@ fun DinoStepApp(
                 AppTab.Stats -> StatsScreen(
                     viewModel = viewModel,
                     onRequestHealthPermission = onRequestHealthPermission,
+                    onGoogleSignIn = onGoogleSignIn,
+                    supabaseConfig = supabaseConfig,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),

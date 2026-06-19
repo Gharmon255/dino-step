@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.game.DevTools
+import com.gharmon255.dinostep.cloud.CloudSaveConflict
+import com.gharmon255.dinostep.cloud.SupabaseConfig
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.ui.common.HealthConnectCard
 import com.gharmon255.dinostep.ui.common.PrivacyPolicyLink
@@ -33,10 +36,13 @@ import java.util.Locale
 fun StatsScreen(
     viewModel: GameViewModel,
     onRequestHealthPermission: () -> Unit,
+    onGoogleSignIn: () -> Unit,
+    supabaseConfig: SupabaseConfig = SupabaseConfig.fromBuildConfig(),
     modifier: Modifier = Modifier,
 ) {
     val numberFormat = NumberFormat.getIntegerInstance(Locale.getDefault())
     val runColors = rarityColors(viewModel.eggRarity)
+    val cloudState by viewModel.cloudAccountUiState.collectAsState()
 
     var showClearCollectionDialog by remember { mutableStateOf(false) }
     var showResetGameDialog by remember { mutableStateOf(false) }
@@ -69,6 +75,14 @@ fun StatsScreen(
         )
 
         PrivacyPolicyLink(modifier = Modifier.fillMaxWidth())
+
+        AccountBackupCard(
+            cloudState = cloudState,
+            googleWebClientId = supabaseConfig.googleWebClientId,
+            onGoogleSignIn = onGoogleSignIn,
+            onSignOut = viewModel::signOutCloudAccount,
+            onExportSave = viewModel::exportLocalSaveJson,
+        )
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -201,6 +215,17 @@ fun StatsScreen(
                     )
                 }
             }
+        }
+    }
+
+    cloudState.pendingConflict?.let { conflict ->
+        if (conflict is CloudSaveConflict.LocalVsCloud) {
+            CloudSaveConflictDialog(
+                conflict = conflict,
+                onKeepLocal = viewModel::keepLocalCloudSave,
+                onUseCloud = viewModel::useCloudSave,
+                onDismiss = viewModel::dismissCloudSaveConflict,
+            )
         }
     }
 

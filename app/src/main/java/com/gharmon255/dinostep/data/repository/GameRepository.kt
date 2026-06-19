@@ -132,6 +132,13 @@ class GameRepository(
         )
     }
 
+    suspend fun replaceGameSnapshot(snapshot: GameSnapshot) = withContext(Dispatchers.IO) {
+        activeCreatureDao.upsert(snapshot.activeCreature.toEntity())
+        completedCreatureDao.deleteAll()
+        snapshot.collection.forEach { completedCreatureDao.insert(it.toEntity()) }
+        playerStatsDao.upsert(snapshot.playerStats.toEntity())
+    }
+
     suspend fun resetGameForTesting(): GameSnapshot = withContext(Dispatchers.IO) {
         completedCreatureDao.deleteAll()
 

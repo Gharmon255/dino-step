@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gharmon255.dinostep.cloud.CloudAccountUiState
+import com.gharmon255.dinostep.cloud.CloudSaveSyncEngine
+import com.gharmon255.dinostep.data.GameSnapshot
 import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.DeveloperPreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
@@ -33,6 +36,7 @@ import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 import com.gharmon255.dinostep.wear.WearSyncDebugState
 import com.gharmon255.dinostep.wear.WearSyncPublishResult
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class GameViewModel(
@@ -44,6 +48,7 @@ class GameViewModel(
     private val wearDataLayerPublisher: WearDataLayerPublisher,
     private val garminCompanionPublisher: GarminCompanionPublisher,
     private val stageMilestoneNotifier: StageMilestoneNotifier,
+    private val cloudSaveSyncEngine: CloudSaveSyncEngine,
 ) : ViewModel() {
     private val testingEggFactory = TestingEggFactory(repository)
     private var lastAutomaticHealthSyncAttemptMillis: Long? = null
@@ -91,6 +96,8 @@ class GameViewModel(
 
     var inactivityPenaltyAlert by mutableStateOf<String?>(null)
         private set
+
+    val cloudAccountUiState: StateFlow<CloudAccountUiState> = cloudSaveSyncEngine.uiState
 
     fun clearPendingDiscovery() {
         pendingDiscovery = null
@@ -172,6 +179,9 @@ class GameViewModel(
             nextEggTestSpecies = developerPreferences.getNextEggTestSpecies()
             refreshHealthConnectStatus()
             refreshExperiencePresentation()
+            cloudSaveSyncEngine.refreshSessionOnLaunch(snapshot) { applied ->
+                applyGameSnapshot(applied)
+            }
             isReady = true
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
             syncHealthSteps(manual = false)
@@ -404,6 +414,7 @@ class GameViewModel(
             repository.saveCompletedCreature(completed)
             repository.savePlayerStats(playerStats)
             repository.saveActiveCreature(activeCreature)
+            cloudSaveSyncEngine.schedulePush(currentSnapshot())
             publishActiveCreatureToWatch(WearSyncEventType.NONE)
         }
     }
@@ -558,6 +569,9 @@ class GameViewModel(
         viewModelScope.launch {
             repository.saveActiveCreature(creature)
             repository.savePlayerStats(stats)
+            if (isReady) {
+                cloudSaveSyncEngine.schedulePush(currentSnapshot())
+            }
         }
     }
 
@@ -575,6 +589,61 @@ class GameViewModel(
 
     fun dismissInactivityPenaltyAlert() {
         inactivityPenaltyAlert = null
+    }
+
+    fun signInWithGoogleIdToken(idToken: String) {
+        if (!isReady) {
+            return
+        }
+        viewModelScope.launch {
+            cloudSaveSyncEngine.handleSignInWithGoogleIdToken(idToken, currentSnapshot())
+        }
+    }
+
+    fun signOutCloudAccount() {
+        cloudSaveSyncEngine.signOut()
+    }
+
+    fun keepLocalCloudSave() {
+        if (!isReady) {
+            return
+        }
+        cloudSaveSyncEngine.resolveConflictKeepLocal(currentSnapshot())
+    }
+
+    fun useCloudSave() {
+        if (!isReady) {
+            return
+        }
+        viewModelScope.launch {
+            val applied = cloudSaveSyncEngine.resolveConflictUseCloud()
+            if (applied != null) {
+                applyGameSnapshot(applied)
+            }
+        }
+    }
+
+    fun dismissCloudSaveConflict() {
+        cloudSaveSyncEngine.dismissConflict()
+    }
+
+    fun exportLocalSaveJson(): String {
+        return cloudSaveSyncEngine.exportLocalJson(currentSnapshot())
+    }
+
+    private fun currentSnapshot(): GameSnapshot {
+        return GameSnapshot(
+            activeCreature = activeCreature,
+            collection = collection,
+            playerStats = playerStats,
+        )
+    }
+
+    private fun applyGameSnapshot(snapshot: GameSnapshot) {
+        activeCreature = snapshot.activeCreature.normalized()
+        collection = snapshot.collection
+        playerStats = snapshot.playerStats
+        publishActiveCreatureToWatch(WearSyncEventType.NONE)
     }
 
     /** DEBUG: Pretend yesterday had [yesterdaySteps] and run the real day-rollover penalty check. */

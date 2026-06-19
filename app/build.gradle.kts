@@ -14,6 +14,12 @@ if (hasReleaseKeystore) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val supabasePropertiesFile = rootProject.file("supabase.properties")
+val supabaseProperties = Properties()
+if (supabasePropertiesFile.isFile) {
+    supabaseProperties.load(FileInputStream(supabasePropertiesFile))
+}
+
 android {
     namespace = "com.gharmon255.dinostep"
     compileSdk {
@@ -30,6 +36,22 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "SUPABASE_URL",
+            "\"${supabaseProperties.getProperty("SUPABASE_URL", "")}\"",
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${supabaseProperties.getProperty("SUPABASE_ANON_KEY", "")}\"",
+        )
+        buildConfigField(
+            "String",
+            "GOOGLE_WEB_CLIENT_ID",
+            "\"${supabaseProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "")}\"",
+        )
     }
 
     if (hasReleaseKeystore) {
@@ -85,6 +107,9 @@ dependencies {
     implementation(libs.play.services.wearable)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.garmin.ciq.companion.sdk)
+    implementation(libs.okhttp)
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.play.services.auth)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

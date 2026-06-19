@@ -28,20 +28,20 @@
 </head>
 <body>
   <h1>Stepasaurus Privacy Policy</h1>
-  <p class="meta">Effective date: June 2, 2026</p>
+  <p class="meta">Effective date: June 18, 2026</p>
 
   <p>
     Stepasaurus (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;the app&rdquo;) is a step-powered dinosaur hatching game
-    for Android (and a separate iOS app). This policy describes how we handle information when you use
-    the Android app and its Wear OS companion.
+    for Android and iOS (including Wear OS and Apple Watch companions). This policy describes how we
+    handle information when you use the apps.
   </p>
 
   <h2>Summary</h2>
   <ul>
-    <li>We read <strong>step count</strong> from Health Connect only when <strong>you tap Sync Steps</strong>.</li>
-    <li>Game progress is stored <strong>on your device</strong>.</li>
+    <li>We read <strong>step count</strong> from Health Connect (Android) or Apple Health (iOS) when you sync steps in the app.</li>
+    <li>Game progress is stored <strong>on your device</strong> by default.</li>
+    <li><strong>Optional account:</strong> you may sign in with Apple or Google to back up game progress across devices. This is not required to play.</li>
     <li>We do <strong>not</strong> sell your data, show ads, or use your steps for tracking across other apps.</li>
-    <li>We do <strong>not</strong> require an account or collect your email through the app.</li>
   </ul>
 
   <h2>Information we access</h2>
@@ -56,7 +56,20 @@
     <li>Completed creatures and collection stats</li>
     <li>App preferences (e.g. developer test settings in debug builds only)</li>
   </ul>
-  <p>This data stays in local app storage unless you uninstall the app or clear app data.</p>
+  <p>This data stays in local app storage unless you uninstall the app, clear app data, or enable cloud backup (see below).</p>
+
+  <h2>Optional cloud backup (account)</h2>
+  <p>
+    If you choose <strong>Sign in with Apple</strong> or <strong>Sign in with Google</strong> in Settings/Stats,
+    we store your <strong>game save</strong> (creature progress, collection, and related stats) on our cloud
+    provider (Supabase) linked to your account identifier and email from the sign-in provider.
+  </p>
+  <ul>
+    <li>Step history and raw Health Connect / HealthKit data are <strong>not</strong> uploaded.</li>
+    <li>Cloud backup is optional; offline play works without an account.</li>
+    <li>You can export a local save file from Settings/Stats before signing in.</li>
+    <li>Signing out stops cloud sync; your local save remains on the device.</li>
+  </ul>
 
   <h2>Wear OS companion</h2>
   <p>
@@ -78,7 +91,6 @@
     <li>No advertising or ad profiling</li>
     <li>No sale or rental of personal data</li>
     <li>No cross-app tracking for marketing</li>
-    <li>No server-side account database operated by us for normal gameplay</li>
   </ul>
 
   <h2>Children</h2>
@@ -89,9 +101,9 @@
 
   <h2>Data retention and deletion</h2>
   <p>
-    Uninstalling the app or clearing app storage removes local game data. Revoking Health Connect
-    permission stops future step reads; previously synced steps already applied to your creature remain
-    in local game state until you reset or uninstall.
+    Uninstalling the app or clearing app storage removes local game data. Revoking health permissions
+    stops future step reads. If you used cloud backup, contact us to request deletion of your cloud save;
+    signing out disables further uploads.
   </p>
 
   <h2>Changes</h2>
