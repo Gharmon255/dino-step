@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -17,11 +15,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.cloud.CloudAccountUiState
-import com.gharmon255.dinostep.cloud.CloudSyncStatus
-import com.gharmon255.dinostep.game.GameViewModel
-import java.text.DateFormat
-import java.util.Date
-import java.util.Locale
+
+internal const val ACCOUNT_SIGN_IN_ENABLED = false
 
 @Composable
 fun AccountBackupCard(
@@ -47,7 +42,19 @@ fun AccountBackupCard(
                 fontWeight = FontWeight.SemiBold,
             )
 
-            when {
+            if (!ACCOUNT_SIGN_IN_ENABLED) {
+                Text(
+                    text = "Sign in to back up progress across devices. Gameplay works offline without an account.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = "Coming soon",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            } else when {
                 !cloudState.isConfigured -> {
                     Text(
                         text = "Cloud backup is not configured in this build.",
@@ -56,66 +63,17 @@ fun AccountBackupCard(
                     )
                 }
                 cloudState.signedInEmail != null -> {
-                    Text(
-                        text = "Signed in as ${cloudState.signedInEmail}",
-                        style = MaterialTheme.typography.bodyMedium,
+                    SignedInAccountContent(
+                        cloudState = cloudState,
+                        onSignOut = onSignOut,
                     )
-                    cloudState.signedInProvider?.let { provider ->
-                        Text(
-                            text = "Provider: $provider",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    backupStatusText(cloudState)?.let { status ->
-                        Text(
-                            text = status,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    if (cloudState.syncStatus == CloudSyncStatus.Syncing) {
-                        CircularProgressIndicator()
-                    }
-                    cloudState.lastError?.let { error ->
-                        Text(
-                            text = error,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                    OutlinedButton(
-                        onClick = onSignOut,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text("Sign out")
-                    }
                 }
                 else -> {
-                    Text(
-                        text = "Sign in to back up progress across devices. Gameplay works offline without an account.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    SignedOutAccountContent(
+                        cloudState = cloudState,
+                        googleWebClientId = googleWebClientId,
+                        onGoogleSignIn = onGoogleSignIn,
                     )
-                    if (googleWebClientId.isNotBlank()) {
-                        Button(
-                            onClick = onGoogleSignIn,
-                            modifier = Modifier.fillMaxWidth(),
-                            enabled = cloudState.syncStatus != CloudSyncStatus.Syncing,
-                        ) {
-                            Text("Sign in with Google")
-                        }
-                    }
-                    if (cloudState.syncStatus == CloudSyncStatus.Syncing) {
-                        CircularProgressIndicator()
-                    }
-                    cloudState.lastError?.let { error ->
-                        Text(
-                            text = error,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
                 }
             }
 
@@ -137,20 +95,85 @@ fun AccountBackupCard(
     }
 }
 
+@Composable
+private fun SignedInAccountContent(
+    cloudState: CloudAccountUiState,
+    onSignOut: () -> Unit,
+) {
+    Text(
+        text = "Signed in as ${cloudState.signedInEmail}",
+        style = MaterialTheme.typography.bodyMedium,
+    )
+    cloudState.signedInProvider?.let { provider ->
+        Text(
+            text = "Provider: $provider",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    backupStatusText(cloudState)?.let { status ->
+        Text(
+            text = status,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    OutlinedButton(
+        onClick = onSignOut,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text("Sign out")
+    }
+}
+
+@Composable
+private fun SignedOutAccountContent(
+    cloudState: CloudAccountUiState,
+    googleWebClientId: String,
+    onGoogleSignIn: () -> Unit,
+) {
+    Text(
+        text = "Sign in to back up progress across devices. Gameplay works offline without an account.",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    if (googleWebClientId.isNotBlank()) {
+        OutlinedButton(
+            onClick = onGoogleSignIn,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = cloudState.syncStatus != com.gharmon255.dinostep.cloud.CloudSyncStatus.Syncing,
+        ) {
+            Text("Sign in with Google")
+        }
+    }
+    cloudState.lastError?.let { error ->
+        Text(
+            text = error,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
 private fun backupStatusText(cloudState: CloudAccountUiState): String? {
     return when (cloudState.syncStatus) {
-        CloudSyncStatus.Syncing -> "Backing up…"
-        CloudSyncStatus.BackedUp -> {
+        com.gharmon255.dinostep.cloud.CloudSyncStatus.Syncing -> "Backing up…"
+        com.gharmon255.dinostep.cloud.CloudSyncStatus.BackedUp -> {
             val millis = cloudState.lastBackedUpAtMillis
             if (millis != null) {
-                val formatted = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
-                    .format(Date(millis))
+                val formatted = java.text.DateFormat.getDateTimeInstance(
+                    java.text.DateFormat.MEDIUM,
+                    java.text.DateFormat.SHORT,
+                    java.util.Locale.getDefault(),
+                ).format(java.util.Date(millis))
                 "Last backed up $formatted"
             } else {
                 "Backup enabled"
             }
         }
-        CloudSyncStatus.Error -> "Backup error"
-        CloudSyncStatus.SignedOut, CloudSyncStatus.Unavailable -> null
+        com.gharmon255.dinostep.cloud.CloudSyncStatus.Error -> "Backup error"
+        com.gharmon255.dinostep.cloud.CloudSyncStatus.SignedOut,
+        com.gharmon255.dinostep.cloud.CloudSyncStatus.Unavailable,
+        -> null
     }
 }

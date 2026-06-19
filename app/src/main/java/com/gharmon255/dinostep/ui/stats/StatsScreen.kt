@@ -218,14 +218,16 @@ fun StatsScreen(
         }
     }
 
-    cloudState.pendingConflict?.let { conflict ->
-        if (conflict is CloudSaveConflict.LocalVsCloud) {
-            CloudSaveConflictDialog(
-                conflict = conflict,
-                onKeepLocal = viewModel::keepLocalCloudSave,
-                onUseCloud = viewModel::useCloudSave,
-                onDismiss = viewModel::dismissCloudSaveConflict,
-            )
+    if (ACCOUNT_SIGN_IN_ENABLED) {
+        cloudState.pendingConflict?.let { conflict ->
+            if (conflict is CloudSaveConflict.LocalVsCloud) {
+                CloudSaveConflictDialog(
+                    conflict = conflict,
+                    onKeepLocal = viewModel::keepLocalCloudSave,
+                    onUseCloud = viewModel::useCloudSave,
+                    onDismiss = viewModel::dismissCloudSaveConflict,
+                )
+            }
         }
     }
 
