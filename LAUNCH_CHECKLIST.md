@@ -27,9 +27,12 @@ Update checkboxes as items are completed.
 - [ ] Privacy policy linked in Play Console **App content → Privacy policy**
 - [ ] **Play Console Data Safety** form completed and matches in-app behavior:
   - Collects: **Steps / fitness** (via Health Connect, user-initiated sync only)
+  - Optional: **Email** + **game save backup** if user signs in for cloud backup (see `docs/DATA_SAFETY_PLAY_CONSOLE.md`)
   - Not sold to third parties
   - Not used for advertising or tracking
-  - Data processed on-device; no account login required
+  - Core gameplay on-device; account not required to play
+- [x] **Cloud backup docs** — `docs/CLOUD_SAVE_CONTRACT.md`, `docs/SUPABASE_SETUP.md`
+- [ ] Cloud sign-in enabled for production (`ACCOUNT_SIGN_IN_ENABLED = true` in `AccountBackupCard.kt`) when ready for testers
 - [ ] In-app disclosure aligns with policy (Stats Health Connect card, permission rationale screen)
 - [ ] Review Data Safety answers whenever permissions or data flows change
 
@@ -203,6 +206,16 @@ Install release build on a physical phone (and paired Wear if available):
 
 ---
 
+## Cloud backup (optional)
+
+- [x] Local-first save + optional Supabase sync (`CloudSaveRepository`, Stats **Account & backup** card)
+- [x] Export local save before sign-in
+- [x] Sign-in gated **Coming soon** for tester builds (`ACCOUNT_SIGN_IN_ENABLED = false`)
+- [ ] Enable sign-in for production when OAuth test users / Play release ready
+- [ ] Hook cloud push to all save paths (e.g. Health Connect auto-sync)
+
+---
+
 ## Known deferred (not blocking internal testing code merge)
 
 - Branded app icon / Play marketing assets (may import from `dino-step-assets`)
@@ -210,6 +223,7 @@ Install release build on a physical phone (and paired Wear if available):
 - Onboarding flow
 - Automatic background Health Connect sync
 - ProGuard / R8 minification (document only; `isMinifyEnabled = false` today)
+- Async PvP (see `docs/PVP_DESIGN.md`)
 
 ---
 
