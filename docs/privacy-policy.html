@@ -28,7 +28,7 @@
 </head>
 <body>
   <h1>Stepasaurus Privacy Policy</h1>
-  <p class="meta">Effective date: June 18, 2026</p>
+  <p class="meta">Effective date: June 6, 2026</p>
 
   <p>
     Stepasaurus (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;the app&rdquo;) is a step-powered dinosaur hatching game
@@ -38,23 +38,25 @@
 
   <h2>Summary</h2>
   <ul>
-    <li>We read <strong>step count</strong> from Health Connect (Android) or Apple Health (iOS) when you sync steps in the app.</li>
+    <li>We read <strong>today&rsquo;s step count</strong> from Health Connect (Android) or Apple Health (iOS) to grow your dinosaur.</li>
+    <li>You can tap <strong>Sync again</strong> on Home anytime; the app may also sync about <strong>once per hour</strong> in the background when permission is granted.</li>
     <li>Game progress is stored <strong>on your device</strong> by default.</li>
-    <li><strong>Optional account:</strong> you may sign in with Apple or Google to back up game progress across devices. This is not required to play.</li>
-    <li>We do <strong>not</strong> sell your data, show ads, or use your steps for tracking across other apps.</li>
+    <li><strong>Optional account:</strong> sign in with Apple or Google to back up game progress or use friend battles. Not required to play.</li>
+    <li>We do <strong>not</strong> sell your data, show ads, or use your steps for cross-app tracking.</li>
   </ul>
 
   <h2>Information we access</h2>
-  <p><strong>Steps (Health Connect)</strong> — With your permission, the app reads your step count from
-  Health Connect to hatch eggs and grow dinosaurs. Sync happens only when you manually tap
-  <em>Sync Steps</em> on the Home screen. We do not read steps automatically in the background.</p>
+  <p><strong>Steps (Health Connect on Android)</strong> — With your permission, the app reads your step count from
+  Health Connect to hatch eggs and grow dinosaurs. Sync happens when you tap <em>Sync again</em> on Home and,
+  with permission granted, about once per hour via Android background work while the app is installed.
+  Raw step history is processed on your device and is <strong>not</strong> uploaded to our servers.</p>
   <p>We do <strong>not</strong> access location, contacts, photos, microphone, or camera.</p>
 
   <h2>Information stored on your device</h2>
   <ul>
     <li>Active egg / creature progress (steps, stage, species)</li>
     <li>Completed creatures and collection stats</li>
-    <li>App preferences (e.g. developer test settings in debug builds only)</li>
+    <li>App preferences</li>
   </ul>
   <p>This data stays in local app storage unless you uninstall the app, clear app data, or enable cloud backup (see below).</p>
 
@@ -69,8 +71,21 @@
     <li>Cloud backup is optional; offline play works without an account.</li>
     <li>You can export a local save file from Stats before signing in.</li>
     <li>Signing out stops cloud sync; your local save remains on the device.</li>
-    <li>Some app versions may show cloud sign-in as <strong>Coming soon</strong> while the feature rolls out; local play is always available without an account.</li>
   </ul>
+
+  <h2>Optional friend battles (account)</h2>
+  <p>
+    If you sign in and use the <strong>Battle</strong> tab, we store battle-related data on Supabase linked to your account:
+    challenge codes, species IDs you pick for fights, combat outcomes, and timestamps. This powers friend battles and
+    battle history. Step counts and Health Connect data are <strong>not</strong> sent for battles.
+  </p>
+
+  <h2>Notifications</h2>
+  <p>
+    The app may show <strong>local notifications</strong> on your device for stage milestones (for example, when your
+    dinosaur reaches a new growth stage) and daily step-goal reminders. Notification content is generated on-device;
+    we do not upload notification data to our servers.
+  </p>
 
   <h2>Wear OS companion</h2>
   <p>
@@ -82,7 +97,7 @@
 
   <h2>Garmin Connect IQ (optional)</h2>
   <p>
-    Debug / experimental builds may integrate with Garmin&rsquo;s companion SDK to show creature state on
+    On Android, Stepasaurus can integrate with Garmin&rsquo;s companion SDK to show creature state on
     supported Garmin watches when Garmin Connect Mobile is installed. No step data is sent to Garmin
     through Stepasaurus; step counts on the phone still come from Health Connect.
   </p>
@@ -97,14 +112,15 @@
   <h2>Children</h2>
   <p>
     The app is a family-friendly game. We do not knowingly collect personal information from children
-    beyond what is described above (local game state and optional Health Connect steps on the device).
+    beyond what is described above (local game state, optional Health Connect steps on the device, and
+    optional cloud backup or battles if an adult chooses to sign in).
   </p>
 
   <h2>Data retention and deletion</h2>
   <p>
     Uninstalling the app or clearing app storage removes local game data. Revoking health permissions
-    stops future step reads. If you used cloud backup, contact us to request deletion of your cloud save;
-    signing out disables further uploads.
+    stops future step reads. If you used cloud backup or battles, contact us to request deletion of your
+    cloud save and battle history; signing out disables further uploads.
   </p>
 
   <h2>Changes</h2>
@@ -114,7 +130,6 @@
   <p>
     Questions about this policy:
     <a href="mailto:support@gharmon255.dev">support@gharmon255.dev</a>
-    (replace with your support email before store submission if different).
   </p>
 
   <p class="meta">App package: com.gharmon255.dinostep</p>

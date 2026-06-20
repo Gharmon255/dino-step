@@ -21,6 +21,7 @@ Upload `docs/privacy-policy.html` to Netlify, Cloudflare Pages, Google Sites, et
 
 ## Before submission
 
+- [ ] Push `main` — GitHub Pages rebuilds from `/docs` (may take 1–2 minutes)
+- [ ] Run `./scripts/verify-privacy-url.sh` — confirms hosted page includes cloud backup, hourly sync, PvP, contact email
 - [ ] Open the URL in a browser (incognito) — page loads over HTTPS
-- [ ] Update contact email in `privacy-policy.html` if `support@gharmon255.dev` is not yours
 - [ ] Complete Play **Data Safety** using `docs/DATA_SAFETY_PLAY_CONSOLE.md`

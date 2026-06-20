@@ -59,16 +59,18 @@ Copy `Dino Step/Config/SupabaseConfig.example.plist` → `SupabaseConfig.plist` 
 
 Enable **Sign in with Apple** on the iPhone target (`Dino Step.entitlements`). URL scheme `stepasaurus` is merged from `Config/SupabaseAuth.plist`.
 
-## 6. Rollout / tester builds
+## 6. Production builds
 
-Sign-in buttons are hidden behind **Coming soon** in release-facing builds:
+Sign-in is **enabled** in release-facing code when Supabase is configured at build time:
 
 | Platform | Flag | File |
 |----------|------|------|
-| Android | `ACCOUNT_SIGN_IN_ENABLED = false` | `app/.../AccountBackupCard.kt` |
-| iOS | `CloudBackupFeatures.signInEnabled = false` | `Dino Step/Views/AccountBackupCard.swift` |
+| Android | `ACCOUNT_SIGN_IN_ENABLED = true` | `app/.../AccountBackupCard.kt` |
+| iOS | `CloudBackupFeatures.signInEnabled = true` | `Dino Step/Views/AccountBackupCard.swift` |
 
-Set the flag to `true` **locally** to test OAuth. **Export local save** remains available regardless.
+Without `supabase.properties` / `SupabaseConfig.plist`, the Account card shows that cloud backup is not configured — local play still works.
+
+**Before external testers:** add release SHA-1 to Google OAuth (Android), configure Apple Services ID + Supabase Apple provider (iOS), and deploy PvP migrations + `battle` Edge Function (see `docs/PVP_DESIGN.md`).
 
 ## 7. Verify
 

@@ -113,8 +113,8 @@ No physical phone or watch is required for emulator-based development.
 
 Game progress is **local-first**. Optional **Sign in with Google** backs up your save to Supabase so you can restore on another device.
 
-- **Stats tab** → **Account & backup** — export local save anytime; sign-in when enabled
-- **Tester builds:** sign-in is gated behind **Coming soon** (`ACCOUNT_SIGN_IN_ENABLED = false` in `AccountBackupCard.kt`). Flip to `true` locally for dev testing only.
+- **Stats tab** → **Account & backup** — export local save anytime; sign in when Supabase is configured at build time
+- **Production:** `ACCOUNT_SIGN_IN_ENABLED = true` in `AccountBackupCard.kt` (requires `supabase.properties`)
 - **Setup:** copy `supabase.properties.example` → `supabase.properties` (gitignored) and follow [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md)
 - **Privacy:** [`docs/privacy-policy.html`](docs/privacy-policy.html), [`docs/DATA_SAFETY_PLAY_CONSOLE.md`](docs/DATA_SAFETY_PLAY_CONSOLE.md)
 
@@ -131,5 +131,5 @@ Steps and raw Health Connect data are **not** uploaded — only game save JSON w
 - Catalog art is **complete** (29/29 species, all stages). See `dino-step-assets/species_queue.md` for expansion notes.
 - UI polish and validation on physical phone + Wear hardware.
 - Wear is read-only; progression is driven on the phone.
-- Cloud sign-in UI gated for testers; cloud push not yet hooked to every save path (e.g. some Health Connect sync flows).
+- Cloud sign-in enabled when `supabase.properties` is present at build time; PvP requires Supabase backend deploy
 - Apple Sign-In is iOS-only; Google and Apple accounts are separate Supabase users (no linking yet).

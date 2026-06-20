@@ -1,7 +1,20 @@
 # Dino Step — Android / Wear OS Launch Checklist
 
-Pre–Google Play **internal testing** readiness for **dino-step**.  
+Pre–Google Play **production** readiness for **dino-step**.  
 Update checkboxes as items are completed.
+
+**Code/doc sync:** June 2026 — privacy policy, Data Safety draft, in-app disclosures, and sign-in flags aligned for production.
+
+---
+
+## Still manual (store console — you)
+
+- [ ] Push `main` to GitHub so **GitHub Pages** serves updated `docs/privacy-policy.html`
+- [ ] Play Console → link privacy policy URL + complete **Data Safety** (`docs/DATA_SAFETY_PLAY_CONSOLE.md`)
+- [ ] Play Console → **Health apps** declaration
+- [ ] Upload **512×512** icon + store listing copy + phone screenshots
+- [ ] `./gradlew bundleRelease` → upload phone + Wear AABs to Internal/Open testing
+- [ ] Physical release smoke test (checklist below)
 
 ---
 
@@ -20,33 +33,33 @@ Update checkboxes as items are completed.
 
 ## Privacy & legal
 
-- [x] **Privacy policy text** — `docs/privacy-policy.html` (hosting steps: `docs/PRIVACY_POLICY_HOSTING.md`)
+- [x] **Privacy policy text** — `docs/privacy-policy.html` (cloud backup, PvP, hourly sync, notifications)
 - [x] **In-app privacy link** — Stats tab + Health Connect rationale screen (`privacy_policy_url` in `strings.xml`)
 - [x] **Data Safety draft answers** — `docs/DATA_SAFETY_PLAY_CONSOLE.md`
-- [ ] **Privacy policy URL** published on a public HTTPS page (required for Play Console)
+- [ ] **Privacy policy URL** live on GitHub Pages matches repo (push `main`, verify in browser)
 - [ ] Privacy policy linked in Play Console **App content → Privacy policy**
 - [ ] **Play Console Data Safety** form completed and matches in-app behavior:
-  - Collects: **Steps / fitness** (via Health Connect, user-initiated sync only)
-  - Optional: **Email** + **game save backup** if user signs in for cloud backup (see `docs/DATA_SAFETY_PLAY_CONSOLE.md`)
-  - Not sold to third parties
-  - Not used for advertising or tracking
+  - Collects: **Steps / fitness** (Health Connect — manual sync + ~hourly background)
+  - Optional: **Email** + **game save** + **battle history** if user signs in
+  - Local notifications (on-device only; not a separate collection type)
+  - Not sold to third parties; not used for advertising or tracking
   - Core gameplay on-device; account not required to play
 - [x] **Cloud backup docs** — `docs/CLOUD_SAVE_CONTRACT.md`, `docs/SUPABASE_SETUP.md`
-- [x] **PvP docs + schema** — `docs/PVP_DESIGN.md`, `supabase/migrations/002_pvp.sql`, `supabase/functions/battle`
-- [ ] Cloud sign-in enabled for production (`ACCOUNT_SIGN_IN_ENABLED = true` in `AccountBackupCard.kt`) when ready for testers
-- [ ] Deploy PvP Edge Function and run `002_pvp.sql` on Supabase before enabling Battle tab for testers
-- [ ] In-app disclosure aligns with policy (Stats Health Connect card, permission rationale screen)
+- [x] **PvP docs + schema** — `docs/PVP_DESIGN.md`, `supabase/migrations/002_pvp.sql` + `003` + `004`, `supabase/functions/battle`
+- [x] Cloud sign-in enabled in code (`ACCOUNT_SIGN_IN_ENABLED = true` in `AccountBackupCard.kt`)
+- [ ] Verify PvP Edge Function + migrations deployed on Supabase prod project
+- [x] In-app disclosure aligns with policy (`PermissionsRationaleActivity`, `HealthConnectCard`)
 - [ ] Review Data Safety answers whenever permissions or data flows change
 
 ---
 
 ## Health Connect
 
-- [ ] **Health Connect permissions** declared in manifest (`android.permission.health.READ_STEPS`)
-- [ ] **Permissions rationale** (`PermissionsRationaleActivity`) reviewed — reads steps for hatch/growth, manual sync only, no location/ads
+- [x] **Health Connect permissions** declared in manifest (`android.permission.health.READ_STEPS`)
+- [x] **Permissions rationale** (`PermissionsRationaleActivity`) — manual + ~hourly background sync, no location/ads
 - [ ] **Play Console Health apps declaration** completed if required for your target audience / region
-- [ ] **Physical device test** — install Health Connect, grant permission, tap **Sync Steps** on Home, verify egg/dino progression
-- [ ] Confirm app does **not** auto-sync in background (by design — manual sync only)
+- [ ] **Physical device test** — install Health Connect, grant permission, sync steps, verify egg/dino progression
+- [x] Background sync via WorkManager (~hourly) + manual **Sync again** on Home
 
 ---
 
@@ -56,7 +69,8 @@ Update checkboxes as items are completed.
 
 | Setting | Value |
 |---------|--------|
-| `versionCode` | `1` |
+| `versionCode` (phone) | `11` |
+| `versionCode` (wear) | `12` |
 | `versionName` | `"1.0"` |
 | Release `isMinifyEnabled` | `false` |
 | `signingConfigs` | **Wired** in `:app` and `:wear` `build.gradle.kts` when `keystore.properties` exists |
@@ -146,15 +160,15 @@ Phone and Wear share **`com.gharmon255.dinostep`**. In each release:
 
 ## Release build quality
 
-- [ ] **Release configuration** hides DEBUG-only UI (`DevTools.isEnabled` = `BuildConfig.DEBUG`):
+- [x] **Release configuration** hides DEBUG-only UI (`DevTools.isEnabled` = `BuildConfig.DEBUG`) — verify on release APK:
   - Home fake step buttons
   - Stats developer testing cards (species override, rarity eggs, reset/clear)
   - Wear sync debug panel + Force Wear Sync
   - Developer diagnostics (fake steps, HC debug rows)
-- [ ] Stats tab in Release shows **Current Run** + **Lifetime** only (mirrors iOS)
-- [ ] `GameViewModel` dev methods no-op when `!DevTools.isEnabled`
-- [ ] No debug-only strings visible in release (e.g. "fake steps", "testing only")
-- [ ] `./gradlew assembleRelease` succeeds
+- [x] Stats tab in Release shows **Current Run** + **Lifetime** only (mirrors iOS)
+- [x] `GameViewModel` dev methods no-op when `!DevTools.isEnabled`
+- [x] No debug-only strings visible in release (e.g. "fake steps", "testing only")
+- [ ] `./gradlew assembleRelease` succeeds on your machine
 - [ ] Install release APK/AAB on test device and spot-check UI
 
 ---
@@ -208,24 +222,23 @@ Install release build on a physical phone (and paired Wear if available):
 
 ---
 
-## Cloud backup (optional)
+## Cloud backup & battles (optional)
 
-- [x] Local-first save + optional Supabase sync (`CloudSaveRepository`, Stats **Account & backup** card)
+- [x] Local-first save + optional Supabase sync (`CloudSaveSyncEngine`, Stats **Account & backup** card)
 - [x] Export local save before sign-in
-- [x] Sign-in gated **Coming soon** for tester builds (`ACCOUNT_SIGN_IN_ENABLED = false`)
-- [ ] Enable sign-in for production when OAuth test users / Play release ready
-- [ ] Hook cloud push to all save paths (e.g. Health Connect auto-sync)
+- [x] Sign-in enabled in code (`ACCOUNT_SIGN_IN_ENABLED = true`); requires `supabase.properties` at build
+- [x] Silent Google re-auth + session persistence across debug rebuilds
+- [ ] Verify cloud push after Health Connect sync and all save paths on release build
+- [ ] Supabase prod: OAuth (release SHA-1), PvP migrations + `battle` function deployed
 
 ---
 
-## Known deferred (not blocking internal testing code merge)
+## Known deferred (not blocking v1.0 store submission)
 
-- Branded app icon / Play marketing assets (may import from `dino-step-assets`)
-- Release signing Gradle wiring (user-local keystore)
-- Onboarding flow
-- Automatic background Health Connect sync
-- ProGuard / R8 minification (document only; `isMinifyEnabled = false` today)
+- Play Console listing assets (512 icon, feature graphic, screenshots) — partial IG assets in iOS repo `marketing/`
+- ProGuard / R8 minification (`isMinifyEnabled = false` today)
 - Async PvP (see `docs/PVP_DESIGN.md`)
+- CI / GitHub Actions for `scripts/run-tests.sh`
 
 ---
 
@@ -233,4 +246,5 @@ Install release build on a physical phone (and paired Wear if available):
 
 | Date | Note |
 |------|------|
+| 2026-06-06 | Privacy/sync disclosure aligned; Data Safety draft updated; sign-in prod flags documented |
 | 2026-06-01 | Initial Android launch checklist; store-hardening sprint gates release Stats UI, improves Health Connect copy |

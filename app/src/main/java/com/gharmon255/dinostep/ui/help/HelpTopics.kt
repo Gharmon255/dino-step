@@ -10,9 +10,9 @@ object HelpTopics {
         add(
             HelpSection(
                 title = "Getting started",
-                body = "Walk every day to earn steps. Tap Sync Steps on Home to pull steps from " +
-                    "Health Connect (Android) or Apple Health (iPhone). Steps hatch your egg and " +
-                    "grow your active dinosaur through baby, juvenile, and adult stages.",
+                body = "Walk every day to earn steps. Tap Sync again on Home to pull steps from " +
+                    "Health Connect, or let the app sync about once per hour in the background. " +
+                    "Steps hatch your egg and grow your active dinosaur through baby, juvenile, and adult stages.",
             ),
         )
         add(
