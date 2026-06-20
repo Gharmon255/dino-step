@@ -32,7 +32,9 @@ Update checkboxes as items are completed.
   - Not used for advertising or tracking
   - Core gameplay on-device; account not required to play
 - [x] **Cloud backup docs** — `docs/CLOUD_SAVE_CONTRACT.md`, `docs/SUPABASE_SETUP.md`
+- [x] **PvP docs + schema** — `docs/PVP_DESIGN.md`, `supabase/migrations/002_pvp.sql`, `supabase/functions/battle`
 - [ ] Cloud sign-in enabled for production (`ACCOUNT_SIGN_IN_ENABLED = true` in `AccountBackupCard.kt`) when ready for testers
+- [ ] Deploy PvP Edge Function and run `002_pvp.sql` on Supabase before enabling Battle tab for testers
 - [ ] In-app disclosure aligns with policy (Stats Health Connect card, permission rationale screen)
 - [ ] Review Data Safety answers whenever permissions or data flows change
 

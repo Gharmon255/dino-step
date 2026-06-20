@@ -35,6 +35,9 @@ class CloudSaveMapperTest {
                     stepsCompleted = 500,
                     completedAt = 1_700_000_000_000L,
                     nickname = "Rex",
+                    eggRarityAtHatch = EggRarity.RARE,
+                    exSteps = 100,
+                    exLevel = 2,
                 ),
             ),
             playerStats = PlayerStats(
@@ -53,6 +56,8 @@ class CloudSaveMapperTest {
         )
         assertEquals("tiny_raptor", cloud.activeCreature.speciesId)
         assertEquals("trex", cloud.completedCreatures.single().speciesId)
+        assertEquals("RARE", cloud.completedCreatures.single().eggRarityAtHatch)
+        assertEquals(CloudGameSave.SCHEMA_VERSION, cloud.schemaVersion)
 
         val restored = CloudSaveMapper.toSnapshot(cloud)
         assertNotNull(restored)

@@ -58,6 +58,14 @@ class GameRepository(
         completedCreatureDao.insert(completedCreature.toEntity())
     }
 
+    suspend fun saveCollection(collection: List<CompletedCreature>) = withContext(Dispatchers.IO) {
+        collection.forEach { completed ->
+            if (completed.id > 0) {
+                completedCreatureDao.update(completed.toEntity())
+            }
+        }
+    }
+
     suspend fun updateCompletedCreatureNickname(id: Long, nickname: String?) = withContext(Dispatchers.IO) {
         if (id > 0) {
             completedCreatureDao.updateNickname(id, CreatureNickname.normalize(nickname))

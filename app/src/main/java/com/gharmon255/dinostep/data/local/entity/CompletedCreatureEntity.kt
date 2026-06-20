@@ -13,4 +13,7 @@ data class CompletedCreatureEntity(
     val completedStepTotal: Int,
     val completedAt: Long,
     val nickname: String? = null,
+    val eggRarityAtHatch: String = "COMMON",
+    val exSteps: Int = 0,
+    val exLevel: Int = 1,
 )

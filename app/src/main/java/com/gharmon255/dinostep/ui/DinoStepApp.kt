@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.cloud.SupabaseConfig
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
+import com.gharmon255.dinostep.ui.battle.BattleScreen
 import com.gharmon255.dinostep.ui.collection.CollectionScreen
 import com.gharmon255.dinostep.ui.eggs.EggsScreen
 import com.gharmon255.dinostep.ui.home.HomeScreen
@@ -128,6 +129,12 @@ fun DinoStepApp(
                         .padding(innerPadding),
                 )
                 AppTab.Collection -> CollectionScreen(
+                    viewModel = viewModel,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+                AppTab.Battle -> BattleScreen(
                     viewModel = viewModel,
                     modifier = Modifier
                         .fillMaxSize()

@@ -87,6 +87,25 @@ class SupabaseHttpClient(
         }
     }
 
+    suspend fun invokeBattleFunction(session: CloudSession, body: JSONObject): JSONObject =
+        withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url("${config.url.trimEnd('/')}/functions/v1/battle")
+                .post(body.toString().toRequestBody(JSON_MEDIA))
+                .header("apikey", config.anonKey)
+                .header("Authorization", "Bearer ${session.accessToken}")
+                .build()
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string().orEmpty()
+            if (!response.isSuccessful) {
+                val errorMessage = runCatching {
+                    JSONObject(responseBody).optString("error", responseBody)
+                }.getOrDefault(responseBody)
+                throw IOException(errorMessage.ifBlank { "Battle request failed: ${response.code}" })
+            }
+            JSONObject(responseBody)
+        }
+
     private suspend fun post(path: String, body: String, accessToken: String?): JSONObject =
         withContext(Dispatchers.IO) {
             val builder = Request.Builder()

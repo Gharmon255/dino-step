@@ -13,6 +13,9 @@ interface CompletedCreatureDao {
     @Insert
     suspend fun insert(creature: CompletedCreatureEntity)
 
+    @androidx.room.Update
+    suspend fun update(creature: CompletedCreatureEntity)
+
     @Query("UPDATE completed_creatures SET nickname = :nickname WHERE id = :id")
     suspend fun updateNickname(id: Long, nickname: String?)
 

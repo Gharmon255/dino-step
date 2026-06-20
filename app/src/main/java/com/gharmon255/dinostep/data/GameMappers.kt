@@ -57,6 +57,9 @@ fun CompletedCreatureEntity.toDomain(): CompletedCreature {
         stepsCompleted = completedStepTotal,
         completedAt = completedAt,
         nickname = nickname,
+        eggRarityAtHatch = EggRarity.fromRaw(eggRarityAtHatch),
+        exSteps = exSteps,
+        exLevel = exLevel.coerceAtLeast(1),
     )
 }
 
@@ -70,6 +73,9 @@ fun CompletedCreature.toEntity(): CompletedCreatureEntity {
         completedStepTotal = stepsCompleted,
         completedAt = completedAt,
         nickname = nickname,
+        eggRarityAtHatch = eggRarityAtHatch.name,
+        exSteps = exSteps,
+        exLevel = exLevel,
     )
 }
 

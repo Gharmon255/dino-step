@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.cloud.CloudAccountUiState
 
-internal const val ACCOUNT_SIGN_IN_ENABLED = false
+internal const val ACCOUNT_SIGN_IN_ENABLED = true
 
 @Composable
 fun AccountBackupCard(

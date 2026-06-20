@@ -106,6 +106,9 @@ object CloudSaveJson {
             put("stepsCompleted", creature.stepsCompleted)
             put("completedAt", creature.completedAt)
             creature.nickname?.let { put("nickname", it) }
+            put("eggRarityAtHatch", creature.eggRarityAtHatch)
+            put("exSteps", creature.exSteps)
+            put("exLevel", creature.exLevel)
         }
     }
 
@@ -116,6 +119,9 @@ object CloudSaveJson {
             stepsCompleted = json.getInt("stepsCompleted"),
             completedAt = json.getString("completedAt"),
             nickname = json.optString("nickname").takeIf { it.isNotBlank() },
+            eggRarityAtHatch = json.optString("eggRarityAtHatch", "COMMON"),
+            exSteps = json.optInt("exSteps", 0),
+            exLevel = json.optInt("exLevel", 1).coerceAtLeast(1),
         )
     }
 

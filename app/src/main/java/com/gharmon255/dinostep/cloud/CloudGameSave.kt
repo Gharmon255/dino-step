@@ -11,7 +11,7 @@ data class CloudGameSave(
     val lastRewardRollPercent: Double? = null,
 ) {
     companion object {
-        const val SCHEMA_VERSION = 1
+        const val SCHEMA_VERSION = 2
     }
 }
 
@@ -34,6 +34,9 @@ data class CloudCompletedCreature(
     val stepsCompleted: Int,
     val completedAt: String,
     val nickname: String?,
+    val eggRarityAtHatch: String = "COMMON",
+    val exSteps: Int = 0,
+    val exLevel: Int = 1,
 )
 
 data class CloudPlayerStats(
@@ -78,6 +81,7 @@ enum class CloudSyncStatus {
 data class CloudAccountUiState(
     val isConfigured: Boolean,
     val syncStatus: CloudSyncStatus,
+    val signedInUserId: String? = null,
     val signedInEmail: String? = null,
     val signedInProvider: String? = null,
     val lastBackedUpAtMillis: Long? = null,

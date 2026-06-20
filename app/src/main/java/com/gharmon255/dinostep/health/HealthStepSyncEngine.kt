@@ -2,6 +2,7 @@ package com.gharmon255.dinostep.health
 
 import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
+import com.gharmon255.dinostep.game.ExProgression
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
@@ -15,6 +16,7 @@ data class HealthStepSyncOutcome(
     val message: String,
     val activeCreature: com.gharmon255.dinostep.game.ActiveCreatureState? = null,
     val playerStats: com.gharmon255.dinostep.model.PlayerStats? = null,
+    val collection: List<com.gharmon255.dinostep.model.CompletedCreature>? = null,
     val inactivityPenaltyApplied: Boolean = false,
 )
 
@@ -100,6 +102,13 @@ class HealthStepSyncEngine(
 
         repository.saveActiveCreature(progression.activeCreature)
         repository.savePlayerStats(progression.playerStats)
+        val updatedCollection = if (snapshot.collection.isNotEmpty() && syncResult.delta > 0) {
+            ExProgression.applyDrip(snapshot.collection, syncResult.delta).also { updated ->
+                repository.saveCollection(updated)
+            }
+        } else {
+            snapshot.collection
+        }
 
         val eventType = WearCreaturePayloadMapper.detectEventType(
             previous = previousCreature,
@@ -114,6 +123,7 @@ class HealthStepSyncEngine(
             message = "Synced ${syncResult.delta} steps (Health Connect today: ${syncResult.currentHealthConnectSteps})",
             activeCreature = progression.activeCreature,
             playerStats = progression.playerStats,
+            collection = updatedCollection,
             inactivityPenaltyApplied = rollover.penalty != null,
         )
     }

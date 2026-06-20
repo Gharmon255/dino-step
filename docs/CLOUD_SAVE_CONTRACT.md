@@ -1,6 +1,6 @@
 # Cloud save contract (Stepasaurus)
 
-Cross-platform game backup format. **Schema version 1.**
+Cross-platform game backup format. **Schema version 2** (v1 still readable with defaults).
 
 ## Principles
 
@@ -8,12 +8,13 @@ Cross-platform game backup format. **Schema version 1.**
 - **Species IDs**: use stable `speciesId` strings (`tiny_raptor`, etc.), not iOS UUIDs.
 - **No health data**: step history stays on-device (Health Connect / HealthKit). Only game progress syncs.
 - **Revision**: monotonic `revision` per device save; server stores latest `updated_at`.
+- **Roster EX**: completed adults earn passive EX from step drip (see PvP); stored per creature in v2.
 
-## `CloudGameSave` JSON (v1)
+## `CloudGameSave` JSON (v2)
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "revision": 42,
   "updatedAt": "2026-06-18T12:00:00.000Z",
   "activeCreature": {
@@ -34,7 +35,10 @@ Cross-platform game backup format. **Schema version 1.**
       "speciesId": "trex",
       "stepsCompleted": 50000,
       "completedAt": "2026-05-20T18:30:00.000Z",
-      "nickname": "Chomper"
+      "nickname": "Chomper",
+      "eggRarityAtHatch": "RARE",
+      "exSteps": 1200,
+      "exLevel": 3
     }
   ],
   "playerStats": {

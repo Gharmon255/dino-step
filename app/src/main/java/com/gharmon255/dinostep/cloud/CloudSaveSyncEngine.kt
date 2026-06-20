@@ -148,6 +148,7 @@ class CloudSaveSyncEngine(
                 )
                 _uiState.value = _uiState.value.copy(
                     syncStatus = CloudSyncStatus.BackedUp,
+                    signedInUserId = session.userId,
                     signedInEmail = session.email,
                     signedInProvider = session.provider,
                     pendingConflict = CloudSaveConflict.LocalVsCloud(
@@ -209,6 +210,7 @@ class CloudSaveSyncEngine(
         }
         _uiState.value = _uiState.value.copy(
             syncStatus = CloudSyncStatus.BackedUp,
+            signedInUserId = session.userId,
             signedInEmail = session.email,
             signedInProvider = session.provider,
             lastBackedUpAtMillis = syncPreferences.lastBackedUpAtMillis,

@@ -41,6 +41,9 @@ object CloudSaveMapper {
                     stepsCompleted = completed.stepsCompleted,
                     completedAt = Instant.ofEpochMilli(completed.completedAt).toString(),
                     nickname = completed.nickname,
+                    eggRarityAtHatch = completed.eggRarityAtHatch.name,
+                    exSteps = completed.exSteps,
+                    exLevel = completed.exLevel,
                 )
             },
             playerStats = CloudPlayerStats(
@@ -81,6 +84,9 @@ object CloudSaveMapper {
                 stepsCompleted = entry.stepsCompleted,
                 completedAt = Instant.parse(entry.completedAt).toEpochMilli(),
                 nickname = entry.nickname,
+                eggRarityAtHatch = EggRarity.fromRaw(entry.eggRarityAtHatch),
+                exSteps = entry.exSteps,
+                exLevel = entry.exLevel.coerceAtLeast(1),
             )
         }
 

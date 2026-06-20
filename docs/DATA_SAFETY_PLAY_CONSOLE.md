@@ -34,6 +34,8 @@ Use these answers when completing **Play Console → App content → Data safety
 
 Without cloud sign-in: no email or server-stored game data.
 
+**Optional PvP (signed in):** battle history (species ids, outcomes) stored in Supabase when user uses Battle tab. No step data uploaded for battles.
+
 **Rollout note:** Tester builds may show **Coming soon** instead of sign-in buttons (`ACCOUNT_SIGN_IN_ENABLED = false`). Data Safety answers above still apply once sign-in is enabled in production.
 
 ## Security practices

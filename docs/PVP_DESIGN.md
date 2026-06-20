@@ -4,95 +4,157 @@ Async, server-authoritative battles built on **Phase 1 cloud save** (stable `use
 
 ## Goals
 
-- Fun async “find opponent” without real-time sockets
+- Fun async battles: **quick matchmaking** and **friend challenges with blind pick**
+- **Pack synergy**: duplicate species in your collection boost the one fighter you field
+- **EX progression**: synced steps grow all completed adults passively (5% drip) while your active egg/dino gets 100%
 - No client-reported combat stats or step counts
 - Cross-platform (Android + iOS) using the same Supabase backend
 
 ## Prerequisites (Phase 1)
 
 - User signed in (Apple / Google)
-- Optional cloud backup enabled
-- `game_saves` row with valid `CloudGameSave` v1
+- Cloud backup enabled and `game_saves` row with valid `CloudGameSave` v2
+- Deploy [`supabase/migrations/002_pvp.sql`](../supabase/migrations/002_pvp.sql) and Edge Function [`supabase/functions/battle`](../supabase/functions/battle/index.ts)
 
-## Data model (new tables)
+## Cloud save v2 (roster EX)
 
-### `fighter_snapshots`
+Each `completedCreatures[]` entry adds:
 
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | uuid PK | |
-| `user_id` | uuid FK | Owner |
-| `species_id` | text | From roster |
-| `egg_rarity` | text | Rolled rarity at hatch |
-| `nickname` | text | Optional |
-| `combat_power` | int | **Server-computed** from species tier + rarity |
-| `elo` | int | Matchmaking rating |
-| `created_at` | timestamptz | |
+| Field | Purpose |
+|-------|---------|
+| `eggRarityAtHatch` | Egg rarity when claimed (combat bonus) |
+| `exSteps` | Lifetime passive EX from step drip |
+| `exLevel` | Derived 1–50 combat tier |
 
-Snapshots are created when the player opts in from an **adult** creature in their verified save. Client sends `speciesId` + snapshot id request; server validates ownership against `game_saves.save_json`.
+See [`CLOUD_SAVE_CONTRACT.md`](CLOUD_SAVE_CONTRACT.md).
+
+### Step drip (client)
+
+```
+rosterDrip = floor(stepAmount * 0.05)
+for each completedCreature:
+    exSteps += rosterDrip
+    exLevel = exLevelFromSteps(exSteps)
+```
+
+Active creature still receives 100% of synced steps.
+
+## Combat power (server + client preview)
+
+Single fighter per side. Pack bonus counts **all copies** of that `speciesId` in the player's save.
+
+```
+basePower      = speciesRarityTable[species.rarity]   // Common 100 … Legendary 280
+eggBonus       = eggRarityTable[eggRarityAtHatch]     // 0 … 40
+exBonus        = exLevel * 3
+packMultiplier = 1 + min(packCount - 1, 3) * 0.15       // cap 1.45× at 4+ copies
+
+combatPower    = floor((basePower + eggBonus + exBonus) * packMultiplier)
+maxHP          = floor(combatPower * 1.2)
+attack         = floor(combatPower * 0.35)
+```
+
+Clients show **estimated** power only; Edge Function recomputes from `game_saves.save_json`.
+
+## Data model
+
+### `player_profiles`
+
+Invite code for friend challenges, optional ELO (default 1000).
+
+### `battle_challenges` (friend blind pick)
+
+| Status | Meaning |
+|--------|---------|
+| `pending` | Challenger waiting for opponent |
+| `picking` | Both players choose fighter secretly |
+| `complete` | Battle resolved |
+
+Picks stored server-side; opponent pick hidden until both submitted.
 
 ### `battles`
 
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | uuid PK | |
-| `player_a_snapshot_id` | uuid | |
-| `player_b_snapshot_id` | uuid | |
-| `winner_snapshot_id` | uuid | |
-| `turn_log` | jsonb | Ordered events for client animation |
-| `created_at` | timestamptz | |
+Stores resolved quick matches and friend battles with `turn_log` JSON for client animation.
 
-## Match flow
+## Match flows
+
+### Quick match
 
 ```mermaid
 sequenceDiagram
     participant Phone
-    participant Edge as Supabase Edge Function
+    participant Edge as battle Edge Function
     participant DB as Postgres
 
-    Phone->>Edge: findMatch(fighterSnapshotId)
-    Edge->>DB: validate snapshot ownership
-    Edge->>DB: pick opponent in ELO/rarity bucket
-    Edge->>Edge: resolveBattle(serverRules)
-    Edge->>DB: insert battle + update ELO
-    Edge->>Phone: battleLog + outcome
+    Phone->>Edge: findQuickMatch(completedCreatureId)
+    Edge->>DB: validate fighter in game_saves
+    Edge->>DB: pick ghost/live opponent save
+    Edge->>Edge: resolveBattle
+    Edge->>DB: insert battles row
+    Edge->>Phone: turn_log + outcome
 ```
 
-1. Player taps **Find opponent** with a chosen fighter snapshot.
-2. Edge function loads both snapshots, computes stats server-side.
-3. Turn-based resolver runs (speed → attack order, damage caps, rarity modifiers).
-4. Returns `turn_log` JSON; clients animate locally. Client sends only `matchId`, not damage.
+### Friend challenge (blind pick)
 
-## Combat rules (MVP)
+1. Player A taps **Challenge** → share invite code
+2. Player B enters code, picks fighter (hidden)
+3. Player A picks fighter (hidden)
+4. When both picks locked → **Reveal** → battle animation
 
-- **Power** = `baseSpeciesTier * rarityMultiplier` (table in Edge function, not client).
-- **HP** = fixed by rarity band.
-- **Turns** = alternating attacks until one HP ≤ 0 (max 20 turns → tie-break by remaining HP).
-- **No steps** in combat formulas.
+```mermaid
+sequenceDiagram
+    participant A as Challenger
+    participant B as Opponent
+    participant Edge as battle Edge Function
 
-## Matchmaking
+    A->>Edge: createChallenge
+    B->>Edge: acceptChallenge(inviteCode)
+    B->>Edge: submitPick(creatureId)
+    A->>Edge: submitPick(creatureId)
+    Edge->>A: battle + turn_log
+    Edge->>B: battle + turn_log
+```
 
-- Bucket by `egg_rarity` ± one tier for queue time
-- Prefer similar `elo` within bucket; expand after 10s wait
-- Allow **ghost** matches against inactive snapshots
+## Edge Function actions
 
-## Rewards (v1)
+| Action | Purpose |
+|--------|---------|
+| `ensureProfile` | Create/load invite code |
+| `createChallenge` | Start friend challenge |
+| `acceptChallenge` | Join via invite code |
+| `joinChallenge` | Join via challenge id |
+| `submitPick` | Blind fighter selection; resolves when both ready |
+| `findQuickMatch` | Instant match vs ghost/live save |
+| `listBattles` | Recent history |
+| `getChallenge` | Poll challenge state (opponent pick hidden) |
 
-- Win streak counter (profile stat)
-- Cosmetic titles later — avoid pay-to-win tied to steps
+## Client UI
+
+- **Battle tab** (Android + iOS): fighter select, quick match, invite code, lock-in pick, results + history
+- **Collection detail**: EX level, egg rarity at hatch, pack bonus preview
 
 ## Anti-cheat
 
-- Never trust client-sent power, steps, or inventory
-- Re-validate `game_saves.revision` when creating snapshots
-- Rate-limit `findMatch` per user
+- Never trust client-sent power, EX, pack count, or steps
+- Validate `completedCreatureId` ownership against `game_saves`
+- Push local save before battle pick so server has latest roster
+
+## Rewards (v1)
+
+- Win/loss in battle history
+- ELO column reserved; tuning later
+- No step or pay-to-win rewards
 
 ## Out of scope for v1 PvP
 
-- Real-time sockets / frame sync
-- Cross-platform live battles
-- Client-authored battle logs
+- Real-time live battles
+- Multi-fighter teams (3v3) — pack bonus replaces this
+- Trading dinos
+- Cross-account linking (Apple vs Google)
 
-## Rough effort
+## Deployment checklist
 
-~3–5 weeks after cloud save is stable in production, depending on battle UX depth.
+1. Run `002_pvp.sql` in Supabase SQL editor
+2. Deploy function: `supabase functions deploy battle`
+3. Enable cloud sign-in for testers (`signInEnabled` / `ACCOUNT_SIGN_IN_ENABLED`)
+4. Verify `game_saves` rows include v2 `exSteps` / `eggRarityAtHatch`

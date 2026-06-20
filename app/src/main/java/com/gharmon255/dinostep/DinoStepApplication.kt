@@ -1,6 +1,7 @@
 package com.gharmon255.dinostep
 
 import android.app.Application
+import com.gharmon255.dinostep.battle.BattleRepository
 import com.gharmon255.dinostep.cloud.CloudAuthRepository
 import com.gharmon255.dinostep.cloud.CloudSaveSyncEngine
 import com.gharmon255.dinostep.cloud.CloudSessionStore
@@ -48,6 +49,14 @@ class DinoStepApplication : Application() {
             config = supabaseConfig,
             httpClient = supabaseHttpClient,
             sessionStore = cloudSessionStore,
+        )
+    }
+
+    val battleRepository: BattleRepository by lazy {
+        BattleRepository(
+            config = supabaseConfig,
+            httpClient = supabaseHttpClient,
+            authRepository = cloudAuthRepository,
         )
     }
 

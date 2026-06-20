@@ -19,7 +19,7 @@ import com.gharmon255.dinostep.data.local.entity.PlayerStatsEntity
         CompletedCreatureEntity::class,
         PlayerStatsEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = false,
 )
 abstract class DinoStepDatabase : RoomDatabase() {
@@ -88,6 +88,20 @@ abstract class DinoStepDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE completed_creatures ADD COLUMN eggRarityAtHatch TEXT NOT NULL DEFAULT 'COMMON'",
+                )
+                db.execSQL(
+                    "ALTER TABLE completed_creatures ADD COLUMN exSteps INTEGER NOT NULL DEFAULT 0",
+                )
+                db.execSQL(
+                    "ALTER TABLE completed_creatures ADD COLUMN exLevel INTEGER NOT NULL DEFAULT 1",
+                )
+            }
+        }
+
         fun getInstance(context: Context): DinoStepDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -95,7 +109,14 @@ abstract class DinoStepDatabase : RoomDatabase() {
                     DinoStepDatabase::class.java,
                     "dino_step.db",
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(
+                        MIGRATION_1_2,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4,
+                        MIGRATION_4_5,
+                        MIGRATION_5_6,
+                        MIGRATION_6_7,
+                    )
                     .build()
                     .also { instance = it }
             }

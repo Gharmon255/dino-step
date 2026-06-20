@@ -134,6 +134,11 @@ fun CollectionSpeciesDetailSheet(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
+                            Text(
+                                text = "EX ${completed.exLevel} · ${completed.eggRarityAtHatch.name} egg",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
                         }
                         TextButton(onClick = { editingCreature = completed }) {
                             Text("Nickname")
@@ -143,11 +148,12 @@ fun CollectionSpeciesDetailSheet(
             }
 
             if (entry.collectCount > 1) {
+                val packMultiplier = com.gharmon255.dinostep.battle.BattlePowerCalculator.packMultiplier(entry.collectCount)
                 Text(
-                    text = "Collected ×${entry.collectCount}",
+                    text = "Collected ×${entry.collectCount} · Pack bonus ×${"%.2f".format(packMultiplier)} (${com.gharmon255.dinostep.battle.BattlePowerCalculator.packAbilityLabel(creature.id)})",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold,
-                    color = colors.accent,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             entry.latestCompletedAt?.let { completedAt ->

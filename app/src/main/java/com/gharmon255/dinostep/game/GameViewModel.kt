@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gharmon255.dinostep.battle.BattleOutcomeText
+import com.gharmon255.dinostep.battle.BattleRecord
+import com.gharmon255.dinostep.battle.BattleRepository
 import com.gharmon255.dinostep.cloud.CloudAccountUiState
 import com.gharmon255.dinostep.cloud.CloudSaveSyncEngine
 import com.gharmon255.dinostep.data.GameSnapshot
@@ -36,6 +39,8 @@ import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 import com.gharmon255.dinostep.wear.WearSyncDebugState
 import com.gharmon255.dinostep.wear.WearSyncPublishResult
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -49,8 +54,10 @@ class GameViewModel(
     private val garminCompanionPublisher: GarminCompanionPublisher,
     private val stageMilestoneNotifier: StageMilestoneNotifier,
     private val cloudSaveSyncEngine: CloudSaveSyncEngine,
+    private val battleRepository: BattleRepository? = null,
 ) : ViewModel() {
     private val testingEggFactory = TestingEggFactory(repository)
+    private var battlePollJob: Job? = null
     private var lastAutomaticHealthSyncAttemptMillis: Long? = null
     var isReady by mutableStateOf(false)
         private set
@@ -98,6 +105,27 @@ class GameViewModel(
         private set
 
     val cloudAccountUiState: StateFlow<CloudAccountUiState> = cloudSaveSyncEngine.uiState
+
+    var selectedBattleFighter by mutableStateOf<CompletedCreature?>(null)
+        private set
+
+    var latestBattle by mutableStateOf<BattleRecord?>(null)
+        private set
+
+    var battleHistory by mutableStateOf<List<BattleRecord>>(emptyList())
+        private set
+
+    var battleInviteCode by mutableStateOf<String?>(null)
+        private set
+
+    var activeBattleChallengeId by mutableStateOf<String?>(null)
+        private set
+
+    var isBattleLoading by mutableStateOf(false)
+        private set
+
+    var battleStatusMessage by mutableStateOf<String?>(null)
+        private set
 
     fun clearPendingDiscovery() {
         pendingDiscovery = null
@@ -354,6 +382,7 @@ class GameViewModel(
 
                 outcome.activeCreature?.let { activeCreature = it.normalized() }
                 outcome.playerStats?.let { playerStats = it }
+                outcome.collection?.let { collection = it }
 
                 if (outcome.status is HealthConnectUiStatus.Ready) {
                     lastSyncTimeMillis = System.currentTimeMillis()
@@ -383,10 +412,11 @@ class GameViewModel(
         val completedCreatureState = activeCreature
         val completedSpeciesId = completedCreatureState.creature.id
         val collectedSpeciesIds = collection.map { it.creature.id }.toSet()
-        val completed = CompletedCreature(
+        val completed = ExProgression.newCompletedCreature(
             creature = completedCreatureState.creature,
             stepsCompleted = completedCreatureState.steps,
             completedAt = System.currentTimeMillis(),
+            eggRarityAtHatch = completedCreatureState.eggRarity,
             nickname = completedCreatureState.nickname,
         )
 
@@ -506,6 +536,15 @@ class GameViewModel(
         )
         activeCreature = progression.activeCreature
         playerStats = progression.playerStats
+        if (collection.isNotEmpty()) {
+            val updatedCollection = ExProgression.applyDrip(collection, amount)
+            if (updatedCollection != collection) {
+                collection = updatedCollection
+                viewModelScope.launch {
+                    repository.saveCollection(updatedCollection)
+                }
+            }
+        }
 
         val eventType = WearCreaturePayloadMapper.detectEventType(
             previous = previous,
@@ -629,6 +668,201 @@ class GameViewModel(
 
     fun exportLocalSaveJson(): String {
         return cloudSaveSyncEngine.exportLocalJson(currentSnapshot())
+    }
+
+    fun selectBattleFighter(fighter: CompletedCreature) {
+        selectedBattleFighter = fighter
+    }
+
+    fun findQuickMatch() {
+        val fighter = selectedBattleFighter ?: return
+        val repository = battleRepository ?: return
+        viewModelScope.launch {
+            isBattleLoading = true
+            resetActiveBattlePresentation()
+            try {
+                cloudSaveSyncEngine.schedulePush(currentSnapshot())
+                val battle = repository.findQuickMatch(fighterCloudId(fighter))
+                latestBattle = battle
+                battleStatusMessage = battle?.let { battleOutcomeHeadline(it) }
+                refreshBattleHistory()
+            } catch (error: Exception) {
+                battleStatusMessage = error.localizedMessage ?: "Quick match failed"
+            } finally {
+                isBattleLoading = false
+            }
+        }
+    }
+
+    fun createFriendChallenge() {
+        val repository = battleRepository ?: return
+        viewModelScope.launch {
+            isBattleLoading = true
+            resetActiveBattlePresentation()
+            try {
+                val result = repository.createChallenge()
+                if (result != null) {
+                    val (challenge, inviteCode) = result
+                    battleInviteCode = inviteCode
+                    activeBattleChallengeId = challenge.id
+                    battleStatusMessage = "Share this battle code: $inviteCode"
+                    startPollingForOpponentJoin(challenge.id)
+                }
+            } catch (error: Exception) {
+                battleStatusMessage = error.localizedMessage ?: "Could not create challenge"
+            } finally {
+                isBattleLoading = false
+            }
+        }
+    }
+
+    fun acceptFriendChallenge(inviteCode: String) {
+        val trimmed = inviteCode.trim()
+        if (trimmed.isBlank()) {
+            battleStatusMessage = "Enter your friend's invite code first."
+            return
+        }
+        val fighter = selectedBattleFighter
+        if (fighter == null) {
+            battleStatusMessage = "Select a fighter above, then tap Accept."
+            return
+        }
+        val repository = battleRepository ?: return
+        viewModelScope.launch {
+            isBattleLoading = true
+            resetActiveBattlePresentation()
+            try {
+                cloudSaveSyncEngine.schedulePush(currentSnapshot())
+                val challenge = repository.acceptChallengeByInvite(trimmed)
+                if (challenge != null) {
+                    activeBattleChallengeId = challenge.id
+                    battleStatusMessage = "Opponent joined — lock in your fighter when ready."
+                    submitBattlePick(challenge.id, fighter)
+                } else {
+                    battleStatusMessage = "Could not accept — sign in from Stats and try again."
+                }
+            } catch (error: Exception) {
+                battleStatusMessage = error.localizedMessage ?: "Could not accept challenge"
+            } finally {
+                isBattleLoading = false
+            }
+        }
+    }
+
+    fun submitBattlePick(challengeId: String) {
+        val fighter = selectedBattleFighter ?: return
+        submitBattlePick(challengeId, fighter)
+    }
+
+    private fun submitBattlePick(challengeId: String, fighter: CompletedCreature) {
+        val repository = battleRepository ?: return
+        viewModelScope.launch {
+            isBattleLoading = true
+            battleStatusMessage = null
+            try {
+                cloudSaveSyncEngine.schedulePush(currentSnapshot())
+                val (challenge, battle) = repository.submitPick(challengeId, fighterCloudId(fighter))
+                if (battle != null) {
+                    applyCompletedBattle(battle)
+                    battlePollJob?.cancel()
+                } else {
+                    activeBattleChallengeId = challenge.id
+                    battleStatusMessage = "Fighter locked in — waiting for opponent..."
+                    startPollingForBattleReveal(challengeId)
+                }
+                refreshBattleHistory()
+            } catch (error: Exception) {
+                battleStatusMessage = error.localizedMessage ?: "Could not submit pick"
+            } finally {
+                isBattleLoading = false
+            }
+        }
+    }
+
+    fun refreshBattleHistory() {
+        val repository = battleRepository ?: return
+        viewModelScope.launch {
+            runCatching {
+                battleHistory = repository.listBattles()
+            }
+        }
+    }
+
+    fun resumeBattlePollingIfNeeded() {
+        val challengeId = activeBattleChallengeId ?: return
+        val message = battleStatusMessage.orEmpty()
+        if (message.contains("waiting", ignoreCase = true)) {
+            startPollingForBattleReveal(challengeId)
+        } else if (battleInviteCode != null) {
+            startPollingForOpponentJoin(challengeId)
+        }
+    }
+
+    fun battleOutcomeHeadline(battle: BattleRecord): String {
+        return BattleOutcomeText.headline(
+            battle = battle,
+            currentUserId = cloudAccountUiState.value.signedInUserId,
+        )
+    }
+
+    private fun resetActiveBattlePresentation() {
+        battlePollJob?.cancel()
+        battleStatusMessage = null
+        latestBattle = null
+        battleInviteCode = null
+        activeBattleChallengeId = null
+    }
+
+    private fun applyCompletedBattle(battle: BattleRecord) {
+        latestBattle = battle
+        battleStatusMessage = battleOutcomeHeadline(battle)
+        battleInviteCode = null
+        activeBattleChallengeId = null
+    }
+
+    private fun startPollingForBattleReveal(challengeId: String) {
+        val repository = battleRepository ?: return
+        battlePollJob?.cancel()
+        battlePollJob = viewModelScope.launch {
+            repeat(45) {
+                delay(2_000)
+                val challenge = runCatching { repository.getChallenge(challengeId) }.getOrNull() ?: return@repeat
+                if (challenge.status == "complete") {
+                    val battleId = challenge.battleId ?: return@launch
+                    repeat(5) {
+                        val battle = runCatching { repository.getBattle(battleId) }.getOrNull()
+                        if (battle != null) {
+                            applyCompletedBattle(battle)
+                            refreshBattleHistory()
+                            return@launch
+                        }
+                        delay(1_000)
+                    }
+                    return@launch
+                }
+            }
+        }
+    }
+
+    private fun startPollingForOpponentJoin(challengeId: String) {
+        val repository = battleRepository ?: return
+        battlePollJob?.cancel()
+        battlePollJob = viewModelScope.launch {
+            repeat(45) {
+                delay(2_000)
+                val challenge = runCatching { repository.getChallenge(challengeId) }.getOrNull() ?: return@repeat
+                if (challenge.opponentId != null) {
+                    battleStatusMessage = "Opponent joined — lock in your fighter!"
+                    return@launch
+                }
+                if (challenge.status != "pending") return@launch
+            }
+        }
+    }
+
+    private fun fighterCloudId(fighter: CompletedCreature): String {
+        return fighter.id.takeIf { it > 0 }?.toString()
+            ?: error("Save your game before battling so fighters have stable IDs")
     }
 
     private fun currentSnapshot(): GameSnapshot {

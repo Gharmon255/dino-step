@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
             garminCompanionPublisher = app.garminCompanionPublisher,
             stageMilestoneNotifier = app.stageMilestoneNotifier,
             cloudSaveSyncEngine = app.cloudSaveSyncEngine,
+            battleRepository = app.battleRepository,
         )
 
         setContent {
