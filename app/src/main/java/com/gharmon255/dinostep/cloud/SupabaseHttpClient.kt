@@ -119,7 +119,7 @@ class SupabaseHttpClient(
             val response = client.newCall(builder.build()).execute()
             val responseBody = response.body?.string().orEmpty()
             if (!response.isSuccessful) {
-                throw IOException("Supabase request failed: ${response.code} $responseBody")
+                throw SupabaseHttpException(response.code, responseBody)
             }
             JSONObject(responseBody)
         }

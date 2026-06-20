@@ -59,6 +59,8 @@ class GameViewModel(
     private val testingEggFactory = TestingEggFactory(repository)
     private var battlePollJob: Job? = null
     private var lastAutomaticHealthSyncAttemptMillis: Long? = null
+    private var lastHomeVisibleHealthSyncAttemptMillis: Long? = null
+    private var pendingManualHealthSync = false
     var isReady by mutableStateOf(false)
         private set
 
@@ -220,6 +222,7 @@ class GameViewModel(
         if (!isReady) {
             return
         }
+        cloudSaveSyncEngine.refreshSignedInState()
         syncHealthSteps(manual = false)
         republishWearStateOnForeground()
     }
@@ -356,8 +359,27 @@ class GameViewModel(
         applyStepsToCreature(amount, countAsFake = true)
     }
 
-    fun syncHealthSteps(manual: Boolean = false) {
+    fun onHomeScreenVisible() {
         if (!isReady || isSyncing) {
+            return
+        }
+        val now = System.currentTimeMillis()
+        val lastAttempt = lastHomeVisibleHealthSyncAttemptMillis
+        if (lastAttempt != null && now - lastAttempt < HOME_VISIBLE_SYNC_DEBOUNCE_MILLIS) {
+            return
+        }
+        lastHomeVisibleHealthSyncAttemptMillis = now
+        syncHealthSteps(manual = false)
+    }
+
+    fun syncHealthSteps(manual: Boolean = false) {
+        if (!isReady) {
+            return
+        }
+        if (isSyncing) {
+            if (manual) {
+                pendingManualHealthSync = true
+            }
             return
         }
 
@@ -372,32 +394,52 @@ class GameViewModel(
 
         viewModelScope.launch {
             isSyncing = true
-            syncStatusMessage = null
+            if (manual) {
+                syncStatusMessage = null
+            }
 
             val previousCreature = activeCreature
             try {
-                val outcome = healthStepSyncEngine.sync()
-                healthConnectStatus = outcome.status
-                syncStatusMessage = outcome.message
-
-                outcome.activeCreature?.let { activeCreature = it.normalized() }
-                outcome.playerStats?.let { playerStats = it }
-                outcome.collection?.let { collection = it }
-
-                if (outcome.status is HealthConnectUiStatus.Ready) {
-                    lastSyncTimeMillis = System.currentTimeMillis()
+                var outcome = healthStepSyncEngine.sync()
+                if (manual && outcome.appliedDelta == 0 && outcome.status is HealthConnectUiStatus.Ready) {
+                    delay(MANUAL_SYNC_HEALTH_CONNECT_RETRY_DELAY_MILLIS)
+                    outcome = healthStepSyncEngine.sync()
                 }
-                if (outcome.appliedDelta > 0) {
-                    stageMilestoneNotifier.notifyIfNeeded(previousCreature, activeCreature)
-                }
-                if (outcome.inactivityPenaltyApplied) {
-                    inactivityPenaltyAlert = inactivityPenaltyMessage()
-                }
-                maybeCelebrateDiscovery(previousCreature, activeCreature)
+                applyHealthSyncOutcome(outcome, previousCreature, manual)
             } finally {
                 isSyncing = false
+                if (pendingManualHealthSync) {
+                    pendingManualHealthSync = false
+                    syncHealthSteps(manual = true)
+                }
             }
         }
+    }
+
+    private fun applyHealthSyncOutcome(
+        outcome: com.gharmon255.dinostep.health.HealthStepSyncOutcome,
+        previousCreature: ActiveCreatureState,
+        manual: Boolean,
+    ) {
+        healthConnectStatus = outcome.status
+        syncStatusMessage = outcome.message
+
+        outcome.activeCreature?.let { activeCreature = it.normalized() }
+        outcome.playerStats?.let { playerStats = it }
+        outcome.collection?.let { collection = it }
+
+        if (outcome.appliedDelta > 0 && outcome.status is HealthConnectUiStatus.Ready) {
+            lastSyncTimeMillis = System.currentTimeMillis()
+        } else if (manual && outcome.appliedDelta == 0) {
+            syncStatusMessage = outcome.message
+        }
+        if (outcome.appliedDelta > 0) {
+            stageMilestoneNotifier.notifyIfNeeded(previousCreature, activeCreature)
+        }
+        if (outcome.inactivityPenaltyApplied) {
+            inactivityPenaltyAlert = inactivityPenaltyMessage()
+        }
+        maybeCelebrateDiscovery(previousCreature, activeCreature)
     }
 
     fun claimReward() {
@@ -930,5 +972,7 @@ class GameViewModel(
 
     companion object {
         private const val AUTOMATIC_SYNC_DEBOUNCE_MILLIS = 120_000L
+        private const val HOME_VISIBLE_SYNC_DEBOUNCE_MILLIS = 15_000L
+        private const val MANUAL_SYNC_HEALTH_CONNECT_RETRY_DELAY_MILLIS = 2_000L
     }
 }

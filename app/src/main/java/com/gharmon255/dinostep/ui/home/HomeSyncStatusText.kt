@@ -8,7 +8,6 @@ internal object HomeSyncStatusText {
     fun format(
         isSyncing: Boolean,
         lastSyncTimeMillis: Long?,
-        syncStatusMessage: String?,
     ): String {
         if (isSyncing) {
             return "Syncing steps…"
@@ -27,6 +26,6 @@ internal object HomeSyncStatusText {
                 }
             }
         }
-        return syncStatusMessage ?: "Steps sync automatically in the background"
+        return "Tap Sync again to pull the latest steps from Health Connect"
     }
 }

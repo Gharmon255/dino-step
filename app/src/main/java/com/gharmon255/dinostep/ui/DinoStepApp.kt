@@ -26,20 +26,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.cloud.SupabaseConfig
+import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.health.HealthConnectUiStatus
+import com.gharmon255.dinostep.ui.battle.BattleIntroDialog
 import com.gharmon255.dinostep.ui.battle.BattleScreen
 import com.gharmon255.dinostep.ui.collection.CollectionScreen
 import com.gharmon255.dinostep.ui.eggs.EggsScreen
+import com.gharmon255.dinostep.ui.help.HelpScreen
 import com.gharmon255.dinostep.ui.home.HomeScreen
 import com.gharmon255.dinostep.ui.navigation.AppTab
 import com.gharmon255.dinostep.ui.onboarding.OnboardingScreen
@@ -55,7 +60,18 @@ fun DinoStepApp(
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(AppTab.Home) }
+    var showBattleIntro by rememberSaveable { mutableStateOf(false) }
+    var showHelp by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val experiencePreferences = remember { AppExperiencePreferences(context) }
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    fun onTabSelected(tab: AppTab) {
+        selectedTab = tab
+        if (tab == AppTab.Battle && !experiencePreferences.hasDismissedBattleIntroPermanently()) {
+            showBattleIntro = true
+        }
+    }
 
     DisposableEffect(lifecycleOwner, viewModel.isReady) {
         val observer = LifecycleEventObserver { _, event ->
@@ -102,7 +118,7 @@ fun DinoStepApp(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         BottomNavBar(
                             selectedTab = selectedTab,
-                            onTabSelected = { selectedTab = it },
+                            onTabSelected = { onTabSelected(it) },
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Spacer(
@@ -144,10 +160,33 @@ fun DinoStepApp(
                     viewModel = viewModel,
                     onRequestHealthPermission = onRequestHealthPermission,
                     onGoogleSignIn = onGoogleSignIn,
+                    onOpenHelp = { showHelp = true },
                     supabaseConfig = supabaseConfig,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
+                )
+            }
+        }
+
+        if (showBattleIntro) {
+            BattleIntroDialog(
+                onDismiss = { showBattleIntro = false },
+                onDontShowAgain = {
+                    experiencePreferences.setBattleIntroDismissedPermanently()
+                    showBattleIntro = false
+                },
+            )
+        }
+
+        if (showHelp) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background,
+            ) {
+                HelpScreen(
+                    onBack = { showHelp = false },
+                    includeEggsTab = true,
                 )
             }
         }

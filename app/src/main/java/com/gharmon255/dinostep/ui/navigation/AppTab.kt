@@ -7,6 +7,6 @@ enum class AppTab(
     Home("Home", "Home"),
     Eggs("Eggs", "Eggs"),
     Collection("Collection", "Collection"),
-    Battle("Battle", "Battle"),
+    Battle("Battle", "Battle Arena"),
     Stats("Stats", "Stats"),
 }

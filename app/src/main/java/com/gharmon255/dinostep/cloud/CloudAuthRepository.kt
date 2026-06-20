@@ -1,12 +1,15 @@
 package com.gharmon255.dinostep.cloud
 
+import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
+import java.io.IOException
 
 class CloudAuthRepository(
     private val config: SupabaseConfig,
     private val httpClient: SupabaseHttpClient,
     private val sessionStore: CloudSessionStore,
+    private val appContext: Context,
 ) {
     val isConfigured: Boolean
         get() = config.isConfigured
@@ -25,10 +28,26 @@ class CloudAuthRepository(
             val refreshed = httpClient.refreshSession(existing.refreshToken)
             sessionStore.saveSession(refreshed)
             refreshed
+        } catch (error: SupabaseHttpException) {
+            if (error.isInvalidRefreshToken) {
+                sessionStore.clear()
+                null
+            } else {
+                existing
+            }
+        } catch (_: IOException) {
+            existing
         } catch (_: Exception) {
-            sessionStore.clear()
-            null
+            existing
         }
+    }
+
+    suspend fun trySilentGoogleSignIn(): CloudSession? {
+        if (!config.isConfigured || config.googleWebClientId.isBlank()) {
+            return null
+        }
+        val idToken = GoogleSignInHelper.silentIdToken(appContext, config.googleWebClientId) ?: return null
+        return runCatching { signInWithGoogleIdToken(idToken) }.getOrNull()
     }
 
     fun signOut() {

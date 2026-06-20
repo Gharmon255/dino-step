@@ -32,6 +32,15 @@ class AppExperiencePreferences(context: Context) {
             .apply()
     }
 
+    fun hasDismissedBattleIntroPermanently(): Boolean =
+        prefs.getBoolean(KEY_BATTLE_INTRO_DISMISSED, false)
+
+    fun setBattleIntroDismissedPermanently() {
+        prefs.edit()
+            .putBoolean(KEY_BATTLE_INTRO_DISMISSED, true)
+            .apply()
+    }
+
     companion object {
         const val CURRENT_WHATS_NEW_VERSION = 1
 
@@ -39,5 +48,6 @@ class AppExperiencePreferences(context: Context) {
         private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
         private const val KEY_WHATS_NEW_VERSION = "whats_new_version"
         private const val KEY_LAST_ACTIVITY_EVAL_DAY = "last_activity_eval_day"
+        private const val KEY_BATTLE_INTRO_DISMISSED = "battle_intro_dismissed"
     }
 }

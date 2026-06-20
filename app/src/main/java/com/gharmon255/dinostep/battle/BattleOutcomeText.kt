@@ -19,4 +19,13 @@ object BattleOutcomeText {
         "b" -> "Opponent wins"
         else -> "Draw!"
     }
+
+    fun sideForUser(userId: String?, battle: BattleRecord): String? {
+        if (userId == null) return null
+        return when (userId) {
+            battle.playerAUserId -> "a"
+            battle.playerBUserId -> "b"
+            else -> null
+        }
+    }
 }

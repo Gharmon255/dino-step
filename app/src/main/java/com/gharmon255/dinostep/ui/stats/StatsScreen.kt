@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,6 +38,7 @@ fun StatsScreen(
     viewModel: GameViewModel,
     onRequestHealthPermission: () -> Unit,
     onGoogleSignIn: () -> Unit,
+    onOpenHelp: () -> Unit,
     supabaseConfig: SupabaseConfig = SupabaseConfig.fromBuildConfig(),
     modifier: Modifier = Modifier,
 ) {
@@ -75,6 +77,29 @@ fun StatsScreen(
         )
 
         PrivacyPolicyLink(modifier = Modifier.fillMaxWidth())
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = "Help & tips",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = "Learn how steps, eggs, collection, battles, and backup work.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Button(onClick = onOpenHelp, modifier = Modifier.fillMaxWidth()) {
+                    Text("Open help guide")
+                }
+            }
+        }
 
         AccountBackupCard(
             cloudState = cloudState,

@@ -31,7 +31,7 @@ class CloudSaveSyncEngine(
             return
         }
         scope.launch {
-            val session = authRepository.restoreSession() ?: run {
+            val session = resolveSession() ?: run {
                 updateSignedInState(null)
                 return@launch
             }
@@ -67,6 +67,19 @@ class CloudSaveSyncEngine(
                 lastError = error.message ?: "Sign-in failed",
             )
         }
+    }
+
+    fun refreshSignedInState() {
+        if (!config.isConfigured) {
+            return
+        }
+        scope.launch {
+            updateSignedInState(resolveSession())
+        }
+    }
+
+    private suspend fun resolveSession(): CloudSession? {
+        return authRepository.restoreSession() ?: authRepository.trySilentGoogleSignIn()
     }
 
     fun signOut() {

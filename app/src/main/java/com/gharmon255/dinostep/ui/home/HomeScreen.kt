@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,10 +60,20 @@ fun HomeScreen(
     onRequestHealthPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val active = viewModel.activeCreatureState
+    LaunchedEffect(Unit) {
+        viewModel.onHomeScreenVisible()
+    }
+
+    val activeCreature = viewModel.activeCreature
+    val collection = viewModel.collection
+    val healthConnectStatus = viewModel.healthConnectStatus
+    val isSyncing = viewModel.isSyncing
+    val syncStatusMessage = viewModel.syncStatusMessage
+    val lastSyncTimeMillis = viewModel.lastSyncTimeMillis
+
     HomeScreenContent(
-        activeCreature = active,
-        collection = viewModel.collection,
+        activeCreature = activeCreature,
+        collection = collection,
         dexDiscovered = viewModel.dexDiscovered,
         dexTotal = viewModel.dexTotal,
         pendingDiscovery = viewModel.pendingDiscovery,
@@ -72,11 +83,11 @@ fun HomeScreen(
         stage = viewModel.stage,
         nextMilestone = viewModel.nextMilestone,
         isAdult = viewModel.isAdult,
-        healthConnectStatus = viewModel.healthConnectStatus,
+        healthConnectStatus = healthConnectStatus,
         lastSyncedStepTotal = viewModel.lastSyncedStepTotal,
-        syncStatusMessage = viewModel.syncStatusMessage,
-        lastSyncTimeMillis = viewModel.lastSyncTimeMillis,
-        isSyncing = viewModel.isSyncing,
+        syncStatusMessage = syncStatusMessage,
+        lastSyncTimeMillis = lastSyncTimeMillis,
+        isSyncing = isSyncing,
         onAddSteps = viewModel::addSteps,
         onSyncSteps = { viewModel.syncHealthSteps(manual = true) },
         onRequestHealthPermission = onRequestHealthPermission,
@@ -232,13 +243,21 @@ private fun HomeScreenContent(
                     text = HomeSyncStatusText.format(
                         isSyncing = isSyncing,
                         lastSyncTimeMillis = lastSyncTimeMillis,
-                        syncStatusMessage = syncStatusMessage,
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                syncStatusMessage?.let { message ->
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 TextButton(
                     onClick = onSyncSteps,
                     enabled = canSync,

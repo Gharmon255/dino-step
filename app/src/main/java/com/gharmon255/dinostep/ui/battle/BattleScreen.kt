@@ -1,22 +1,18 @@
 package com.gharmon255.dinostep.ui.battle
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,14 +23,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gharmon255.dinostep.battle.BattlePowerCalculator
-import com.gharmon255.dinostep.battle.BattleRecord
-import com.gharmon255.dinostep.battle.BattleTurn
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.model.CompletedCreature
-import com.gharmon255.dinostep.model.CreatureCatalog
 
 @Composable
 fun BattleScreen(
@@ -48,139 +42,126 @@ fun BattleScreen(
         viewModel.resumeBattlePollingIfNeeded()
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        if (!cloudState.isConfigured) {
-            Text("Cloud backup is not configured on this build.")
-            return@Column
-        }
+    Box(modifier = modifier.fillMaxSize()) {
+        BattleArenaBackground()
 
-        if (cloudState.syncStatus.name == "SignedOut") {
-            Text("Sign in from Stats to battle other players.")
-            return@Column
-        }
-
-        viewModel.battleInviteCode?.let { code ->
-            Text(
-                text = "Battle code: $code",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = "Share this 5-letter code with your opponent (new code each Challenge).",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        if (viewModel.isBattleLoading) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
-        viewModel.battleStatusMessage?.let { message ->
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        }
-
-        Text(
-            text = "Choose your fighter",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-        )
-
-        if (viewModel.collection.isEmpty()) {
-            Text("Claim an adult dinosaur to unlock battles.")
-        } else {
-            LazyColumn(
-                modifier = Modifier.weight(1f, fill = false),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(viewModel.collection, key = { it.id }) { fighter ->
-                    FighterPickCard(
-                        fighter = fighter,
-                        collection = viewModel.collection,
-                        selected = viewModel.selectedBattleFighter?.id == fighter.id,
-                        onSelect = { viewModel.selectBattleFighter(fighter) },
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            when {
+                !cloudState.isConfigured -> BattleSignInPrompt()
+                cloudState.syncStatus.name == "SignedOut" -> BattleSignInPrompt()
+                else -> {
+                    SignedInBattleContent(
+                        viewModel = viewModel,
+                        cloudState = cloudState,
+                        inviteCodeInput = inviteCodeInput,
+                        onInviteCodeChange = { inviteCodeInput = it },
                     )
                 }
             }
         }
+    }
+}
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Button(
-                onClick = { viewModel.findQuickMatch() },
-                enabled = viewModel.selectedBattleFighter != null && !viewModel.isBattleLoading,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text("Quick match")
-            }
-            Button(
-                onClick = { viewModel.createFriendChallenge() },
-                enabled = !viewModel.isBattleLoading,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text("Challenge")
-            }
-        }
-
-        OutlinedTextField(
-            value = inviteCodeInput,
-            onValueChange = { inviteCodeInput = it.uppercase().filter { ch -> ch.isLetterOrDigit() }.take(5) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Opponent's 5-letter battle code") },
-            singleLine = true,
+@Composable
+private fun SignedInBattleContent(
+    viewModel: GameViewModel,
+    cloudState: com.gharmon255.dinostep.cloud.CloudAccountUiState,
+    inviteCodeInput: String,
+    onInviteCodeChange: (String) -> Unit,
+) {
+    viewModel.latestBattle?.let { battle ->
+        BattleRevealCard(
+            battle = battle,
+            headline = viewModel.battleOutcomeHeadline(battle),
+            currentUserId = cloudState.signedInUserId,
         )
-        Button(
-            onClick = { viewModel.acceptFriendChallenge(inviteCodeInput) },
-            enabled = inviteCodeInput.length == 5 && viewModel.selectedBattleFighter != null && !viewModel.isBattleLoading,
-            modifier = Modifier.fillMaxWidth(),
+    }
+
+    if (viewModel.isBattleLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Text("Accept & blind pick")
+            CircularProgressIndicator(color = Color.White)
         }
+    }
 
-        viewModel.activeBattleChallengeId?.let { challengeId ->
-            Button(
-                onClick = { viewModel.submitBattlePick(challengeId) },
-                enabled = viewModel.selectedBattleFighter != null && !viewModel.isBattleLoading,
+    viewModel.battleStatusMessage?.let { message ->
+        BattleStatusBanner(message = message)
+    }
+
+    viewModel.battleInviteCode?.let { code ->
+        BattleCodeBanner(code = code)
+    }
+
+    ActionSection(viewModel = viewModel)
+    JoinSection(
+        inviteCodeInput = inviteCodeInput,
+        onInviteCodeChange = onInviteCodeChange,
+        viewModel = viewModel,
+    )
+
+    viewModel.activeBattleChallengeId?.let { challengeId ->
+        BattleActionButton(
+            title = "Lock in fighter",
+            emoji = "🛡️",
+            style = BattleActionStyle.Accent,
+            enabled = viewModel.selectedBattleFighter != null && !viewModel.isBattleLoading,
+            onClick = { viewModel.submitBattlePick(challengeId) },
+        )
+    }
+
+    FighterSection(viewModel = viewModel)
+
+    if (viewModel.battleHistory.isNotEmpty()) {
+        HistorySection(viewModel = viewModel)
+    }
+}
+
+@Composable
+private fun FighterSection(viewModel: GameViewModel) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        BattleSectionHeader(
+            title = "Choose your champion",
+            subtitle = "Adults only · picks stay hidden in friend battles",
+        )
+
+        if (viewModel.collection.isEmpty()) {
+            Card(
                 modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
             ) {
-                Text("Lock in fighter (hidden until reveal)")
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Text(text = "🐢", style = MaterialTheme.typography.displaySmall)
+                    Text(
+                        text = "Hatch and claim an adult dinosaur to unlock battles.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                    )
+                }
             }
-        }
-
-        viewModel.latestBattle?.let { battle ->
-            Spacer(modifier = Modifier.height(8.dp))
-            BattleResultCard(
-                battle = battle,
-                headline = viewModel.battleOutcomeHeadline(battle),
-            )
-        }
-
-        if (viewModel.battleHistory.isNotEmpty()) {
-            Text(
-                text = "Recent battles",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-            )
-            viewModel.battleHistory.take(5).forEach { battle ->
-                BattleHistoryRow(
-                    battle = battle,
-                    headline = viewModel.battleOutcomeHeadline(battle),
+        } else {
+            sortedFighters(viewModel).forEach { fighter ->
+                BattleFighterCard(
+                    fighter = fighter,
+                    collection = viewModel.collection,
+                    selected = viewModel.selectedBattleFighter?.id == fighter.id,
+                    onSelect = { viewModel.selectBattleFighter(fighter) },
                 )
             }
         }
@@ -188,82 +169,77 @@ fun BattleScreen(
 }
 
 @Composable
-private fun FighterPickCard(
-    fighter: CompletedCreature,
-    collection: List<CompletedCreature>,
-    selected: Boolean,
-    onSelect: () -> Unit,
+private fun ActionSection(viewModel: GameViewModel) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        BattleSectionHeader(title = "Battle modes")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            BattleActionButton(
+                title = "Quick match",
+                emoji = "⚡",
+                style = BattleActionStyle.Primary,
+                enabled = viewModel.selectedBattleFighter != null && !viewModel.isBattleLoading,
+                onClick = { viewModel.findQuickMatch() },
+                modifier = Modifier.weight(1f),
+            )
+            BattleActionButton(
+                title = "Challenge",
+                emoji = "🏁",
+                style = BattleActionStyle.Secondary,
+                enabled = !viewModel.isBattleLoading,
+                onClick = { viewModel.createFriendChallenge() },
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun JoinSection(
+    inviteCodeInput: String,
+    onInviteCodeChange: (String) -> Unit,
+    viewModel: GameViewModel,
 ) {
-    val power = BattlePowerCalculator.compute(fighter, collection)
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onSelect),
-        colors = CardDefaults.cardColors(
-            containerColor = if (selected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceContainerHighest
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        BattleSectionHeader(
+            title = "Join a friend",
+            subtitle = "Enter the host's 5-letter code",
+        )
+        BattleJoinCodeField(
+            value = inviteCodeInput,
+            onValueChange = { raw ->
+                onInviteCodeChange(raw.uppercase().filter { it.isLetterOrDigit() }.take(5))
             },
-        ),
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = fighter.displayName,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
-            Text(
-                text = "Power ${power.combatPower} · EX ${power.exLevel} · Pack ×${power.packCount}",
-                style = MaterialTheme.typography.bodySmall,
+        )
+        BattleActionButton(
+            title = "Accept & blind pick",
+            emoji = "🙈",
+            style = BattleActionStyle.Accent,
+            enabled = inviteCodeInput.length == 5 &&
+                viewModel.selectedBattleFighter != null &&
+                !viewModel.isBattleLoading,
+            onClick = { viewModel.acceptFriendChallenge(inviteCodeInput) },
+        )
+    }
+}
+
+@Composable
+private fun HistorySection(viewModel: GameViewModel) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        BattleSectionHeader(title = "Recent battles")
+        viewModel.battleHistory.take(5).forEach { battle ->
+            BattleHistoryRowStyled(
+                battle = battle,
+                headline = viewModel.battleOutcomeHeadline(battle),
             )
         }
     }
 }
 
-@Composable
-private fun BattleResultCard(
-    battle: BattleRecord,
-    headline: String,
-) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = headline,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = "${displayName(battle.playerASpeciesId)} (${battle.playerAPower}) vs ${displayName(battle.playerBSpeciesId)} (${battle.playerBPower})",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            battle.turnLog.forEach { turn ->
-                BattleTurnLine(turn = turn)
-            }
-        }
+private fun sortedFighters(viewModel: GameViewModel): List<CompletedCreature> {
+    return viewModel.collection.sortedByDescending { fighter ->
+        BattlePowerCalculator.compute(fighter, viewModel.collection).combatPower
     }
-}
-
-@Composable
-private fun BattleHistoryRow(
-    battle: BattleRecord,
-    headline: String,
-) {
-    Text(
-        text = "${displayName(battle.playerASpeciesId)} vs ${displayName(battle.playerBSpeciesId)} — $headline",
-        style = MaterialTheme.typography.bodySmall,
-    )
-}
-
-@Composable
-private fun BattleTurnLine(turn: BattleTurn) {
-    Text(
-        text = turn.message.ifBlank { "Turn ${turn.turn}: ${turn.action} -${turn.damage}" },
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-private fun displayName(speciesId: String): String {
-    return CreatureCatalog.byId(speciesId)?.name ?: speciesId
 }

@@ -49,6 +49,7 @@ class DinoStepApplication : Application() {
             config = supabaseConfig,
             httpClient = supabaseHttpClient,
             sessionStore = cloudSessionStore,
+            appContext = this,
         )
     }
 
