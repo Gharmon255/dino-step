@@ -87,6 +87,7 @@ fun PlayerStatsEntity.toDomain(): PlayerStats {
         lastSyncedStepTotal = lastSyncedStepTotal,
         lastSyncDayStartMillis = lastSyncDayStartMillis,
         lifetimeStepsApplied = lifetimeStepsApplied,
+        pendingRewardEggRarity = pendingRewardEggRarity,
     )
 }
 
@@ -98,6 +99,7 @@ fun PlayerStats.toEntity(): PlayerStatsEntity {
         lastSyncedStepTotal = lastSyncedStepTotal,
         lastSyncDayStartMillis = lastSyncDayStartMillis,
         lifetimeStepsApplied = lifetimeStepsApplied,
+        pendingRewardEggRarity = pendingRewardEggRarity,
     )
 }
 

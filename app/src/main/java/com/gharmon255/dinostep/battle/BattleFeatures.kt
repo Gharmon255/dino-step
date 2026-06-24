@@ -1,5 +1,6 @@
 package com.gharmon255.dinostep.battle
 
 object BattleFeatures {
-    const val enabled = true
+    /** Android battles ship after Google Play test-user setup is easier to manage. */
+    const val enabled = false
 }

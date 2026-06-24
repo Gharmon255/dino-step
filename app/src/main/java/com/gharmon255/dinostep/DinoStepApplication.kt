@@ -20,6 +20,7 @@ import com.gharmon255.dinostep.garmin.GarminConnectIQManager
 import com.gharmon255.dinostep.garmin.GarminSdkCompanionPublisher
 import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
+import com.gharmon255.dinostep.promo.PromoRepository
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
 
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +51,14 @@ class DinoStepApplication : Application() {
             httpClient = supabaseHttpClient,
             sessionStore = cloudSessionStore,
             appContext = this,
+        )
+    }
+
+    val promoRepository: PromoRepository by lazy {
+        PromoRepository(
+            config = supabaseConfig,
+            httpClient = supabaseHttpClient,
+            authRepository = cloudAuthRepository,
         )
     }
 

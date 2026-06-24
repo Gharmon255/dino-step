@@ -100,6 +100,35 @@ fun BattleSectionHeader(
 }
 
 @Composable
+fun BattleComingSoonBanner(modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(text = "⚔️", fontSize = 40.sp)
+            Text(
+                text = "Battles coming soon",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = "PvP battles are live on iPhone for now. Browse your champions below — Android battles are on the way.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
 fun BattleSignInPrompt(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -211,6 +240,7 @@ fun BattleFighterCard(
     selected: Boolean,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier,
+    selectable: Boolean = true,
 ) {
     val power = BattlePowerCalculator.compute(fighter, collection)
     val rarityColor = rarityColors(fighter.creature.rarity)
@@ -225,7 +255,13 @@ fun BattleFighterCard(
                 color = if (selected) Color(0xFFFFD54F) else rarityColor.border.copy(alpha = 0.35f),
                 shape = RoundedCornerShape(16.dp),
             )
-            .clickable(onClick = onSelect)
+            .then(
+                if (selectable) {
+                    Modifier.clickable(onClick = onSelect)
+                } else {
+                    Modifier
+                },
+            )
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),

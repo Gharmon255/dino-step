@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gharmon255.dinostep.battle.BattleOutcomeText
 import com.gharmon255.dinostep.battle.BattleRecord
+import com.gharmon255.dinostep.battle.BattleFeatures
 import com.gharmon255.dinostep.battle.BattleRepository
 import com.gharmon255.dinostep.cloud.CloudAccountUiState
 import com.gharmon255.dinostep.cloud.CloudSaveSyncEngine
@@ -32,6 +33,8 @@ import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
+import com.gharmon255.dinostep.promo.PromoCodes
+import com.gharmon255.dinostep.promo.PromoRepository
 import com.gharmon255.dinostep.ui.collection.CollectionRoster
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
@@ -55,6 +58,7 @@ class GameViewModel(
     private val stageMilestoneNotifier: StageMilestoneNotifier,
     private val cloudSaveSyncEngine: CloudSaveSyncEngine,
     private val battleRepository: BattleRepository? = null,
+    private val promoRepository: PromoRepository? = null,
 ) : ViewModel() {
     private val testingEggFactory = TestingEggFactory(repository)
     private var battlePollJob: Job? = null
@@ -128,6 +132,18 @@ class GameViewModel(
 
     var battleStatusMessage by mutableStateOf<String?>(null)
         private set
+
+    var promoStatusMessage by mutableStateOf<String?>(null)
+        private set
+
+    var isPromoLoading by mutableStateOf(false)
+        private set
+
+    var epic20PromoRedeemed by mutableStateOf(false)
+        private set
+
+    val hasPendingEpicRewardEgg: Boolean
+        get() = playerStats.pendingRewardEggRarity?.let { EggRarity.fromRaw(it) == EggRarity.EPIC } == true
 
     fun clearPendingDiscovery() {
         pendingDiscovery = null
@@ -463,10 +479,10 @@ class GameViewModel(
         )
 
         collection = collection + completed
+        val rewardRoll = consumePendingRewardRoll()
         playerStats = playerStats.copy(
             creaturesCompleted = playerStats.creaturesCompleted + 1,
         )
-        val rewardRoll = EggRewardRoller.rollWeighted()
         activeCreature = repository.createRandomEggWithRarity(
             eggRarity = rewardRoll.eggRarity,
             excludeSpeciesIds = setOf(completedSpeciesId),
@@ -712,11 +728,62 @@ class GameViewModel(
         return cloudSaveSyncEngine.exportLocalJson(currentSnapshot())
     }
 
+    fun refreshEpic20PromoStatus() {
+        val repo = promoRepository ?: return
+        if (cloudSaveSyncEngine.uiState.value.signedInUserId == null) {
+            epic20PromoRedeemed = false
+            return
+        }
+        viewModelScope.launch {
+            runCatching {
+                repo.status(PromoCodes.EPIC20).redeemed
+            }.onSuccess { redeemed ->
+                epic20PromoRedeemed = redeemed
+            }
+        }
+    }
+
+    fun redeemPromoCode(code: String) {
+        val repo = promoRepository ?: return
+        if (!isReady || isPromoLoading) return
+        viewModelScope.launch {
+            isPromoLoading = true
+            promoStatusMessage = null
+            try {
+                val result = repo.redeemCode(code)
+                playerStats = playerStats.copy(
+                    pendingRewardEggRarity = result.pendingRewardEggRarity.name,
+                )
+                if (code.trim().equals(PromoCodes.EPIC20, ignoreCase = true)) {
+                    epic20PromoRedeemed = true
+                }
+                promoStatusMessage = result.message
+                repository.savePlayerStats(playerStats)
+                cloudSaveSyncEngine.schedulePush(currentSnapshot())
+            } catch (error: Exception) {
+                promoStatusMessage = error.message ?: "Could not redeem code"
+            } finally {
+                isPromoLoading = false
+            }
+        }
+    }
+
+    private fun consumePendingRewardRoll(): EggRewardRoller.RollResult {
+        val pending = playerStats.pendingRewardEggRarity?.let { EggRarity.fromRaw(it) }
+        if (pending != null) {
+            playerStats = playerStats.copy(pendingRewardEggRarity = null)
+            return EggRewardRoller.RollResult(eggRarity = pending, rollValue = -1)
+        }
+        return EggRewardRoller.rollWeighted()
+    }
+
     fun selectBattleFighter(fighter: CompletedCreature) {
+        if (!BattleFeatures.enabled) return
         selectedBattleFighter = fighter
     }
 
     fun findQuickMatch() {
+        if (!BattleFeatures.enabled) return
         val fighter = selectedBattleFighter ?: return
         val repository = battleRepository ?: return
         viewModelScope.launch {
@@ -737,6 +804,7 @@ class GameViewModel(
     }
 
     fun createFriendChallenge() {
+        if (!BattleFeatures.enabled) return
         val repository = battleRepository ?: return
         viewModelScope.launch {
             isBattleLoading = true
@@ -759,6 +827,7 @@ class GameViewModel(
     }
 
     fun acceptFriendChallenge(inviteCode: String) {
+        if (!BattleFeatures.enabled) return
         val trimmed = inviteCode.trim()
         if (trimmed.isBlank()) {
             battleStatusMessage = "Enter your friend's invite code first."
@@ -792,6 +861,7 @@ class GameViewModel(
     }
 
     fun submitBattlePick(challengeId: String) {
+        if (!BattleFeatures.enabled) return
         val fighter = selectedBattleFighter ?: return
         submitBattlePick(challengeId, fighter)
     }
@@ -822,6 +892,7 @@ class GameViewModel(
     }
 
     fun refreshBattleHistory() {
+        if (!BattleFeatures.enabled) return
         val repository = battleRepository ?: return
         viewModelScope.launch {
             runCatching {
@@ -831,6 +902,7 @@ class GameViewModel(
     }
 
     fun resumeBattlePollingIfNeeded() {
+        if (!BattleFeatures.enabled) return
         val challengeId = activeBattleChallengeId ?: return
         val message = battleStatusMessage.orEmpty()
         if (message.contains("waiting", ignoreCase = true)) {

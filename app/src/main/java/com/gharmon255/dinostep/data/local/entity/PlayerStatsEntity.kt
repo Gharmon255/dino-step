@@ -12,6 +12,7 @@ data class PlayerStatsEntity(
     val lastSyncedStepTotal: Int = 0,
     val lastSyncDayStartMillis: Long = 0L,
     val lifetimeStepsApplied: Int = 0,
+    val pendingRewardEggRarity: String? = null,
 ) {
     companion object {
         const val STATS_ROW_ID = 1

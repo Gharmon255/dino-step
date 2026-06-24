@@ -20,6 +20,7 @@ object CloudSaveJson {
             put("playerStats", encodeStats(save.playerStats))
             save.lastRewardedEggRarity?.let { put("lastRewardedEggRarity", it) }
             save.lastRewardRollPercent?.let { put("lastRewardRollPercent", it) }
+            save.pendingRewardEggRarity?.let { put("pendingRewardEggRarity", it) }
         }
     }
 
@@ -43,6 +44,7 @@ object CloudSaveJson {
             } else {
                 null
             },
+            pendingRewardEggRarity = json.optString("pendingRewardEggRarity").takeIf { it.isNotBlank() },
         )
     }
 

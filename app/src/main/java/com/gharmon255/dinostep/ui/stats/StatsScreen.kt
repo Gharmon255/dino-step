@@ -109,6 +109,13 @@ fun StatsScreen(
             onExportSave = viewModel::exportLocalSaveJson,
         )
 
+        if (cloudState.signedInEmail != null) {
+            PromoCodeCard(
+                viewModel = viewModel,
+                isSignedIn = true,
+            )
+        }
+
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier

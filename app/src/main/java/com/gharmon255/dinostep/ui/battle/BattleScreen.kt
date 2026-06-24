@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.gharmon255.dinostep.battle.BattleFeatures
 import com.gharmon255.dinostep.battle.BattlePowerCalculator
 import com.gharmon255.dinostep.game.GameViewModel
 import com.gharmon255.dinostep.model.CompletedCreature
@@ -39,7 +40,9 @@ fun BattleScreen(
     val cloudState by viewModel.cloudAccountUiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.resumeBattlePollingIfNeeded()
+        if (BattleFeatures.enabled) {
+            viewModel.resumeBattlePollingIfNeeded()
+        }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -52,7 +55,10 @@ fun BattleScreen(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            when {
+            if (!BattleFeatures.enabled) {
+                BattleComingSoonBanner()
+                FighterSection(viewModel = viewModel, battlesEnabled = false)
+            } else when {
                 !cloudState.isConfigured -> BattleSignInPrompt()
                 cloudState.syncStatus.name == "SignedOut" -> BattleSignInPrompt()
                 else -> {
@@ -127,11 +133,18 @@ private fun SignedInBattleContent(
 }
 
 @Composable
-private fun FighterSection(viewModel: GameViewModel) {
+private fun FighterSection(
+    viewModel: GameViewModel,
+    battlesEnabled: Boolean = true,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         BattleSectionHeader(
             title = "Choose your champion",
-            subtitle = "Adults only · picks stay hidden in friend battles",
+            subtitle = if (battlesEnabled) {
+                "Adults only · picks stay hidden in friend battles"
+            } else {
+                "Preview your roster · PvP battles coming soon on Android"
+            },
         )
 
         if (viewModel.collection.isEmpty()) {
@@ -160,7 +173,8 @@ private fun FighterSection(viewModel: GameViewModel) {
                 BattleFighterCard(
                     fighter = fighter,
                     collection = viewModel.collection,
-                    selected = viewModel.selectedBattleFighter?.id == fighter.id,
+                    selected = battlesEnabled && viewModel.selectedBattleFighter?.id == fighter.id,
+                    selectable = battlesEnabled,
                     onSelect = { viewModel.selectBattleFighter(fighter) },
                 )
             }

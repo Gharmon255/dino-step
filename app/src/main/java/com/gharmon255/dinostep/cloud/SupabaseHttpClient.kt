@@ -88,9 +88,15 @@ class SupabaseHttpClient(
     }
 
     suspend fun invokeBattleFunction(session: CloudSession, body: JSONObject): JSONObject =
+        invokeFunction(session, "battle", body)
+
+    suspend fun invokePromoFunction(session: CloudSession, body: JSONObject): JSONObject =
+        invokeFunction(session, "redeem-promo", body)
+
+    private suspend fun invokeFunction(session: CloudSession, functionName: String, body: JSONObject): JSONObject =
         withContext(Dispatchers.IO) {
             val request = Request.Builder()
-                .url("${config.url.trimEnd('/')}/functions/v1/battle")
+                .url("${config.url.trimEnd('/')}/functions/v1/$functionName")
                 .post(body.toString().toRequestBody(JSON_MEDIA))
                 .header("apikey", config.anonKey)
                 .header("Authorization", "Bearer ${session.accessToken}")
@@ -101,7 +107,7 @@ class SupabaseHttpClient(
                 val errorMessage = runCatching {
                     JSONObject(responseBody).optString("error", responseBody)
                 }.getOrDefault(responseBody)
-                throw IOException(errorMessage.ifBlank { "Battle request failed: ${response.code}" })
+                throw IOException(errorMessage.ifBlank { "$functionName request failed: ${response.code}" })
             }
             JSONObject(responseBody)
         }

@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
             stageMilestoneNotifier = app.stageMilestoneNotifier,
             cloudSaveSyncEngine = app.cloudSaveSyncEngine,
             battleRepository = app.battleRepository,
+            promoRepository = app.promoRepository,
         )
 
         setContent {
