@@ -61,4 +61,4 @@ Declare that the app uses Health Connect for **steps** to support fitness/game f
 
 ## Support contact
 
-`support@gharmon255.dev` (also in privacy policy)
+`stepasaurushelp@gmail.com` (also in privacy policy)

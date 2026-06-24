@@ -55,7 +55,7 @@ object HelpTopics {
                 title = "Stats & backup",
                 body = "View today's steps, lifetime steps, and dex progress. Optionally sign in to " +
                     "back up your save to the cloud or export a local copy. Grant health permissions " +
-                    "here if sync is blocked.",
+                    "here if sync is blocked. Questions or lost saves? Email stepasaurushelp@gmail.com.",
             ),
         )
         add(

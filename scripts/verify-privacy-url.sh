@@ -13,7 +13,7 @@ check_url() {
   local body
   body="$(curl -fsSL "$url")"
   local missing=0
-  for phrase in "once per hour" "Optional cloud backup" "friend battles" "support@gharmon255.dev"; do
+  for phrase in "once per hour" "Optional cloud backup" "friend battles" "stepasaurushelp@gmail.com"; do
     if ! grep -qi "$phrase" <<< "$body"; then
       echo "  MISSING: $phrase"
       missing=$((missing + 1))

@@ -190,7 +190,7 @@ Phone and Wear share **`com.gharmon255.dinostep`**. In each release:
 - [ ] **Screenshots** — phone (required), 7-inch / 10-inch tablet if targeting tablets
 - [ ] **Feature graphic** 1024×500 (optional)
 - [ ] Category, content rating questionnaire
-- [ ] Contact email / support URL
+- [ ] Contact email: **stepasaurushelp@gmail.com** / support URL
 - [ ] Privacy policy URL
 
 ---

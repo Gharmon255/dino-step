@@ -120,6 +120,10 @@ Game progress is **local-first**. Optional **Sign in with Google** backs up your
 
 Steps and raw Health Connect data are **not** uploaded — only game save JSON when the user signs in.
 
+## Support
+
+Questions, lost saves, or privacy requests: **stepasaurushelp@gmail.com**
+
 ## Repo notes
 
 - Do **not** commit `build/`, `.gradle/`, `local.properties`, or IDE noise (see `.gitignore`).
