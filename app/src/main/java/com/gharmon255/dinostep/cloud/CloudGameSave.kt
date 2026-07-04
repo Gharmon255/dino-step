@@ -10,6 +10,7 @@ data class CloudGameSave(
     val lastRewardedEggRarity: String? = null,
     val lastRewardRollPercent: Double? = null,
     val pendingRewardEggRarity: String? = null,
+    val redeemedPromoCodes: String? = null,
 ) {
     companion object {
         const val SCHEMA_VERSION = 2

@@ -21,6 +21,7 @@ object CloudSaveJson {
             save.lastRewardedEggRarity?.let { put("lastRewardedEggRarity", it) }
             save.lastRewardRollPercent?.let { put("lastRewardRollPercent", it) }
             save.pendingRewardEggRarity?.let { put("pendingRewardEggRarity", it) }
+            save.redeemedPromoCodes?.let { put("redeemedPromoCodes", it) }
         }
     }
 
@@ -45,6 +46,7 @@ object CloudSaveJson {
                 null
             },
             pendingRewardEggRarity = json.optString("pendingRewardEggRarity").takeIf { it.isNotBlank() },
+            redeemedPromoCodes = json.optString("redeemedPromoCodes").takeIf { it.isNotBlank() },
         )
     }
 

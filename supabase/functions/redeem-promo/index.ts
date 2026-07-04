@@ -9,7 +9,13 @@ const corsHeaders = {
 /** Normalized code -> egg rarity granted on next reward claim */
 const PROMO_CODES: Record<string, string> = {
   epic20: "EPIC",
+  legend20: "LEGENDARY",
 };
+
+function promoMessage(rewardRarity: string): string {
+  const label = rewardRarity.charAt(0) + rewardRarity.slice(1).toLowerCase();
+  return `Your next reward egg will be ${label}!`;
+}
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -127,7 +133,7 @@ serve(async (req) => {
       ok: true,
       code,
       pendingRewardEggRarity: rewardRarity,
-      message: "Your next reward egg will be Epic!",
+      message: promoMessage(rewardRarity),
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

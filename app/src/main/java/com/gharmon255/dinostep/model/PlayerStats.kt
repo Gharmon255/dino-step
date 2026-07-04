@@ -8,4 +8,5 @@ data class PlayerStats(
     val lastSyncDayStartMillis: Long = 0L,
     val lifetimeStepsApplied: Int = 0,
     val pendingRewardEggRarity: String? = null,
+    val redeemedPromoCodes: String? = null,
 )

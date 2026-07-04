@@ -33,7 +33,8 @@ import com.gharmon255.dinostep.model.GrowthStage
 import com.gharmon255.dinostep.model.PlayerStats
 import com.gharmon255.dinostep.model.Rarity
 import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
-import com.gharmon255.dinostep.promo.PromoCodes
+import com.gharmon255.dinostep.promo.PromoCatalog
+import com.gharmon255.dinostep.promo.PromoRedemptionCodec
 import com.gharmon255.dinostep.promo.PromoRepository
 import com.gharmon255.dinostep.ui.collection.CollectionRoster
 import com.gharmon255.dinostep.shared.wear.WearSyncEventType
@@ -139,11 +140,11 @@ class GameViewModel(
     var isPromoLoading by mutableStateOf(false)
         private set
 
-    var epic20PromoRedeemed by mutableStateOf(false)
-        private set
+    val pendingPromoRewardRarity: EggRarity?
+        get() = playerStats.pendingRewardEggRarity?.let { EggRarity.fromRaw(it) }
 
-    val hasPendingEpicRewardEgg: Boolean
-        get() = playerStats.pendingRewardEggRarity?.let { EggRarity.fromRaw(it) == EggRarity.EPIC } == true
+    val redeemedPromoCodes: Set<String>
+        get() = PromoRedemptionCodec.parse(playerStats.redeemedPromoCodes)
 
     fun clearPendingDiscovery() {
         pendingDiscovery = null
@@ -728,17 +729,16 @@ class GameViewModel(
         return cloudSaveSyncEngine.exportLocalJson(currentSnapshot())
     }
 
-    fun refreshEpic20PromoStatus() {
+    fun refreshPromoRedemptionStatus() {
         val repo = promoRepository ?: return
-        if (cloudSaveSyncEngine.uiState.value.signedInUserId == null) {
-            epic20PromoRedeemed = false
-            return
-        }
         viewModelScope.launch {
             runCatching {
-                repo.status(PromoCodes.EPIC20).redeemed
-            }.onSuccess { redeemed ->
-                epic20PromoRedeemed = redeemed
+                repo.syncRedemptionStatus(playerStats)
+            }.onSuccess { synced ->
+                if (synced.redeemedPromoCodes != playerStats.redeemedPromoCodes) {
+                    playerStats = synced
+                    repository.savePlayerStats(playerStats)
+                }
             }
         }
     }
@@ -750,13 +750,8 @@ class GameViewModel(
             isPromoLoading = true
             promoStatusMessage = null
             try {
-                val result = repo.redeemCode(code)
-                playerStats = playerStats.copy(
-                    pendingRewardEggRarity = result.pendingRewardEggRarity.name,
-                )
-                if (code.trim().equals(PromoCodes.EPIC20, ignoreCase = true)) {
-                    epic20PromoRedeemed = true
-                }
+                val result = repo.redeemCode(code, playerStats)
+                playerStats = result.playerStats
                 promoStatusMessage = result.message
                 repository.savePlayerStats(playerStats)
                 cloudSaveSyncEngine.schedulePush(currentSnapshot())
@@ -766,6 +761,10 @@ class GameViewModel(
                 isPromoLoading = false
             }
         }
+    }
+
+    fun isPromoCodeRedeemed(code: String): Boolean {
+        return PromoRedemptionCodec.hasRedeemed(playerStats.redeemedPromoCodes, code)
     }
 
     private fun consumePendingRewardRoll(): EggRewardRoller.RollResult {

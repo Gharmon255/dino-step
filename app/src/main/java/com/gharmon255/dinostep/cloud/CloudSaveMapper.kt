@@ -56,6 +56,7 @@ object CloudSaveMapper {
             lastRewardedEggRarity = lastRewardedEggRarity,
             lastRewardRollPercent = lastRewardRollPercent,
             pendingRewardEggRarity = snapshot.playerStats.pendingRewardEggRarity,
+            redeemedPromoCodes = snapshot.playerStats.redeemedPromoCodes,
         )
     }
 
@@ -101,6 +102,7 @@ object CloudSaveMapper {
                 lastSyncDayStartMillis = cloud.playerStats.lastSyncDayStartMillis,
                 lifetimeStepsApplied = cloud.playerStats.lifetimeStepsApplied,
                 pendingRewardEggRarity = cloud.pendingRewardEggRarity,
+                redeemedPromoCodes = cloud.redeemedPromoCodes,
             ),
         )
     }

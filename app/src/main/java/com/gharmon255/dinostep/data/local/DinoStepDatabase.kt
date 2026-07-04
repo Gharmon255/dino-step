@@ -13,13 +13,20 @@ import com.gharmon255.dinostep.data.local.entity.ActiveCreatureEntity
 import com.gharmon255.dinostep.data.local.entity.CompletedCreatureEntity
 import com.gharmon255.dinostep.data.local.entity.PlayerStatsEntity
 
+/**
+ * Single source of truth for the Room schema version. Referenced by the [Database] annotation and
+ * verified by `MigrationCoverageTest` so a bumped version can never ship without a matching
+ * migration (the #1 cause of "my save disappeared after updating").
+ */
+internal const val DINO_STEP_DB_VERSION = 9
+
 @Database(
     entities = [
         ActiveCreatureEntity::class,
         CompletedCreatureEntity::class,
         PlayerStatsEntity::class,
     ],
-    version = 8,
+    version = DINO_STEP_DB_VERSION,
     exportSchema = false,
 )
 abstract class DinoStepDatabase : RoomDatabase() {
@@ -110,6 +117,30 @@ abstract class DinoStepDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE player_stats ADD COLUMN redeemedPromoCodes TEXT",
+                )
+            }
+        }
+
+        /**
+         * Every migration the app ships, in order. This is the exact list handed to Room and the
+         * one `MigrationCoverageTest` inspects to prove the 1..[DINO_STEP_DB_VERSION] upgrade path
+         * is unbroken (no gaps, no duplicates, terminates at the current version).
+         */
+        internal val ALL_MIGRATIONS: Array<Migration> = arrayOf(
+            MIGRATION_1_2,
+            MIGRATION_2_3,
+            MIGRATION_3_4,
+            MIGRATION_4_5,
+            MIGRATION_5_6,
+            MIGRATION_6_7,
+            MIGRATION_7_8,
+            MIGRATION_8_9,
+        )
+
         fun getInstance(context: Context): DinoStepDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -117,15 +148,7 @@ abstract class DinoStepDatabase : RoomDatabase() {
                     DinoStepDatabase::class.java,
                     "dino_step.db",
                 )
-                    .addMigrations(
-                        MIGRATION_1_2,
-                        MIGRATION_2_3,
-                        MIGRATION_3_4,
-                        MIGRATION_4_5,
-                        MIGRATION_5_6,
-                        MIGRATION_6_7,
-                        MIGRATION_7_8,
-                    )
+                    .addMigrations(*ALL_MIGRATIONS)
                     .build()
                     .also { instance = it }
             }
