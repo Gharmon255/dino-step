@@ -4,6 +4,7 @@ import com.gharmon255.dinostep.data.AppExperiencePreferences
 import com.gharmon255.dinostep.data.repository.GameRepository
 import com.gharmon255.dinostep.game.ExProgression
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
+import com.gharmon255.dinostep.notifications.DailyStepGoalReminderScheduler
 import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.wear.WearCreaturePayloadMapper
 import com.gharmon255.dinostep.wear.WearDataLayerPublisher
@@ -82,6 +83,10 @@ class HealthStepSyncEngine(
         )
 
         if (syncResult.delta <= 0) {
+            DailyStepGoalReminderScheduler.updateAfterSync(
+                context = healthConnectRepository.appContext,
+                todaySteps = syncResult.currentHealthConnectSteps,
+            )
             return@withLock HealthStepSyncOutcome(
                 status = status,
                 appliedDelta = 0,
@@ -117,6 +122,11 @@ class HealthStepSyncEngine(
         wearDataLayerPublisher?.publishActiveCreature(progression.activeCreature, eventType)
         garminCompanionPublisher?.publishActiveCreature(progression.activeCreature, eventType)
 
+        DailyStepGoalReminderScheduler.updateAfterSync(
+            context = healthConnectRepository.appContext,
+            todaySteps = syncResult.currentHealthConnectSteps,
+        )
+
         return@withLock HealthStepSyncOutcome(
             status = status,
             appliedDelta = syncResult.delta,
@@ -144,7 +154,6 @@ class HealthStepSyncEngine(
                 healthConnectRepository.readStepTotalBetween(start, end)
                     .getOrNull()
                     ?.toInt()
-                    ?: 0
             },
         )
         if (rollover.penalty != null) {

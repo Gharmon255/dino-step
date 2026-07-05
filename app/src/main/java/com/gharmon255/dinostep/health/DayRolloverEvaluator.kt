@@ -14,7 +14,7 @@ object DayRolloverEvaluator {
         experience: AppExperiencePreferences,
         activeCreature: ActiveCreatureState,
         playerStats: PlayerStats,
-        fetchYesterdaySteps: suspend () -> Int,
+        fetchYesterdaySteps: suspend () -> Int?,
     ): DayRolloverOutcome {
         val todayStart = StepTimeUtils.startOfTodayMillis()
         val lastEvaluatedDay = experience.lastActivityEvaluationDayStartMillis()
@@ -31,11 +31,13 @@ object DayRolloverEvaluator {
                 playerStats = playerStats,
                 fetchYesterdaySteps = fetchYesterdaySteps,
             )
-            penalty = DailyActivityPenalty.applyIfNeeded(
-                yesterdaySteps = yesterdaySteps,
-                activeCreature = creature,
-            )
-            penalty?.let { creature = it.creature }
+            if (yesterdaySteps != null) {
+                penalty = DailyActivityPenalty.applyIfNeeded(
+                    yesterdaySteps = yesterdaySteps,
+                    activeCreature = creature,
+                )
+                penalty?.let { creature = it.creature }
+            }
         }
 
         experience.setLastActivityEvaluationDayStartMillis(todayStart)
@@ -45,14 +47,31 @@ object DayRolloverEvaluator {
         )
     }
 
+    /**
+     * Returns yesterday's step total for the inactivity check.
+     *
+     * Always prefers a fresh Health Connect read when available, because a partial in-app sync
+     * from earlier in the day can under-count steps the player earned later without reopening
+     * the app. When Health Connect cannot be read, falls back to the cached sync total for
+     * yesterday. Returns null when neither source is available so callers skip the penalty.
+     */
     internal suspend fun resolveYesterdaySteps(
         playerStats: PlayerStats,
-        fetchYesterdaySteps: suspend () -> Int,
-    ): Int {
+        fetchYesterdaySteps: suspend () -> Int?,
+    ): Int? {
         val yesterdayStart = StepTimeUtils.startOfYesterdayMillis()
-        if (playerStats.lastSyncDayStartMillis == yesterdayStart) {
-            return playerStats.lastSyncedStepTotal
+        val cachedYesterdayTotal = if (playerStats.lastSyncDayStartMillis == yesterdayStart) {
+            playerStats.lastSyncedStepTotal
+        } else {
+            null
         }
-        return fetchYesterdaySteps()
+
+        val fetched = fetchYesterdaySteps()
+        return when {
+            fetched != null && cachedYesterdayTotal != null -> maxOf(fetched, cachedYesterdayTotal)
+            fetched != null -> fetched
+            cachedYesterdayTotal != null -> cachedYesterdayTotal
+            else -> null
+        }
     }
 }

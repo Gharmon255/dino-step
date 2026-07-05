@@ -18,6 +18,7 @@ import com.gharmon255.dinostep.health.StepSyncScheduler
 import com.gharmon255.dinostep.garmin.GarminCompanionPublisher
 import com.gharmon255.dinostep.garmin.GarminConnectIQManager
 import com.gharmon255.dinostep.garmin.GarminSdkCompanionPublisher
+import com.gharmon255.dinostep.notifications.DailyStepGoalReminderScheduler
 import com.gharmon255.dinostep.notifications.InactivityPenaltyNotifier
 import com.gharmon255.dinostep.notifications.StageMilestoneNotifier
 import com.gharmon255.dinostep.promo.PromoRepository
@@ -96,6 +97,7 @@ class DinoStepApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         StepSyncScheduler.schedule(this)
+        DailyStepGoalReminderScheduler.ensureScheduled(this)
     }
 
     override fun onTerminate() {

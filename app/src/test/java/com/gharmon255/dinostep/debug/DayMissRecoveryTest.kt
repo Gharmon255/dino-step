@@ -155,16 +155,41 @@ class DayMissRecoveryTest {
     }
 
     @Test
-    fun yesterdayStepResolution_prefersCachedTotalWhenItMatchesYesterday() = runBlocking {
+    fun yesterdayStepResolution_usesHigherOfFreshReadAndCachedPartialSync() = runBlocking {
         val yesterdayStart = StepTimeUtils.startOfYesterdayMillis()
         val stats = PlayerStats(lastSyncedStepTotal = 3_000, lastSyncDayStartMillis = yesterdayStart)
 
         val resolved = DayRolloverEvaluator.resolveYesterdaySteps(
             playerStats = stats,
-            fetchYesterdaySteps = { error("fetch must not be called when cache matches yesterday") },
+            fetchYesterdaySteps = { 6_500 },
+        )
+
+        assertEquals(6_500, resolved)
+    }
+
+    @Test
+    fun yesterdayStepResolution_fallsBackToCacheWhenHealthReadFails() = runBlocking {
+        val yesterdayStart = StepTimeUtils.startOfYesterdayMillis()
+        val stats = PlayerStats(lastSyncedStepTotal = 3_000, lastSyncDayStartMillis = yesterdayStart)
+
+        val resolved = DayRolloverEvaluator.resolveYesterdaySteps(
+            playerStats = stats,
+            fetchYesterdaySteps = { null },
         )
 
         assertEquals(3_000, resolved)
+    }
+
+    @Test
+    fun yesterdayStepResolution_returnsNullWhenNoSourceAvailable() = runBlocking {
+        val stats = PlayerStats(lastSyncedStepTotal = 3_000, lastSyncDayStartMillis = 0L)
+
+        val resolved = DayRolloverEvaluator.resolveYesterdaySteps(
+            playerStats = stats,
+            fetchYesterdaySteps = { null },
+        )
+
+        assertNull(resolved)
     }
 
     @Test

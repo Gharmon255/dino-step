@@ -14,6 +14,7 @@ import java.time.Instant
 class HealthConnectRepository(
     private val context: Context,
 ) {
+    val appContext: Context get() = context.applicationContext
     val readStepsPermissions: Set<String> = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
     )

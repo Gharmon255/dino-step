@@ -62,7 +62,9 @@ object HelpTopics {
             HelpSection(
                 title = "Daily step goal",
                 body = "Walk at least 5,000 steps on a day or your active dinosaur resets to a fresh egg " +
-                    "with 500 steps already applied. Keep moving to protect your progress!",
+                    "with 500 steps already applied. Stepasaurus checks your phone's step history each day, " +
+                    "even if you don't open the app — you don't need to sync manually to stay safe. " +
+                    "You'll get an evening reminder if you're still short of the goal.",
             ),
         )
     }

@@ -57,8 +57,9 @@ resets to a 500-step egg → regrow to adult again**. Verifies:
 - Idempotency: a freshly reset egg isn't stomped again the next inactive day.
 - After a reset the creature re-hatches at the hatch threshold (hatch counter increments again) and
   climbs back through baby/juvenile/adult.
-- `DayRolloverEvaluator.resolveYesterdaySteps` prefers the cached HealthConnect total when it maps
-  to yesterday, otherwise falls back to a fresh read.
+- `DayRolloverEvaluator.resolveYesterdaySteps` always queries Health Connect / HealthKit for
+  yesterday's full-day total and uses the higher of that read and any partial in-app sync cache.
+  When neither source is available, the penalty is skipped instead of treating unknown as zero.
 
 ### `ProgressionLifecycleTest` — "the growth economy is sane"
 Per-rarity adult totals (40k → 240k), ordered hatch/juvenile/total thresholds (~18% / ~45%), exact
